@@ -1,3 +1,12 @@
+/* jquery.nicescroll
+-- versione 1.0.0
+-- copyright 2011 InuYaksa*2011
+-- licensed under the MIT
+--
+-- https://github.com/inuyaksa/jquery.nicescroll
+--
+*/
+
 (function( $ ){
 
   var AScrollClass = function(myopt) {
