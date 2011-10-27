@@ -5,6 +5,7 @@ https://github.com/inuyaksa/jquery.nicescroll
 
 
 A jquery (since 1.5) plugin for nice scrollbars as ios/mobile style.
+Compatible with Firefox 4+, Chrome 5+, Safari 5+, Opera 10+, IE 8+.
 
 
 
