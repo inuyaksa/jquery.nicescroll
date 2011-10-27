@@ -7,7 +7,7 @@
 --
 */
 
-(function( $ ){
+(function($){
 
   var AScrollClass = function(myopt) {
 
@@ -194,7 +194,7 @@
       self.hideCursor();
     };
    
-    this.bind = function(dom,name,fn,bubble) {  // fixing jquery
+    this.bind = function(dom,name,fn,bubble) {  // fixing jquery bind
       var el = dom[0];
       if (el.addEventListener) {
         el.addEventListener(name,fn,bubble||false);
