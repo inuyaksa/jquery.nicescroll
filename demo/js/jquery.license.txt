@@ -1,0 +1,15 @@
+Original web page: http://jquery.org/license/
+
+The MIT License is recommended for most projects. It is simple and easy to understand and it places almost no restrictions on what you can do with a jQuery project.
+
+If the GPL suits your project better you are also free to use a jQuery project under that license.
+
+You don’t have to do anything special to choose one license or the other and you don’t have to notify anyone which license you are using. You are free to use a jQuery project in commercial projects as long as the copyright header is left intact.
+Licenses
+
+    MIT License (More Information)
+    GPL (More Information)
+
+Sizzle
+
+The Sizzle selector engine (which is included inside the jQuery library) is held by the Dojo Foundation and is licensed under the MIT, GPL, and BSD licenses. 
