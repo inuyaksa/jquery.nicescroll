@@ -16,6 +16,16 @@ Document (body) scrollbars can't appears, old (native browser) one is used.
 Some issues with IFrame scrolling.
 
 
+* FEATURES
+
+- simple installation and activation, it works with NO modification of your code. (some exceptions can happen, so you can write to me)
+- very stylish scrollbars, with no occupation on your window (original browser scrollbars need some of page space and reduces window/div usable width)
+- you can stile main document scrollbar (body) too!! (not all script implements this feature)
+- on all browsers you can scroll: dragging the cursor, mouse wheel (speed customizable), keyboard navigation (cursor keys, pagup/down keys, home/end keys)
+- scroll is smooth (as modern tablet browsing), speed is customizable
+- tested for all major browsers but with extended support, including IE6, Safari on Mac and IE10 preview!
+
+
 * DEPENDENCIES
 It uses jquery framework, since 1.5.x version. (you can try with 1.4.x)
 
