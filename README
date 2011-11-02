@@ -1,19 +1,36 @@
 jquery.nicescroll
-v. 1.5.0 10-30-2011
+v. 1.5.1 10-30-2011
 copyright 2011 InuYaksa*2011
 licensed under the MIT
 https://github.com/inuyaksa/jquery.nicescroll
 
 
-A jquery (since 1.5) plugin for nice scrollbars as ios/mobile style.
+Nicescroll (as nice scroll for browsers) is a jquery (since 1.5) plugin, for nice scrollbars with a very similar ios/mobile style.
 It supports DIVs, IFrames and document page (body) scrollbars.
-Compatible with Firefox 4+, Chrome 5+, Safari 4+, Opera 10+, IE 8+.
+Compatible with Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
 
-Only vertical scrolls supported in this version.
+Only vertical scrollbars supported in this version.
+
+Warning for IE6 users (who uses IE6 yet? Please updgrade to a more stable and modern browser), some feature can't work for limitation of the browser.
+Document (body) scrollbars can't appears, old (native browser) one is used.
+Some issues with IFrame scrolling.
 
 
+* DEPENDENCIES
+It uses jquery framework, since 1.5.x version. (you can try with 1.4.x)
 
-1. How to use (simple):
+
+* INSTALLATION
+Put loading script tag after jquery script tag:
+
+<script src="jquery.nicescroll.js"></script>
+
+
+* HOW TO USE
+
+Recall ALWAYS in (document) ready statement.
+
+1. Simple mode, it styles document scrollbar:
 
 $(document).ready(
   function() {  
@@ -21,9 +38,7 @@ $(document).ready(
   }
 );
 
-
-
-2. How to use (with object returned):
+2. Style scrollbars wit object returned:
 
 var scrollbars = false;
 $(document).ready(
@@ -31,4 +46,30 @@ $(document).ready(
     scrollbars = $("body").niceScroll();
   }
 );
+
+3. Style a DIV and chage cursor color:
+
+$(document).ready(
+  function() {  
+    $("#thisdiv").niceScroll({cursorcolor:"#00F"});
+  }
+);
+
+
+* CONFIGURATION PARAMETERS
+
+When you call "niceScroll" you can pass some parameters to custom visual aspects:
+
+. cursorcolor - change cursor color in hex, default is "#000000"
+. cursoropacitymin - change opacity very cursor is inactive (scrollabar "hidden" state), range from 1 to 0, default is 0 (hidden)
+. cursoropacitymax - change opacity very cursor is active (scrollabar "visible" state), range from 1 to 0, default is 1 (full opacity)
+. zindex - change z-index for scrollbar div, default value is 9999
+. scrollspeed - scrolling speed, default value is 60
+. mousescrollstep - scrolling speed with mouse wheel, default value is 48 (pixel)
+
+
+* LICENSE
+
+Copyright 2011*InuYaksa
+Licensed under the MIT License, http://www.opensource.org/licenses/mit-license.php
 

@@ -24,10 +24,10 @@
       cursoropacitymax:1,
       cursorcolor:"#424242",
       scrollspeed:60,
-      mousescrollstep:8*6,
+      mousescrollstep:8*6
     };
     
-    if (myopt) {
+    if (myopt||false) {
       for(var a in self.opt) {
         if (myopt[a]!==undefined) self.opt[a] = myopt[a];
       }
@@ -168,7 +168,7 @@
         if (!self.rail.drag) self.hideCursor();
       });
       
-      if (!self.isiframe) self.bind(self.docscroll,"mousewheel",self.onmousewheel);
+      if (!self.isiframe) self.bind((self.isie&&self.ispage) ? document : self.docscroll,"mousewheel",self.onmousewheel);
       self.bind(self.rail,"mousewheel",self.onmousewheel);
 
       if (!self.ispage) {
@@ -305,7 +305,7 @@
         if (name=='mousewheel') el.addEventListener("DOMMouseScroll",fn,bubble||false);
       } 
       else if (el.attachEvent) {
-        el.attachEvent(name,fn);
+        el.attachEvent("on"+name,fn);
       } 
       else {
         el["on"+name] = fn;
@@ -331,15 +331,6 @@
         self.doScrollBy(delta*self.opt.mousescrollstep,true);
       }
       return self.cancelEvent(e);
-    };
-    
-    this.mousewheel = function(fn) {
-      if (!self.isie) self.bind(self.docscroll,'DOMMouseScroll',self.onmousewheel,false);      
-      self.bind(self.docscroll,'mousewheel',self.onmousewheel,false);
-      if (!self.ispage) {
-        if (!self.isie) self.bind(self.rail,'DOMMouseScroll',self.onmousewheel,false);      
-        self.bind(self.rail,'mousewheel',self.onmousewheel,false);
-      }
     };
     
     this.doScroll = function(y) {
@@ -402,8 +393,8 @@
   
   $.fn.niceScroll = function(opt) {
     var ret = [];
-    if (opt===undefined) opt = {};
-    var docundef = (opt.doc===undefined);
+    if (typeof opt=="undefined") opt = {};
+    var docundef = !("doc" in opt);
     this.each(function() {      
       opt.doc = (docundef) ? $(this) : opt.doc;
       ret.push(new NiceScrollClass(opt));
