@@ -1,0 +1,19 @@
+Changelog nicescroll release 2.0.0
+https://github.com/inuyaksa/jquery.nicescroll
+
+New features
+- full support for mobile devices as iPad, iPhone, Android
+- new zoom feature (desktop & mobile)
+- hardware accelerated scroll
+- touchbehavior flag
+- support for "scrollable wrapper" (div in div)
+
+Changed features
+- cursor size changed to 5 pixels
+- z-index for scrollbar lowered to 9000
+- mobile device use native scrollbar for window (main page)
+
+Fixes
+- some fixes for IE6
+- some fixes for Chrome/Safari
+- fixing cursor scrolling/hiding functions

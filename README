@@ -1,37 +1,48 @@
 jquery.nicescroll
-v. 1.5.1 10-30-2011
+v. 2.0.0 11-03-2011
 copyright 2011 InuYaksa*2011
 licensed under the MIT
+http://areaaperta.com/nicescroll
 https://github.com/inuyaksa/jquery.nicescroll
 
 
 Nicescroll (as nice scroll for browsers) is a jquery (since 1.5) plugin, for nice scrollbars with a very similar ios/mobile style.
 It supports DIVs, IFrames and document page (body) scrollbars.
 Compatible with Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
+Compatible with iOS devices as iPad. So you have scrollable divs for iPad.
+
+Sexy zoom feature, you can "zoom-in" the content of any nicescroll'ed div. Nice to use and nice to see, all the content of the div in fullscreen mode. It works on desktop (double click on div) either in mobile/touch devices using pitch gesture.
+
+On modern browsers hardware accelerated scrolling has implemented.
 
 Only vertical scrollbars supported in this version.
 
-Warning for IE6 users (who uses IE6 yet? Please updgrade to a more stable and modern browser), some feature can't work for limitation of the browser.
-Document (body) scrollbars can't appears, old (native browser) one is used.
-Some issues with IFrame scrolling.
+Warning for IE6 users (who uses IE6 yet? Please updgrade to a more stable and modern browser), some feature can't work for limitation of the browser. Document (body) scrollbars can't appears, old (native browser) one is used. Some issues with IFrame scrolling.
 
 
 * FEATURES
 
 - simple installation and activation, it works with NO modification of your code. (some exceptions can happen, so you can write to me)
 - very stylish scrollbars, with no occupation on your window (original browser scrollbars need some of page space and reduces window/div usable width)
-- you can stile main document scrollbar (body) too!! (not all script implements this feature)
+- you can style main document scrollbar (body) too!! (not all script implements this feature)
 - on all browsers you can scroll: dragging the cursor, mouse wheel (speed customizable), keyboard navigation (cursor keys, pagup/down keys, home/end keys)
 - scroll is smooth (as modern tablet browsing), speed is customizable
-- tested for all major browsers but with extended support, including IE6, Safari on Mac and IE10 preview!
+- zoom feature
+- hardware accelerated scroll (when available)
+- tested for all major browsers desktop and mobile versiones
+- support for touch devices
+- compatible with many other browsers, including IE6, Safari on Mac and IE10 preview!
+- very customizable aspect of bar
+- native scroll events are working yet
 
 
 * DEPENDENCIES
-It uses jquery framework, since 1.5.x version. (you can try with 1.4.x)
+It's a plugin for the jquery framework, you need to include jquery in your scripts.
+From 1.5.x version and on. (you can try with 1.4.x also)
 
 
 * INSTALLATION
-Put loading script tag after jquery script tag:
+Put loading script tag after jquery script tag and loading the zoom image in the same folder of the script:
 
 <script src="jquery.nicescroll.js"></script>
 
@@ -65,6 +76,13 @@ $(document).ready(
   }
 );
 
+4. DIV with "wrapper", formed by two divs, the first is the vieport, the latter is the content:
+$(document).ready(
+  function() {
+    $("#viewportdiv").niceScroll("#wrapperdiv",{cursorcolor:"#00F"});
+  }
+);
+
 
 * CONFIGURATION PARAMETERS
 
@@ -73,13 +91,21 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 . cursorcolor - change cursor color in hex, default is "#000000"
 . cursoropacitymin - change opacity very cursor is inactive (scrollabar "hidden" state), range from 1 to 0, default is 0 (hidden)
 . cursoropacitymax - change opacity very cursor is active (scrollabar "visible" state), range from 1 to 0, default is 1 (full opacity)
+. cursorwidth - cursor width in pixel, default is 5 (you can write "5px" too)
+. cursorborder - css definition for cursor border, default is "1px solid #fff"
+. cursorborderradius - border radius in pixel for cursor, default is "4px"
 . zindex - change z-index for scrollbar div, default value is 9999
 . scrollspeed - scrolling speed, default value is 60
 . mousescrollstep - scrolling speed with mouse wheel, default value is 48 (pixel)
+. touchbehavior - enable cursor-drag scrolling like touch devices in desktop computer, default is false
+. hwacceleration - use hardware accelerated scroll when supported, default is true
+. boxzoom - enable zoom for box content, default is false
+. dblclickzoom - (only when boxzoom=true) zoom activated when double click on box, default is true
+. gesturezoom - (only when boxzoom=true and with touch devices) zoom activated when pitch out/in on box, default is true
 
 
 * LICENSE
 
 Copyright 2011*InuYaksa
 Licensed under the MIT License, http://www.opensource.org/licenses/mit-license.php
-
+Images used for zoom icons have derived from OLPC interface, http://laptop.org/8.2.0/manual/Browse_ChangingView.html
