@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- versione 2.0.0
+-- versione 2.0.1
 -- copyright 2011 InuYaksa*2011
 -- licensed under the MIT
 --
@@ -35,7 +35,7 @@
       cursorcolor:"#424242",
       cursorwidth:"5px",
       cursorborder:"1px solid #fff",
-      cursorborderradius:"4px",
+      cursorborderradius:"5px",
       scrollspeed:60,
       mousescrollstep:8*6,
       touchbehavior:false,
@@ -59,33 +59,6 @@
     this.docscroll = this.ispage?$(window):this.win;
 
     this.isiframe = ((this.doc[0].nodeName == 'IFRAME') && (this.win[0].nodeName == 'IFRAME'));
-    
-/*    
-    if (this.isiframe) {
-      this.docscroll = (this.doc[0].document)?$(this.doc[0].document.body):this.doc;
-      this.doc.load(function() {
-        var doc = 'contentDocument' in this? this.contentDocument : this.contentWindow.document;
-        self.docscroll = $(doc.body);
-        self.onResize();
-        $(doc.body).css({'overflow-y':'hidden'});
-        $(doc).scroll(self.onscroll);
-        $(doc).mouseup(function() {self.rail.drag = false;});
-        self.bind(doc,"mousewheel",self.onmousewheel);
-        $(doc).keydown(self.onkeypress);
-      });
-    }
-    else if (this.doc[0].nodeName == 'IFRAME') {
-      this.doc.load(function() {
-        self.onResize();
-        var doc = 'contentDocument' in this? this.contentDocument : this.contentWindow.document;
-        $(doc).find('body,html').css({'overflow-y':'hidden'});
-        $(doc).scroll(self.onscroll);
-        $(doc).mouseup(function() {self.rail.drag = false;});
-        self.bind(doc,"mousewheel",self.onmousewheel);
-        $(doc).keydown(self.onkeypress);
-      });
-    }
-*/
 
     if (this.doc[0].nodeName == 'IFRAME') {
       this.doc.load(function() {        
@@ -148,12 +121,22 @@
     this.hasfocus = false;
     this.hasmousefocus = false;
     
+    this.locked = false;
+    
     var domtest = document.createElement('DIV');
     
     this.isie = (document.all && !document.opera);
     this.isieold = (this.isie && !('msInterpolationMode' in domtest.style));
     
     this.cantouch = ('ontouchstart' in document.documentElement);
+
+    if (this.cantouch && /iphone|ipad|ipod/i.test(navigator.platform)) {
+      this.isios = true;
+      this.isios4 = !("seal" in Object);
+    } else {
+      this.isios = false;
+      this.isios4 = false;
+    }
     
     if (self.opt.hwacceleration) {  // if you dont need dont bother to look for
       this.trstyle = (window.opera) ? 'OTransform' : (document.all) ? 'msTransform' : (domtest.style.webkitTransform!==undefined) ? 'webkitTransform' : (domtest.style.MozTransform!==undefined) ? 'MozTransform' : false;
@@ -163,9 +146,22 @@
         domtest.style[this.trstyle] = "translate3d(1px,2px,3px)";
         this.hastranslate3d = /translate3d/.test(domtest.style[this.trstyle]);
       }
+      
+      this.transitionstyle = false;
+      var check = ['transition','webkitTransition','MozTransition','OTransition','msTransition','KhtmlTransition'];
+      for(var a=0;a<check.length;a++) {
+        if (check[a] in domtest.style) {
+          this.transitionstyle = check[a];
+          break;
+        }
+      }
+      this.hastransition = (this.transitionstyle);
+      
     } else {
       this.trstyle = false;
       this.hastransform = false;
+      this.transitionstyle = false;
+      this.hastransition = false;
     }
 
     this.ishwscroll = (self.hastransform)&&(self.opt.hwacceleration)&&(self.haswrapper);
@@ -241,7 +237,7 @@
       } else {
         var pos = self.win.offset();
         pos.top+=2;
-        pos.left+=self.win.outerWidth()-self.rail.width-5;
+        pos.left+=self.win.outerWidth()-self.rail.width-4;
         self.rail.css({position:"absolute",top:pos.top,left:pos.left,height:self.win.outerHeight()});
         if (self.zoom) self.zoom.css({position:"absolute",top:pos.top+1,left:pos.left-18});
       }
@@ -646,18 +642,21 @@
       self.zoomrestore = {
         style:{}
       };
-      for(var a in self.win[0].style) {
-        self.zoomrestore.style[a] = self.win[0].style[a];
+      var lst = ['position','top','left','zIndex','backgroundColor','width','height','marginTop','marginBottom','marginLeft','marginRight'];
+      for(var a in lst) {
+        var pp = lst[a];
+        self.zoomrestore.style[pp] = self.win.css(pp)||'';
       }
       self.zoomrestore.padding = {
         w:self.win.outerWidth()-self.win.width(),
         h:self.win.outerHeight()-self.win.height()
-      };      
+      };
       self.win.css({
         "position":"fixed",
         "top":0,
         "left":0,
-        "z-index":self.opt.zindex+100
+        "z-index":self.opt.zindex+100,
+        "margin":"0px"
       });
       var bkg = self.win.css("backgroundColor");      
       if (bkg==""||/transparent|rgba\(0, 0, 0, 0\)|rgba\(0,0,0,0\)/.test(bkg)) self.win.css("backgroundColor","#fff");
@@ -672,16 +671,9 @@
     this.doZoomOut = function(e) {
       if (!self.zoomactive) return;
       
-      var res = self.zoomrestore.style;
-      self.win.css({
-        "position":res.position||'',
-        "top":res.top||'',
-        "left":res.left||'',
-        "width":res.width||'',
-        "height":res.height||'',
-        "z-index":res.zIndex||'',
-        "backgroundColor":res.backgroundColor||''
-      });
+      self.win.css("margin","");
+      self.win.css(self.zoomrestore.style);
+      
       self.rail.css({"z-index":self.opt.zindex});
       self.zoom.css({"z-index":self.opt.zindex});
       self.zoomactive = false;

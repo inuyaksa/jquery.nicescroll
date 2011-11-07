@@ -1,5 +1,5 @@
 jquery.nicescroll
-v. 2.0.0 11-03-2011
+v. 2.0.1 11-07-2011
 copyright 2011 InuYaksa*2011
 licensed under the MIT
 http://areaaperta.com/nicescroll
@@ -11,7 +11,7 @@ It supports DIVs, IFrames and document page (body) scrollbars.
 Compatible with Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
 Compatible with iOS devices as iPad. So you have scrollable divs for iPad.
 
-Sexy zoom feature, you can "zoom-in" the content of any nicescroll'ed div. Nice to use and nice to see, all the content of the div in fullscreen mode. It works on desktop (double click on div) either in mobile/touch devices using pitch gesture.
+Sexy zoom feature, you can "zoom-in" the content of any nicescroll'ed div. Nice to use and nice to see, all the content of the div in fullscreen mode. It works on desktop (double click on div) either in mobile/touch devices using pinch gesture.
 
 On modern browsers hardware accelerated scrolling has implemented.
 
@@ -101,7 +101,7 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 . hwacceleration - use hardware accelerated scroll when supported, default is true
 . boxzoom - enable zoom for box content, default is false
 . dblclickzoom - (only when boxzoom=true) zoom activated when double click on box, default is true
-. gesturezoom - (only when boxzoom=true and with touch devices) zoom activated when pitch out/in on box, default is true
+. gesturezoom - (only when boxzoom=true and with touch devices) zoom activated when pinch out/in on box, default is true
 
 
 * LICENSE
