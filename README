@@ -1,5 +1,5 @@
 jquery.nicescroll
-v. 2.0.1 11-07-2011
+v. 2.2.0 11-13-2011
 copyright 2011 InuYaksa*2011
 licensed under the MIT
 http://areaaperta.com/nicescroll
@@ -28,7 +28,7 @@ Warning for IE6 users (who uses IE6 yet? Please updgrade to a more stable and mo
 - on all browsers you can scroll: dragging the cursor, mouse wheel (speed customizable), keyboard navigation (cursor keys, pagup/down keys, home/end keys)
 - scroll is smooth (as modern tablet browsing), speed is customizable
 - zoom feature
-- hardware accelerated scroll (when available)
+- hardware accelerated scroll (where available)
 - tested for all major browsers desktop and mobile versiones
 - support for touch devices
 - compatible with many other browsers, including IE6, Safari on Mac and IE10 preview!
@@ -45,6 +45,8 @@ From 1.5.x version and on. (you can try with 1.4.x also)
 Put loading script tag after jquery script tag and loading the zoom image in the same folder of the script:
 
 <script src="jquery.nicescroll.js"></script>
+
+Copy image "zoomico.png" in the same folder of jquery.nicescroll.js.
 
 
 * HOW TO USE
@@ -102,7 +104,9 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 . boxzoom - enable zoom for box content, default is false
 . dblclickzoom - (only when boxzoom=true) zoom activated when double click on box, default is true
 . gesturezoom - (only when boxzoom=true and with touch devices) zoom activated when pinch out/in on box, default is true
-
+. grabcursorenabled, display "grab" icon for div with touchbehavior = true, default is true
+. autohidemode, how hide the scrollbar works, true=default / "cursor" = only cursor hidden / false = do not hide
+. background, change css for rail background, default is ""
 
 * LICENSE
 

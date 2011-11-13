@@ -1,0 +1,41 @@
+Changelog nicescroll release 2.2.0
+http://areaaperta.com/nicescroll
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+New features
+- scrolling with css transition (for full hw speed)
+- cssHook-ed scrollTop property, hw-scroll can be controlled by jQuery and you can use animation
+- override jQuery scrollTop function, hw-scroll can be controlled by jQuery and you can use animation
+- nicescroll object linked with jQuery DOM, using $.data named "__nicescroll"
+- jQuery function's getNiceScroll, to get the nicescroll object using $ selectors
+- only one instance for div, it checks if nicescroll already exists on the div
+- "grab" icon on div with touchbehavior = true
+
+New options
+- grabcursorenabled, display "grab" icon for div with touchbehavior = true, default is true
+- autohidemode, how hide the scrollbar works, true=default / "cursor" = only cursor hidden / false = do not hide
+- background, change css for rail background, default is ""
+
+Changed features
+- zIndex for scrollbar of document is the default value and for others is default+2
+- using css "background-clip" with value "padding-box" for a better cursor display. (see http://css-tricks.com/7423-transparent-borders-with-background-clip/)
+
+Fixes
+- zoom on iOS4, not fully visible
+- textarea resize bug, scrollbar didn't update
+- IE7, page scrollbar not hidden 
+- IE7-IE8, touchbehavior (grab-to-scroll) doesnt' work
+- IE8, workaround for IFRAME onload bug
+- Opera, key repetitions not working
+- scrollball don't update position when div has resized (no wrapper div), only for IE/Firefox/Opera
+
+
+Known issues
+- textarea on Firefox7, native scrollbars can't be hidden (firefox bug?)
+- chrome, -webkit-grab value accepted but cursor remain as pointer (possible browser bug)
+- chrome/safari, can't detect div resize (browser limitation)
+
+
+Thanks for nice feeback to:
+butchewing, replete, pathetix and mkmcdonald
