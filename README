@@ -1,5 +1,5 @@
 jquery.nicescroll
-v. 2.2.0 11-13-2011
+v. 2.3.0 11-23-2011
 copyright 2011 InuYaksa*2011
 licensed under the MIT
 http://areaaperta.com/nicescroll
@@ -107,6 +107,8 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 . grabcursorenabled, display "grab" icon for div with touchbehavior = true, default is true
 . autohidemode, how hide the scrollbar works, true=default / "cursor" = only cursor hidden / false = do not hide
 . background, change css for rail background, default is ""
+. iframeautoresize, autoresize iframe on load event (default:true)
+. autohidemode, when true the scrollbars has hidden if there is no scroll on page/div (default:true)
 
 * LICENSE
 
