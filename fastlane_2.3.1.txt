@@ -1,0 +1,7 @@
+jquery.nicescroll
+version 2.3.1 FASTLANE
+FASTLANE is a bleeding edge version, not fully tested, only for last-hours issue fix
+
+Fixing
+- compatibility with jquery.mobile and other library using touch events to create custom events
+- tabindex numbering assigned more consistent
