@@ -8,6 +8,15 @@
 --
 */
 
+
+function resetniceScroll(element) {
+        $('.Scroller').remove();
+        $(element).removeAttr('style');
+        $(element).removeAttr('tabindex');
+        $(element).data('__nicescroll', 0);
+        $(element).niceScroll({});
+    }
+
 (function($){
 
   // globals
@@ -313,6 +322,7 @@
         
         var rail = $(document.createElement('div'));
         rail.attr('id',self.id);
+        rail.attr('class','Scroller');
         rail.width = 3+Math.max(parseFloat(self.opt.cursorwidth),cursor.outerWidth());
         rail.css({"padding-left":"0px","padding-right":"1px",width:rail.width+"px",'zIndex':(self.ispage)?self.opt.zindex:self.opt.zindex+2,"background":self.opt.background});
         
