@@ -1,5 +1,5 @@
 jquery.nicescroll
-v. 2.3.0 11-23-2011
+v. 2.5.0 12-05-2011
 copyright 2011 InuYaksa*2011
 licensed under the MIT
 http://areaaperta.com/nicescroll
@@ -9,7 +9,7 @@ https://github.com/inuyaksa/jquery.nicescroll
 Nicescroll (as nice scroll for browsers) is a jquery (since 1.5) plugin, for nice scrollbars with a very similar ios/mobile style.
 It supports DIVs, IFrames and document page (body) scrollbars.
 Compatible with Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
-Compatible with iOS devices as iPad. So you have scrollable divs for iPad.
+Compatible with iOS devices as iPad. So you have scrollable divs for iPad 4.x.
 
 Sexy zoom feature, you can "zoom-in" the content of any nicescroll'ed div. Nice to use and nice to see, all the content of the div in fullscreen mode. It works on desktop (double click on div) either in mobile/touch devices using pinch gesture.
 
@@ -17,7 +17,7 @@ On modern browsers hardware accelerated scrolling has implemented.
 
 Only vertical scrollbars supported in this version.
 
-Warning for IE6 users (who uses IE6 yet? Please updgrade to a more stable and modern browser), some feature can't work for limitation of the browser. Document (body) scrollbars can't appears, old (native browser) one is used. Some issues with IFrame scrolling.
+Warning for IE6 users (why do you uses IE6 yet? Please updgrade to a more stable and modern browser), some feature can't work for limitation of the browser. Document (body) scrollbars can't appears, old (native browser) one is used. Some issues with IFrame scrolling.
 
 
 * FEATURES
@@ -29,16 +29,19 @@ Warning for IE6 users (who uses IE6 yet? Please updgrade to a more stable and mo
 - scroll is smooth (as modern tablet browsing), speed is customizable
 - zoom feature
 - hardware accelerated scroll (where available)
+- dragging scroll mode with scrolling momentum (as touch device)
 - tested for all major browsers desktop and mobile versiones
 - support for touch devices
 - compatible with many other browsers, including IE6, Safari on Mac and IE10 preview!
 - very customizable aspect of bar
 - native scroll events are working yet
+- fully integrated with jQuery
+- compatibile with jQuery UI, jQuery Touch, jQuery Mobile
 
 
 * DEPENDENCIES
 It's a plugin for the jquery framework, you need to include jquery in your scripts.
-From 1.5.x version and on. (you can try with 1.4.x also)
+From 1.5.x version and on. (you can try with 1.4.2+ also)
 
 
 * INSTALLATION
@@ -61,12 +64,12 @@ $(document).ready(
   }
 );
 
-2. Style scrollbars wit object returned:
+2. Instance with object returned:
 
-var scrollbars = false;
+var nice = false;
 $(document).ready(
   function() {  
-    scrollbars = $("body").niceScroll();
+    nice = $("body").niceScroll();
   }
 );
 
@@ -79,11 +82,20 @@ $(document).ready(
 );
 
 4. DIV with "wrapper", formed by two divs, the first is the vieport, the latter is the content:
+
 $(document).ready(
   function() {
     $("#viewportdiv").niceScroll("#wrapperdiv",{cursorcolor:"#00F"});
   }
 );
+
+5. Get nicescroll object:
+
+var nice = $("#mydiv").getNiceScroll();
+
+6. Hide scrollbars:
+
+$("#mydiv").getNiceScroll().hide();
 
 
 * CONFIGURATION PARAMETERS
@@ -108,7 +120,8 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 . autohidemode, how hide the scrollbar works, true=default / "cursor" = only cursor hidden / false = do not hide
 . background, change css for rail background, default is ""
 . iframeautoresize, autoresize iframe on load event (default:true)
-. autohidemode, when true the scrollbars has hidden if there is no scroll on page/div (default:true)
+. cursorminheight, set the minimum cursor height in pixel (default:20)
+
 
 * LICENSE
 
