@@ -1,9 +1,10 @@
 jquery.nicescroll
-v. 2.5.0 12-05-2011
+v. 2.5.1 12-10-2011
 copyright 2011 InuYaksa*2011
 licensed under the MIT
 http://areaaperta.com/nicescroll
 https://github.com/inuyaksa/jquery.nicescroll
+Nicescroll as a Greasemonkey plugin: http://userscripts.org/scripts/show/119910
 
 
 Nicescroll (as nice scroll for browsers) is a jquery (since 1.5) plugin, for nice scrollbars with a very similar ios/mobile style.

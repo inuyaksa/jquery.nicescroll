@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 2.5.0
+-- version 2.5.1
 -- copyright 2011 InuYaksa*2011
 -- licensed under the MIT
 --
@@ -30,7 +30,7 @@
 
     var self = this;
 
-    this.version = '2.5.0';
+    this.version = '2.5.1';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -62,13 +62,13 @@
     
     if (myopt||false) {
       for(var a in self.opt) {
-        if (myopt[a]!==undefined) self.opt[a] = myopt[a];
+        if (typeof myopt[a] != "undefined") self.opt[a] = myopt[a];
       }
     }
     
     this.id = self.opt.doc[0].id||'';
     this.doc = self.opt.doc;
-    this.ispage = (self.doc[0].nodeName=='BODY'||self.doc[0].nodeName=='HTML');  
+    this.ispage = /BODY|HTML/.test(self.doc[0].nodeName);  
     this.haswrapper = (self.opt.win!==false);
     this.win = self.opt.win||(this.ispage?$(window):this.doc);
     this.docscroll = this.ispage?$(window):this.win;
@@ -205,37 +205,36 @@
       this.getScrollTop = function() {
         return self.doc.translate.y;
       };
+      
+      if (document.createEvent) {
+        this.notifyScrollEvent = function(el) {
+          var e = document.createEvent("UIEvents");
+          e.initUIEvent("scroll", false, true, window, 1);
+          el.dispatchEvent(e);
+        };
+      }
+      else if (document.fireEvent) {
+        this.notifyScrollEvent = function(el) {
+          var e = document.createEventObject();
+          el.fireEvent("onscroll");
+          e.cancelBubble = true; 
+        };
+      }
+      else {
+        this.notifyScrollEvent = function(el) {}; //NOPE
+      }
+      
       if (this.hastranslate3d) {
         this.setScrollTop = function(val,silent) {
           self.doc.css(self.trstyle,"translate3d(0px,"+(val*-1)+"px,0px)");
           self.doc.translate.y = val;
-          if (!silent) {
-            if (document.createEvent) {
-              var e = document.createEvent("UIEvents");
-              e.initUIEvent("scroll", false, true, window, 1);
-              self.docscroll[0].dispatchEvent(e);
-            } else {
-              var e = document.createEventObject();
-              self.docscroll[0].fireEvent("onscroll");
-              e.cancelBubble = true; 
-            }
-          }
+          if (!silent) self.notifyScrollEvent(self.docscroll[0]);
         };
       } else {
         this.setScrollTop = function(val,silent) {
           self.doc.css(self.trstyle,"translate(0px,"+(val*-1)+"px)");
           self.doc.translate.y = val;
-          if (!silent) {
-            if (document.createEvent) {
-              var e = document.createEvent("UIEvents");
-              e.initUIEvent("scroll", false, true, window, 1);
-              self.docscroll[0].dispatchEvent(e);
-            } else {
-              var e = document.createEventObject();
-              self.docscroll[0].fireEvent("onscroll");
-              e.cancelBubble = true; 
-            }
-          }
+          if (!silent) self.notifyScrollEvent(self.docscroll[0]);          
         };
       }
     } else {
@@ -797,7 +796,7 @@
     };
    
     this.bind = function(dom,name,fn,bubble) {  // touch-oriented & fixing jquery bind
-      var el = (dom.length) ? dom[0] : dom;
+      var el = (dom.length&&("selector" in dom)) ? dom[0] : dom;
       if (el.addEventListener) {
         if (self.cantouch && /mouseup|mousedown|mousemove/.test(name)) {  // touch device support
           var tt = (name=='mousedown')?'touchstart':(name=='mouseup')?'touchend':'touchmove';
@@ -940,6 +939,7 @@
       };
       
 //      self.bind(self.doc,'transitionend',function(e){console.log(e)},false); TEST!! Later or soon I use it! (I hope so)
+
     } else {
       this.doScroll = function(y) {
         self.newscrolly = y;
@@ -947,7 +947,7 @@
         if ((df*df)>100) {
           self.newspeedy = {
             x:y-Math.round(df/6),
-            v:Math.round(df/6*5/8)+1
+            v:Math.round((df/6*5/8)+0.5)
           };
         } else {
           self.newspeedy = false;
@@ -973,12 +973,13 @@
           } else {
             var gp = self.newscrolly - self.getScrollTop();
             var df = (gp>0) ? Math.ceil(gp*rt) : Math.floor(gp*rt);
-            var sc = self.getScrollTop()+df;
+            var sc = (df) ? self.getScrollTop()+df : self.newscrolly;
           }
           self.setScrollTop(sc);
 //          if (!self.cursorfreezed) self.showCursor(sc);
-          if (sc == self.newscrolly) {
+          if (sc == self.newscrolly) {            
 //            clearAnimationFrame(self.timer);
+//            console.log('stop');
             self.timer = 0;        
             self.cursorfreezed = false;
           } else {
@@ -1224,7 +1225,7 @@
  
   jQuery.fn.scrollTop = function(value) {    
     if (typeof value == "undefined") {
-      var nice = $.data(this,'__nicescroll')||false;
+      var nice = $.data(this[0],'__nicescroll')||false;
       return (nice&&nice.ishwscroll) ? nice.getScrollTop() : _scrollTop.call(this);
     } else {
       return this.each(function() {     
@@ -1304,7 +1305,7 @@
   
   jQuery.fn.getNiceScroll = function(index) {
     if (typeof index == "undefined") {
-      return (this.length>0) ? new NiceScrollArray(this) : $.data(this,'__nicescroll')||false;
+      return new NiceScrollArray(this);
     } else {
       var nice = $.data(this[index],'__nicescroll')||false;
       return nice;
