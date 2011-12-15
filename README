@@ -1,5 +1,5 @@
 jquery.nicescroll
-v. 2.5.1 12-10-2011
+v. 2.6.0 12-15-2011
 copyright 2011 InuYaksa*2011
 licensed under the MIT
 http://areaaperta.com/nicescroll
@@ -61,7 +61,7 @@ Recall ALWAYS in (document) ready statement.
 
 $(document).ready(
   function() {  
-    $("body").niceScroll();
+    $("html").niceScroll();
   }
 );
 
@@ -70,7 +70,7 @@ $(document).ready(
 var nice = false;
 $(document).ready(
   function() {  
-    nice = $("body").niceScroll();
+    nice = $("html").niceScroll();
   }
 );
 
@@ -122,7 +122,8 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 . background, change css for rail background, default is ""
 . iframeautoresize, autoresize iframe on load event (default:true)
 . cursorminheight, set the minimum cursor height in pixel (default:20)
-
+. preservenativescrolling, you can scroll native scrollable areas with mouse, bubbling mouse wheel event (default:true)
+. railoffset, you can add offset top/left for rail position (default:false)
 
 * LICENSE
 

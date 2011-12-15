@@ -1,0 +1,21 @@
+Changelog nicescroll release 2.6.0
+http://areaaperta.com/nicescroll
+https://github.com/inuyaksa/jquery.nicescroll
+
+New options
+- preservenativescrolling, you can scroll native scrollable areas with mouse, bubbling mouse wheel event (default:true)
+- railoffset, you can add offset top/left for rail position (default:false)
+
+Changed features
+- optimized scroll event dispatcher for hwaccelerated scroll
+- optimized scroll momentum and bounce effect(scroll by touch)
+
+Fixes
+- detection of window object on bind function (addEventListener access error)
+- scrolling up with mouse wheel can stuck
+- scrollTop override (hw accelerated scroll)
+- iframe autoresize
+
+Other updates
+- mouseup/mousedown events changed bind from rail to cursor
+- crossdomain iframes detection
