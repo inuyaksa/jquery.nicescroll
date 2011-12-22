@@ -1,5 +1,5 @@
 jquery.nicescroll
-v. 2.6.0 12-15-2011
+v. 2.6.5 12-22-2011
 copyright 2011 InuYaksa*2011
 licensed under the MIT
 http://areaaperta.com/nicescroll
@@ -111,7 +111,7 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 . cursorborderradius - border radius in pixel for cursor, default is "4px"
 . zindex - change z-index for scrollbar div, default value is 9999
 . scrollspeed - scrolling speed, default value is 60
-. mousescrollstep - scrolling speed with mouse wheel, default value is 48 (pixel)
+. mousescrollstep - scrolling speed with mouse wheel, default value is 40 (pixel)
 . touchbehavior - enable cursor-drag scrolling like touch devices in desktop computer, default is false
 . hwacceleration - use hardware accelerated scroll when supported, default is true
 . boxzoom - enable zoom for box content, default is false
@@ -124,6 +124,7 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 . cursorminheight, set the minimum cursor height in pixel (default:20)
 . preservenativescrolling, you can scroll native scrollable areas with mouse, bubbling mouse wheel event (default:true)
 . railoffset, you can add offset top/left for rail position (default:false)
+. bouncescroll, enable scroll bouncing at the end of content as mobile-like (only hw accell) (default:false)
 
 * LICENSE
 
