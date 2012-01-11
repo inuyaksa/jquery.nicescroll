@@ -1,0 +1,15 @@
+Changelog nicescroll release 2.8.0
+http://areaaperta.com/nicescroll
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+Changed features
+- native scrolling based on bezier curves (more smooth and time-based scrolling)
+- prevent event catching (mousewheel & keypress) on no-scrolling areas (issue#12)
+- smooth cursor movement for hw-scrolling areas
+- when scroll running, getScrollTop(value) can return actual cursor position (false) or end-scroll cursor position (true)
+
+
+Fixes
+- iframe & touchbehavior:true, error on console
+- page & touchbehavior:true, error on console

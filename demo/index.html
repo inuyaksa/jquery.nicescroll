@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>jQuery NiceScroll Test 2.6.5</title>
+<title>jQuery NiceScroll Test 2.8.0</title>
 <style type="text/css">
 #boxscroll {
 	padding: 40px;
@@ -45,25 +45,22 @@
 
 <script src="js/jquery.min.js"></script>
 <script src="js/jquery.nicescroll.min.js"></script>
-<script>
-//  document.addEventListener('touchmove',function(e){e.preventDefault();},false); // for touch devices
-</script>
 
 <script>
   $(document).ready(function() {
-  $("body").niceScroll();  // The document page (body)
+  
+    $("html").niceScroll();  // The document page (body)
     
-  $("#boxscroll").niceScroll({cursorborder:"",cursorcolor:"#00F",boxzoom:true}); // First scrollable DIV
+    $("#boxscroll").niceScroll({cursorborder:"",cursorcolor:"#00F",boxzoom:true}); // First scrollable DIV
     
-//    $("#boxscroll").niceScroll({touchbehavior:false,cursorcolor:"#00F",cursoropacitymax:0.7,cursorwidth:11,cursorborder:"1px solid #2848BE",cursorborderradius:"8px"}).cursor.css({"background-image":"url(img/mac6scroll.png)"}); // MAC like scrollbar
+    // Customizable cursor
+    // $("#boxscroll").niceScroll({touchbehavior:false,cursorcolor:"#00F",cursoropacitymax:0.7,cursorwidth:11,cursorborder:"1px solid #2848BE",cursorborderradius:"8px"}).cursor.css({"background-image":"url(img/mac6scroll.png)"}); // MAC like scrollbar
 
-    $("#boxscroll2").niceScroll("#contentscroll2",{cursorcolor:"#F00",cursoropacitymax:0.7,boxzoom:true});  // Second scrollable DIV
+    $("#boxscroll2").niceScroll("#contentscroll2",{cursorcolor:"#F00",cursoropacitymax:0.7,boxzoom:true,touchbehavior:true});  // Second scrollable DIV
     $("#boxframe").niceScroll("#boxscroll3",{cursorcolor:"#0F0",cursoropacitymax:0.7,boxzoom:true});  // This is an IFrame (iPad compatible)
 	
-	
-   $("#boxscroll4").niceScroll("#boxscroll4 .wrapper",{boxzoom:true});  // The document page (body)
-
-	
+    $("#boxscroll4").niceScroll("#boxscroll4 .wrapper",{boxzoom:true});  // hw acceleration enabled when using wrapper
+    
   });
 </script>
 
