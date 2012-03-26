@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 2.8.2
+-- version 2.8.5
 -- copyright 2011-12 InuYaksa*2012
 -- licensed under the MIT
 --
@@ -8,7 +8,7 @@
 --
 */
 
-(function($){
+(function(jQuery){
 
   // globals
   var domfocus = false;
@@ -16,6 +16,8 @@
   var zoomactive = false;
   var tabindexcounter = 5000;
   var ascrailcounter = 2000;
+  
+  var $ = jQuery;  // sandbox
  
   // http://stackoverflow.com/questions/2161159/get-script-path
   function getScriptPath() {
@@ -47,7 +49,7 @@
 
     var self = this;
 
-    this.version = '2.8.2';
+    this.version = '2.8.5';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -77,7 +79,8 @@
       cursorminheight:20,
       preservenativescrolling:true,
       railoffset:false,
-      bouncescroll:false
+      bouncescroll:false,
+      spacebarenabled:true
     };
     
     if (myopt||false) {
@@ -469,19 +472,6 @@
           self.autohidedom = self.cursor;
         }        
         
-        self.bind(window,'resize',self.onResize);
-        self.bind(window,'orientationchange',self.onResize);
-        
-/* DISABLED - No cross-browser implementation 
-        if (!self.ispage&&!self.haswrapper) {
-          self.bind(self.win,(self.isie&&!self.isie9)?"propertychange":"DOMAttrModified",self.onAttributeChange);
-        }
-*/        
-
-        if (!self.ispage&&self.opt.boxzoom) self.bind(window,"resize",self.resizeZoom);
-        if (self.istextarea) self.bind(self.win,"mouseup",self.onResize);
-        self.onResize();
-        
         if (self.cantouch||self.opt.touchbehavior) {
           self.scrollmom = {
             y:new ScrollMomentumClass(self)
@@ -683,6 +673,12 @@
                 self.doScrollTo(self.page.maxh);
                 ret = true;
                 break;
+              case 32:
+                if (self.opt.spacebarenabled) {
+                  self.doScrollBy(-self.view.h);
+                  ret = true;
+                }
+                break;
               case 27: // ESC
                 if (self.zoomactive) {
                   self.doZoom();
@@ -695,6 +691,23 @@
         };
         
         self.bind(document,(self.isopera)?"keypress":"keydown",self.onkeypress);
+        
+        
+        self.bind(window,'resize',self.resize);
+        self.bind(window,'orientationchange',self.resize);
+        
+        self.bind(window,"load",self.resize);
+        
+/* DISABLED - No cross-browser implementation 
+        if (!self.ispage&&!self.haswrapper) {
+          self.bind(self.win,(self.isie&&!self.isie9)?"propertychange":"DOMAttrModified",self.onAttributeChange);
+        }
+*/        
+
+        if (!self.ispage&&self.opt.boxzoom) self.bind(window,"resize",self.resizeZoom);
+        if (self.istextarea) self.bind(self.win,"mouseup",self.resize);
+        
+        self.resize();
         
       }
       
@@ -822,6 +835,8 @@
         if (!self.visibility) return false;
       }
     
+      var premaxh = self.page.maxh;
+    
       self.view = {
         w:(self.ispage) ? self.win.width() : self.win.innerWidth(),
         h:(self.ispage) ? self.win.height() : self.win.innerHeight()
@@ -830,6 +845,8 @@
       self.page = (page) ? page : self.getContentSize();
       
       self.page.maxh = Math.max(0,self.page.h - self.view.h);
+      
+      if (self.page.maxh == premaxh) return self; //nothing to do
       
       if (self.page.maxh==0) {
         self.hide();        
@@ -869,7 +886,7 @@
       return self;
     };
     
-    this.resize = this.onResize;  // mask internal method -- in future name can change
+    this.resize = this.onResize;  // hide internal method -- in future name can change
    
     this._bind = function(el,name,fn,bubble) {  // primitive bind
       self.events.push({e:el,n:name,f:fn});
@@ -943,8 +960,10 @@
     };
 
     this.show = function() {
-      self.visibility = true;
-      self.rail.css('display','block');
+      if (self.page.maxh!=0) {
+        self.visibility = true;
+        self.rail.css('display','block');
+      }
       return self;
     };
 
@@ -989,7 +1008,7 @@
         self.checkarea = false;
         self.nativescrollingarea = self.isScrollable(e); 
       }
-      if (self.nativescrollingarea) return true; // it's not my business
+      if (self.nativescrollingarea) return true; // this isn't my business
       if (self.locked) return self.cancelEvent(e);
       if (self.rail.drag) return self.cancelEvent(e);
       var delta = 0;      
@@ -1399,10 +1418,12 @@
     }
   };
   
+/*  ====================================> TO INSPECT  
   $.fx.step["scrollTop"] = function(fx){
     if (fx.start=='') fx.start=$.cssHooks.scrollTop.get(fx.elem);
     $.cssHooks.scrollTop.set(fx.elem,fx.now+fx.unit);
   };  
+*/  
  
   jQuery.fn.scrollTop = function(value) {    
     if (typeof value == "undefined") {
@@ -1505,6 +1526,10 @@
       ret.push(nice);
     });
     return (ret.length==1) ? ret[0] : ret;
+  };
+  
+  window.NiceScroll = {
+    getjQuery:function(){return jQuery}
   };
   
 })( jQuery );

@@ -1,0 +1,17 @@
+Changelog nicescroll release 2.8.5
+http://areaaperta.com/nicescroll
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+Changed features
+- display cursor on resize event only when size has changed
+
+
+Fixes
+- issue #17
+- issue #23
+
+
+New feature
+- You can scroll with space key (#21)
+- nicescroll checks content size on (body) load event
