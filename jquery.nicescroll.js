@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 2.8.6
+-- version 2.8.6.1
 -- copyright 2011-12 InuYaksa*2012
 -- licensed under the MIT
 --
@@ -49,7 +49,7 @@
 
     var self = this;
 
-    this.version = '2.8.6';
+    this.version = '2.8.6.1';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -848,9 +848,21 @@
       self.page = (page) ? page : self.getContentSize();
       
       self.page.maxh = Math.max(0,self.page.h - self.view.h);
-      self.page.maxw = Math.max(0,self.page.w - self.view.w);
+      self.page.maxw = Math.max(0,self.page.w - self.view.w);      
       
-      if ((self.page.maxh==premaxh)&&(self.page.maxw==premaxw)&&(self.view.w==preview.w)) return self; //nothing to do
+      if ((self.page.maxh==premaxh)&&(self.page.maxw==premaxw)&&(self.view.w==preview.w)) {
+        // test position        
+        if (!self.ispage) {
+          var pos = self.win.offset();
+          if (self.lastposition) {
+            var lst = self.lastposition;
+            if ((lst.top==pos.top)&&(lst.left==pos.left)) return self; //nothing to do            
+          }
+          self.lastposition = pos;
+        } else {
+          return self; //nothing to do
+        }
+      }
       
       if (self.page.maxh==0) {
         self.hide();        
