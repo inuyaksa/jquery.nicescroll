@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>jQuery NiceScroll Test 2.8.2</title>
+<title>jQuery NiceScroll Test Page</title>
 <style type="text/css">
 #boxscroll {
 	padding: 40px;
@@ -15,7 +15,7 @@
 #boxscroll2 {
 	padding: 40px;
 	height: 120px;
-	width: 500px;
+	width: 730px;
 	border: 2px solid #F00;
 	overflow: auto;
 }
@@ -23,12 +23,12 @@
 	overflow: hidden;
 }
 #boxframe {
-  position:absolute;
-  top:8px;
-  left:420px;
-  width:400px;
-  height:300px;
-  overflow:auto;
+	position:absolute;
+	top:28px;
+	left:420px;
+	width:400px;
+	height:300px;
+	overflow:auto;
 	border: 2px solid #0F0;
 }
 #boxscroll4 {
@@ -49,7 +49,9 @@
 <script>
   $(document).ready(function() {
   
-    $("html").niceScroll();  // The document page (body)
+	var nice = $("html").niceScroll();  // The document page (body)
+	
+	$("#div1").html($("#div1").html()+' '+nice.version);
     
     $("#boxscroll").niceScroll({cursorborder:"",cursorcolor:"#00F",boxzoom:true}); // First scrollable DIV
     
@@ -69,6 +71,9 @@
 </head>
 
 <body>
+
+<div id="div1"><strong>NiceScroll version:</strong></div>
+
 <div id="boxscroll">
 THIS IS A SIMPLE SCROLLABLE DIV
   <h2> Package Description </h2>

@@ -1,8 +1,0 @@
-Changelog nicescroll release 2.8.6.1
-http://areaaperta.com/nicescroll
-https://github.com/inuyaksa/jquery.nicescroll
-
-
-Fixes
-- for floating divs, nicescroll bar don't update horizontal position when window resize (issue #27)
-

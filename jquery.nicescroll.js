@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 2.8.6.1
+-- version 2.9.0
 -- copyright 2011-12 InuYaksa*2012
 -- licensed under the MIT
 --
@@ -49,7 +49,7 @@
 
     var self = this;
 
-    this.version = '2.8.6.1';
+    this.version = '2.9.0';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -90,7 +90,7 @@
     }
     
     this.doc = self.opt.doc;
-    this.id = (this.doc&&this.doc[0])?this.doc[0].id||'':'';    
+    this.iddoc = (this.doc&&this.doc[0])?this.doc[0].id||'':'';    
     this.ispage = /BODY|HTML/.test((self.opt.win)?self.opt.win[0].nodeName:this.doc[0].nodeName);
     this.haswrapper = (self.opt.win!==false);
     this.win = self.opt.win||(this.ispage?$(window):this.doc);
@@ -140,7 +140,7 @@
     this.visibility = true;
     this.locked = false;
     
-    self.nativescrollingarea = false;
+    this.nativescrollingarea = false;
     
     this.events = [];  // event list for unbind
     
@@ -205,17 +205,14 @@
     if (self.opt.grabcursorenabled&&self.opt.touchbehavior) {  // check grab cursor support
       function detectCursorGrab() {
         // thank you google for custom cursor!
-        if (self.ischrome||(self.isie&&!self.isie9)) {  // some old IE return false positive + chrome cursor bug
-          var lst = ['url(http://www.google.com/intl/en_ALL/mapfiles/openhand.cur)','n-resize'];  
-        } else {
-          var lst = ['grab','-moz-grab','-webkit-grab','url(http://www.google.com/intl/en_ALL/mapfiles/openhand.cur)','n-resize'];
-        }
+        var lst = ['-moz-grab','-webkit-grab','grab'];
+        if (self.ischrome||self.isie) lst=[];  // force setting for IE returns false positive and chrome cursor bug
         for(var a=0;a<lst.length;a++) {
           var p = lst[a];
           domtest.style['cursor']=p;
           if (domtest.style['cursor']==p) return p;
         }
-        return '';  // nope!
+        return 'url(http://www.google.com/intl/en_ALL/mapfiles/openhand.cur),n-resize';
       }
       this.cursorgrabvalue = detectCursorGrab();
     }
@@ -291,6 +288,8 @@
     if (this.ishwscroll) {  
     // hw accelerated scroll
       this.doc.translate = {x:0,y:0};
+      
+      if (this.hastranslate3d) this.doc.css(this.prefixstyle+"backface-visibility","hidden");  // prevent flickering http://stackoverflow.com/questions/3461441/      
       
       this.getScrollTop = function(last) {
         if (self.timerscroll&&!last) {
@@ -460,6 +459,9 @@
             self.body.append(rail);           
             if (self.zoom) self.body.append(self.zoom);
           }
+          
+          if (self.isios) self.css(self.win,{'-webkit-tap-highlight-color':'rgba(0,0,0,0)','-webkit-touch-callout':'none'});  // prevent grey layer on click
+          
         }
         
         if (self.opt.autohidemode===false) {
@@ -482,6 +484,7 @@
               self.cancelScroll();
               self.rail.drag = {x:e.screenX,y:e.screenY,sx:self.scroll.x,sy:self.scroll.y,st:self.getScrollTop()};
               self.hasmoving = false;
+              self.lastmouseup = false;
               self.scrollmom.y.reset(e.screenY);
               if (!self.cantouch) return self.cancelEvent(e);
             }
@@ -491,17 +494,27 @@
               self.scrollmom.y.doMomentum();
               self.rail.drag = false;
               if (self.hasmoving) {
-//                self.hasmoving = false;
+                self.hasmoving = false;
+                self.lastmouseup = true;
                 self.hideCursor();
-                return self.cancelEvent(e);
+                if (!self.cantouch) return self.cancelEvent(e);
               }                            
             }            
           };
-          self.onclick = function(e) {
-            if (self.hasmoving) return self.cancelEvent(e);
-          };          
+
+          self.onclick = (self.isios) ? false : function(e) { 
+            if (self.lastmouseup) {
+              self.lastmouseup = false;
+              return self.cancelEvent(e);
+            } else {
+              return true;
+            }
+          }; 
+          
           self.onmousemove = function(e) {
             if (self.rail.drag) {
+              if (self.cantouch&&(typeof e.original == "undefined")) return true;  // prevent ios "ghost" events by clickable elements
+            
               self.hasmoving = true;
               var my = (e.screenY-self.rail.drag.y);
 
@@ -522,10 +535,10 @@
                 if (ny>self.page.maxh) ny=self.page.maxh;
               }
               
-              self.showCursor(ny);
-              
               if (self.prepareTransition) self.prepareTransition(0);
               self.setScrollTop(ny);
+
+              self.showCursor(ny);
 
               self.scrollmom.y.update(fy);
               
@@ -566,8 +579,17 @@
           };
         }
 
-        if (self.cantouch||self.opt.touchbehavior) self.bind(self.win,"mousedown",self.onmousedown);
-        self.bind(self.win,"mouseup",self.onmouseup);
+        if (self.cantouch||self.opt.touchbehavior) {
+/*        
+          if (self.isios) {  // avoid click grey fx & scroll stuck
+            self.bind(document,"mousedown",function(e){
+              if (self.hasParent(e,self.iddoc)) self.onmousedown(e);
+            });            
+          } else {
+*/          
+            self.bind(self.win,"mousedown",self.onmousedown);
+//          }
+        }
         
         self.bind(self.cursor,"mousedown",self.onmousedown);          
         self.bind(self.cursor,"mouseup",function(e) {
@@ -734,7 +756,7 @@
             var hh=Math.max(doc.getElementsByTagName('html')[0].scrollHeight,doc.body.scrollHeight);
             self.doc.height(hh);          
           }
-          self.onResize();
+          self.resize();
           
           if (self.isie7) self.css($(doc).find('html'),{'overflow-y':'hidden'});
           self.css($(doc.body),{'overflow-y':'hidden'});
@@ -828,11 +850,15 @@
     };
     
     this.onResize = function(e,page) {
+    
       if (!self.haswrapper&&!self.ispage) {        
-        var vis = (self.win.css('display')!='none');      
-        if (vis&&!self.visibility) self.show();
-        if (!vis&&self.visibility) self.hide();      
-        if (!self.visibility) return false;
+        var vis = (self.win.css('display')!='none');
+        if (!vis) {
+          if (self.visibility) self.hide();
+          return false;
+        } else {
+          self.show();
+        }        
       }
     
       var premaxh = self.page.maxh;
@@ -921,9 +947,9 @@
       var el = ("jquery" in dom) ? dom[0] : dom;
       if (el.addEventListener) {
         if (self.cantouch && /mouseup|mousedown|mousemove/.test(name)) {  // touch device support
-          var tt = (name=='mousedown')?'touchstart':(name=='mouseup')?'touchend':'touchmove';
+          var tt=(name=='mousedown')?'touchstart':(name=='mouseup')?'touchend':'touchmove';
           self._bind(el,tt,function(e){
-            if(e.touches.length<2){var ev=(e.touches.length>0)?e.touches[0]:e;ev.original=e;fn.call(this,ev);}
+            if(e.touches.length<2){var ev=(e.touches.length)?e.touches[0]:e;ev.original=e;fn.call(this,ev);}
           },bubble||false);
         }
         self._bind(el,name,fn,bubble||false);
