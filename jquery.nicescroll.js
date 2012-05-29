@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 2.9.0
+-- version 2.9.2
 -- copyright 2011-12 InuYaksa*2012
 -- licensed under the MIT
 --
@@ -49,7 +49,7 @@
 
     var self = this;
 
-    this.version = '2.9.0';
+    this.version = '2.9.2';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -139,6 +139,7 @@
     
     this.visibility = true;
     this.locked = false;
+    this.hidden = false; // rails always hidden
     
     this.nativescrollingarea = false;
     
@@ -474,6 +475,8 @@
           self.autohidedom = self.cursor;
         }        
         
+//        if (self.ie10touch) self.opt.touchbehavior = true; // fix for IE10 & WP7
+        
         if (self.cantouch||self.opt.touchbehavior) {
           self.scrollmom = {
             y:new ScrollMomentumClass(self)
@@ -482,10 +485,10 @@
           self.onmousedown = function(e) {
             if (!self.locked) {
               self.cancelScroll();
-              self.rail.drag = {x:e.screenX,y:e.screenY,sx:self.scroll.x,sy:self.scroll.y,st:self.getScrollTop()};
+              self.rail.drag = {x:e.clientX,y:e.clientY,sx:self.scroll.x,sy:self.scroll.y,st:self.getScrollTop()};
               self.hasmoving = false;
               self.lastmouseup = false;
-              self.scrollmom.y.reset(e.screenY);
+              self.scrollmom.y.reset(e.clientY);
               if (!self.cantouch) return self.cancelEvent(e);
             }
           };
@@ -516,9 +519,9 @@
               if (self.cantouch&&(typeof e.original == "undefined")) return true;  // prevent ios "ghost" events by clickable elements
             
               self.hasmoving = true;
-              var my = (e.screenY-self.rail.drag.y);
+              var my = (e.clientY-self.rail.drag.y);
 
-              var fy = e.screenY;
+              var fy = e.clientY;
               var ny = self.rail.drag.st-my;
               
               if (self.ishwscroll) {
@@ -554,7 +557,7 @@
           self.onmousedown = function(e) {
             if (self.locked) return self.cancelEvent(e);
             self.cancelScroll();
-            self.rail.drag = {x:e.screenX,y:e.screenY,sx:self.scroll.x,sy:self.scroll.y};
+            self.rail.drag = {x:e.pageX,y:e.clientY,sx:self.scroll.x,sy:self.scroll.y};
             return self.cancelEvent(e);
           };
           self.onmouseup = function(e) {
@@ -565,7 +568,7 @@
           };        
           self.onmousemove = function(e) {
             if (self.rail.drag) {
-              self.scroll.y = self.rail.drag.sy + (e.screenY-self.rail.drag.y);
+              self.scroll.y = self.rail.drag.sy + (e.clientY-self.rail.drag.y);
               if (self.scroll.y<0) self.scroll.y=0;
               var my = self.scrollvaluemax;
               if (self.scroll.y>my) self.scroll.y=my;
@@ -854,10 +857,10 @@
       if (!self.haswrapper&&!self.ispage) {        
         var vis = (self.win.css('display')!='none');
         if (!vis) {
-          if (self.visibility) self.hide();
+          if (self.visibility) self.hideRail();
           return false;
         } else {
-          self.show();
+          if (!self.hidden&&!self.visibility) self.showRail();
         }        
       }
     
@@ -865,10 +868,17 @@
       var premaxw = self.page.maxw;
 
       var preview = {h:self.view.h,w:self.view.w};
-      
-      self.view = {
+
+/*      
+      self.view = {      
         w:(self.ispage) ? self.win.width() : self.win.innerWidth(),
         h:(self.ispage) ? self.win.height() : self.win.innerHeight()
+      }
+*/      
+      
+      self.view = {
+        w:(self.ispage) ? self.win.width() : parseInt(self.win[0].clientWidth),
+        h:(self.ispage) ? self.win.height() : parseInt(self.win[0].clientHeight)
       };
       
       self.page = (page) ? page : self.getContentSize();
@@ -891,7 +901,7 @@
       }
       
       if (self.page.maxh==0) {
-        self.hide();        
+        self.hideRail();        
         self.scrollvaluemax = 0;
         self.scroll.y = 0;
         self.scrollratio = {x:0,y:0};
@@ -900,9 +910,10 @@
         self.setScrollTop(0);
         return false;
       } 
-      else if (!self.visibility) self.show();     
-      
-      self.locked = false;
+      else if (!self.hidden&&!self.visibility) {
+        self.showRail();     
+        self.locked = false;
+      }
       
       if (self.istextarea&&self.win.css('resize')&&self.win.css('resize')!='none') self.view.h-=20;      
       if (!self.ispage) self.updateScrollBar(self.view);
@@ -1001,18 +1012,30 @@
       return false;
     };
 
-    this.show = function() {
-      if (self.page.maxh!=0) {
+    this.showRail = function() {
+      if ((self.page.maxh!=0)&&(self.ispage||self.win.css('display')!='none')) {
         self.visibility = true;
         self.rail.css('display','block');
       }
       return self;
     };
 
-    this.hide = function() {
+    this.hideRail = function() {
       self.visibility = false;
       self.rail.css('display','none');
       return self;
+    };
+    
+    this.show = function() {
+      self.hidden = false;
+      self.locked = false;
+      return self.showRail();
+    };
+
+    this.hide = function() {
+      self.hidden = true;
+      self.locked = true;
+      return self.hideRail();
     };
     
     this.remove = function() {
@@ -1459,13 +1482,6 @@
       return this;
     }
   };
-  
-/*  ====================================> TO INSPECT  
-  $.fx.step["scrollTop"] = function(fx){
-    if (fx.start=='') fx.start=$.cssHooks.scrollTop.get(fx.elem);
-    $.cssHooks.scrollTop.set(fx.elem,fx.now+fx.unit);
-  };  
-*/  
  
   jQuery.fn.scrollTop = function(value) {    
     if (typeof value == "undefined") {

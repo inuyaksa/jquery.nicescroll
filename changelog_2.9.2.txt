@@ -1,0 +1,11 @@
+Changelog nicescroll release 2.9.2
+http://areaaperta.com/nicescroll
+https://github.com/inuyaksa/jquery.nicescroll
+
+Changed features
+- replacing screenX/screenY to clientX/clientY, for smooth drag when browser zoom is enabled
+
+
+Fixes
+- zooming show hided scrollbars, jquery bug on innerWidth/innerHeight calculation [issue #35]
+- rail visibility functions rewritten [issue #35]
