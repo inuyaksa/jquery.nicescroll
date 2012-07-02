@@ -1,0 +1,20 @@
+Changelog nicescroll release 2.9.5
+http://areaaperta.com/nicescroll
+https://github.com/inuyaksa/jquery.nicescroll
+
+New features
+- DOM chance detection for major browsers (IE, Firefox, Chrome, Opera)
+- new object $.nicescroll (NiceScrollArray returned) for simpliest activities on nicescroll bars
+- maintained scroll position on hidden divs when showed
+- experimental compatibility for MSPointer events (IE10) and devices with mouse and touch inputs both enabled [googlecode request 3]
+- experimental compatibility for Windows Phone 7.5 Mango (IEMobile 9)
+- add railoffset to adjust offset of rail [googlecode request 6]
+
+Changed features
+- using requestAnimationFrame (crossbrowser implementation) for smoothest scrolling and cpu-saving code on moving events (mousemove, tochmove, mousewheel, momentum)
+- automatic disable of all functions on Windows Phone 7.0 with IEMobile 7 (no reliable events)
+
+Fixes
+- support for Blackberry and others touch devices [issue #41]
+- touchbehavior:true, can't select form elements [issue #42]
+- Chrome/Safari, orange border on focus (outline css rule) [issue #44]

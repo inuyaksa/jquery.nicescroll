@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 2.9.2
+-- version 2.9.5
 -- copyright 2011-12 InuYaksa*2012
 -- licensed under the MIT
 --
@@ -49,7 +49,7 @@
 
     var self = this;
 
-    this.version = '2.9.2';
+    this.version = '2.9.5';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -80,7 +80,9 @@
       preservenativescrolling:true,
       railoffset:false,
       bouncescroll:false,
-      spacebarenabled:true
+      spacebarenabled:true,
+      railpadding:{top:0,right:0,left:0,bottom:0},
+      disableoutline:true
     };
     
     if (myopt||false) {
@@ -148,6 +150,9 @@
     this.saved = {};
     
     this.delaylist = {};
+    this.synclist = {};
+    
+    this.lastdelta = 0;
     
     var domtest = document.createElement('DIV');
     
@@ -159,11 +164,20 @@
     this.isie8 = this.isie&&("documentMode" in document)&&(document.documentMode==8);
     this.isie9 = this.isie&&("performance" in window)&&(document.documentMode>=9);
     
+    this.isie9mobile = /iemobile.9/i.test(navigator.userAgent);  //wp 7.1 mango
+    this.isie7mobile = (!this.isie9mobile&&this.isie7) && /iemobile/i.test(navigator.userAgent);  //wp 7.0
+    
     this.ismozilla = ("MozAppearance" in domtest.style);
     this.ischrome = ("chrome" in window);
     
     this.cantouch = ("ontouchstart" in document.documentElement);
-
+    this.hasmstouch = (window.navigator.msPointerEnabled||false);  // IE10+ pointer events - EXPERIMENTAL
+    
+/* alternative methods to detect touch support */
+/* thanks modernizr.github.com/Modernizr/touch.html  */
+//    if (!this.cantouch) this.cantouch = (typeof TouchEvent != "undefined");  // NOT READY -> testing session (false positive on chrome19)
+/*  */    
+    
     this.isios = (this.cantouch && /iphone|ipad|ipod/i.test(navigator.platform));
     this.isios4 = ((this.isios)&&!("seal" in Object));
     
@@ -239,6 +253,24 @@
         }
         setTimeout(function(){fn.call();},0);
       }
+    };
+    
+    this.requestSync = function() {
+      if (self.onsync) return;
+      setAnimationFrame(function(){
+        self.onsync = false;
+        for(name in self.synclist){
+          var fn = self.synclist[name];
+          if (fn) fn.call(self);
+          self.synclist[name] = false;
+        }
+      });
+      self.onsync = true;
+    };
+    
+    this.synched = function(name,fn) {
+      self.synclist[name] = fn;
+      self.requestSync();
     };
     
     this.css = function(el,pars) {  // save & set
@@ -336,7 +368,7 @@
       this.getScrollTop = function() {
         return self.docscroll.scrollTop();
       };
-      this.setScrollTop = function(val) {
+      this.setScrollTop = function(val) {        
         return self.docscroll.scrollTop(val);
       };
     }
@@ -362,9 +394,9 @@
         self.rail.css({height:self.win.innerHeight()});
       } else {
         var pos = self.win.offset();
-        pos.top+=2;
+        pos.top+= parseFloat(self.win.css('border-top-width'));
         var brd = (self.win.outerWidth() - self.win.innerWidth())/2;
-        pos.left+= self.win.innerWidth() + brd - self.rail.width -1;
+        pos.left+= self.win.outerWidth() - parseFloat(self.win.css('border-right-width')) - self.rail.width;
         
         var off = self.opt.railoffset;
         if (off) {
@@ -381,7 +413,7 @@
     self.hascancelanimationframe = (clearAnimationFrame);
     
     if (!self.hasanimationframe) {
-      setAnimationFrame=function(fn){return setTimeout(fn,1000/60)};
+      setAnimationFrame=function(fn){return setTimeout(fn,16)}; // 1000/60)};
       clearAnimationFrame=clearInterval;
     } 
     else if (!self.hascancelanimationframe) clearAnimationFrame=function(){self.cancelAnimationFrame=true};
@@ -390,12 +422,18 @@
 
       self.saved.css = [];
       
-      if (!self.ispage || (!self.cantouch && !self.isieold)) {
+      if (self.isie7mobile) return true; // SORRY, DO NOT WORK!
+      
+//      if (self.hasmstouch) $("html").css('-ms-content-zooming','none');
+      if (self.hasmstouch) self.css((self.ispage)?$("html"):self.win,{'-ms-touch-action':'none'});
+      
+      if (!self.ispage || (!self.cantouch && !self.isieold && !self.isie9mobile)) {
       
         var cont = self.docscroll;
         if (self.ispage) cont = (self.haswrapper)?self.win:self.doc;
-        self.css(cont,{'overflow-y':'hidden'});
-      
+        
+        if (!self.isie9mobile) self.css(cont,{'overflow-y':'hidden'});      
+        
         if (self.ispage&&self.isie7&&self.win[0].nodeName=='BODY') self.css($("html"),{'overflow-y':'hidden'});  //IE7 double scrollbar issue
         
         var cursor = $(document.createElement('div'));
@@ -414,8 +452,14 @@
         
         var rail = $(document.createElement('div'));
         rail.attr('id',self.id);
-        rail.width = 1+Math.max(parseFloat(self.opt.cursorwidth),cursor.outerWidth());
-        rail.css({"padding-left":"0px","padding-right":"1px",width:rail.width+"px",'zIndex':(self.ispage)?self.opt.zindex:self.opt.zindex+2,"background":self.opt.background});
+        rail.width = Math.max(parseFloat(self.opt.cursorwidth),cursor.outerWidth());
+        rail.css({width:rail.width+"px",'zIndex':(self.ispage)?self.opt.zindex:self.opt.zindex+2,"background":self.opt.background});
+        
+        var kp = ["top","bottom","left","right"];
+        for(var a in kp) {
+          var v = self.opt.railpadding[a];
+          if (v) rail.css("padding-"+a,v+"px");
+        }
         
         rail.append(cursor);
         
@@ -475,181 +519,305 @@
           self.autohidedom = self.cursor;
         }        
         
-//        if (self.ie10touch) self.opt.touchbehavior = true; // fix for IE10 & WP7
-        
-        if (self.cantouch||self.opt.touchbehavior) {
-          self.scrollmom = {
+        if (self.isie9mobile) {
+
+          self.scrollmom = {            
             y:new ScrollMomentumClass(self)
-          };
-        
-          self.onmousedown = function(e) {
-            if (!self.locked) {
-              self.cancelScroll();
-              self.rail.drag = {x:e.clientX,y:e.clientY,sx:self.scroll.x,sy:self.scroll.y,st:self.getScrollTop()};
-              self.hasmoving = false;
-              self.lastmouseup = false;
-              self.scrollmom.y.reset(e.clientY);
-              if (!self.cantouch) return self.cancelEvent(e);
-            }
-          };
-          self.onmouseup = function(e) {
-            if (self.rail.drag) {            
-              self.scrollmom.y.doMomentum();
-              self.rail.drag = false;
-              if (self.hasmoving) {
-                self.hasmoving = false;
-                self.lastmouseup = true;
-                self.hideCursor();
-                if (!self.cantouch) return self.cancelEvent(e);
-              }                            
-            }            
-          };
+          };        
 
-          self.onclick = (self.isios) ? false : function(e) { 
-            if (self.lastmouseup) {
-              self.lastmouseup = false;
-              return self.cancelEvent(e);
+          self.onmangotouch = function(e) {
+            var py = self.getScrollTop();
+            if (py == self.scrollmom.y.lastscrolly) return true;
+            var df = py-self.mangotouch.sy;
+            if (df==0) return;
+            var dr = (df<0)?-1:1;
+            var tm = (new Date()).getTime();            
+            if (self.mangotouch.lazy) clearTimeout(self.mangotouch.lazy);
+            if (((tm-self.mangotouch.tm)>60)||(self.mangotouch.dry!=dr)) {
+              self.scrollmom.y.stop();
+              self.scrollmom.y.reset(py);
+              self.mangotouch.sy = py;
+              self.mangotouch.ly = py;
+              self.mangotouch.dry = dr;
+              self.mangotouch.tm = tm;
             } else {
-              return true;
+              self.scrollmom.y.stop();
+              self.scrollmom.y.update(self.mangotouch.sy-df);
+              var gap = tm - self.mangotouch.tm;
+              self.mangotouch.tm = tm;
+              var px = Math.abs(self.mangotouch.ly-py);
+              self.mangotouch.ly = py;
+              if (px>2) {
+                self.mangotouch.lazy = setTimeout(function(){
+                  self.mangotouch.lazy = false;
+                  self.mangotouch.dry = 0;
+                  self.mangotouch.tm = 0;
+                  self.scrollmom.y.doMomentum(gap);
+                },80);
+              }
             }
-          }; 
+          }
           
-          self.onmousemove = function(e) {
-            if (self.rail.drag) {
-              if (self.cantouch&&(typeof e.original == "undefined")) return true;  // prevent ios "ghost" events by clickable elements
-            
-              self.hasmoving = true;
-              var my = (e.clientY-self.rail.drag.y);
-
-              var fy = e.clientY;
-              var ny = self.rail.drag.st-my;
+          var top = self.getScrollTop()
+          self.mangotouch = {sy:top,ly:top,dry:0,lazy:false,tm:0};
+          
+          self.bind(self.docscroll,"scroll",self.onmangotouch);
+        
+        } else {
+        
+          if (self.cantouch||self.opt.touchbehavior||self.hasmstouch) {
+          
+            self.scrollmom = {
+              y:new ScrollMomentumClass(self)
+            };        
+          
+            self.ontouchstart = function(e) {
+              if (e.pointerType&&e.pointerType!=2) return false;
               
-              if (self.ishwscroll) {
-                if (ny<0) {
-                  ny = Math.round(ny/2);
-                  fy = 0;
+              if (!self.locked) {
+              
+                if (self.hasmstouch) {
+                  var tg = (e.target) ? e.target : false;
+                  while (tg) {
+                    var nc = $(tg).getNiceScroll();
+                    if ((nc.length>0)&&(nc[0].me == self.me)) break;
+                    if (nc.length>0) return false;
+                    if ((tg.nodeName=='DIV')&&(tg.id==self.id)) break;
+                    tg = (tg.parentNode) ? tg.parentNode : false;
+                  }
                 }
-                else if (ny>self.page.maxh) {
-                  ny = self.page.maxh+Math.round((ny-self.page.maxh)/2);
-                  fy = 0;
+              
+                self.cancelScroll();
+                self.rail.drag = {x:e.clientX,y:e.clientY,sx:self.scroll.x,sy:self.scroll.y,st:self.getScrollTop(),pt:2};
+                
+                self.hasmoving = false;
+                self.lastmouseup = false;
+                self.scrollmom.y.reset(e.clientY);
+                if (!self.cantouch&&!self.hasmstouch) {
+                  var tg = self.getTarget(e);                
+                  var ip = (tg)?/INPUT|SELECT|TEXTAREA/i.test(tg.nodeName):false;
+                  if (!ip) return self.cancelEvent(e);
+                  if (/SUBMIT|CANCEL|BUTTON/i.test($(tg).attr('type'))) {
+                    pc = {"tg":tg,"click":false};
+                    self.preventclick = pc;
+                  }
                 }
-              } else {
-                if (ny<0) ny=0;
-                if (ny>self.page.maxh) ny=self.page.maxh;
               }
               
-              if (self.prepareTransition) self.prepareTransition(0);
-              self.setScrollTop(ny);
-
-              self.showCursor(ny);
-
-              self.scrollmom.y.update(fy);
+            };
+            
+            self.ontouchend = function(e) {
+              if (e.pointerType&&e.pointerType!=2) return false;
+              if (self.rail.drag&&(self.rail.drag.pt==2)) {            
+                self.scrollmom.y.doMomentum();
+                self.rail.drag = false;
+                if (self.hasmoving) {
+                  self.hasmoving = false;
+                  self.lastmouseup = true;
+                  self.hideCursor();
+                  if (!self.cantouch) return self.cancelEvent(e);
+                }                            
+              }                        
               
-              return self.cancelEvent(e);
+            };
+            
+            self.ontouchmove = function(e) {            
+              
+              if (e.pointerType&&e.pointerType!=2) return false;
+    
+              if (self.rail.drag&&(self.rail.drag.pt==2)) {
+                if (self.cantouch&&(typeof e.original == "undefined")) return true;  // prevent ios "ghost" events by clickable elements
+              
+                self.hasmoving = true;
+
+                if (self.preventclick&&!self.preventclick.click) {
+                  self.preventclick.click = self.preventclick.tg.onclick||false;                
+                  self.preventclick.tg.onclick = self.onpreventclick;
+                }
+
+                var fy = e.clientY;
+                var my = (fy-self.rail.drag.y);
+                
+                var ny = self.rail.drag.st-my;
+                
+                if (self.ishwscroll) {
+                  if (ny<0) {
+                    ny = Math.round(ny/2);
+                    fy = 0;
+                  }
+                  else if (ny>self.page.maxh) {
+                    ny = self.page.maxh+Math.round((ny-self.page.maxh)/2);
+                    fy = 0;
+                  }
+                } else {
+                  if (ny<0) ny=0;
+                  if (ny>self.page.maxh) ny=self.page.maxh;
+                }
+                              
+                self.synched("touchmove",function(){
+                  if (self.rail.drag&&(self.rail.drag.pt==2)) {
+                    if (self.prepareTransition) self.prepareTransition(0);
+                    self.setScrollTop(ny);
+                    self.showCursor(ny);
+                    self.scrollmom.y.update(fy);
+                  }
+                });
+                
+                return self.cancelEvent(e);
+              }
+              
+            };
+          
+          }
+         
+          if (self.cantouch||self.opt.touchbehavior) {
+          
+            self.onpreventclick = function(e) {
+              if (self.preventclick) {
+                self.preventclick.tg.onclick = self.preventclick.click;
+                self.preventclick = false;            
+                return self.cancelEvent(e);
+              }
             }
+          
+            self.onmousedown = self.ontouchstart;
+            
+            self.onmouseup = self.ontouchend;
+
+            self.onclick = (self.isios) ? false : function(e) { 
+              if (self.lastmouseup) {
+                self.lastmouseup = false;
+                return self.cancelEvent(e);
+              } else {
+                return true;
+              }
+            }; 
+            
+            self.onmousemove = self.ontouchmove;
+            
+            if (self.cursorgrabvalue) {
+              self.css((self.ispage)?self.doc:self.win,{'cursor':self.cursorgrabvalue});            
+              self.css(self.rail,{'cursor':self.cursorgrabvalue});
+            }
+            
+          } else {
+          
+            self.onmousedown = function(e) {            
+              if (self.rail.drag&&self.rail.drag.pt!=1) return;
+              if (self.locked) return self.cancelEvent(e);            
+              self.cancelScroll();
+              self.rail.drag = {x:e.clientX,y:e.clientY,sx:self.scroll.x,sy:self.scroll.y,pt:1};
+              return self.cancelEvent(e);
+            };
+            self.onmouseup = function(e) {
+              if (self.rail.drag) {
+                if(self.rail.drag.pt!=1)return;
+                self.rail.drag = false;
+                return self.cancelEvent(e);
+              }
+            };        
+            self.onmousemove = function(e) {
+
+              if (self.rail.drag) {
+                if(self.rail.drag.pt!=1)return;
+                self.scroll.y = self.rail.drag.sy + (e.clientY-self.rail.drag.y);
+                if (self.scroll.y<0) self.scroll.y=0;
+                var my = self.scrollvaluemax;
+                if (self.scroll.y>my) self.scroll.y=my;
+                
+                self.synched('mousemove',function(){
+                  if (self.rail.drag&&(self.rail.drag.pt==1)) {
+                    self.showCursor();
+                    self.cursorfreezed = true;
+                    self.doScroll(Math.round(self.scroll.y*self.scrollratio.y));          
+                  }
+                });
+                
+                return self.cancelEvent(e);
+              } else {
+                self.checkarea = true;
+              }
+            };
+          }
+
+          if (self.cantouch||self.opt.touchbehavior) {
+            self.bind(self.win,"mousedown",self.onmousedown);
+          }
+          
+          if (self.hasmstouch) {
+            self.css(self.rail,{'-ms-touch-action':'none'});
+            self.css(self.cursor,{'-ms-touch-action':'none'});
+            
+            self.bind(self.win,"MSPointerDown",self.ontouchstart);
+            self.bind(document,"MSPointerUp",self.ontouchend);
+            self.bind(document,"MSPointerMove",self.ontouchmove);
+            self.bind(self.cursor,"MSGestureHold",function(e){e.preventDefault();});
+            self.bind(self.cursor,"contextmenu",function(e){e.preventDefault();});
+          }
+
+          self.bind(self.cursor,"mousedown",self.onmousedown);
+          self.bind(self.cursor,"mouseup",function(e) {
+            if (self.rail.drag&&self.rail.drag.pt==2) return;
+            self.rail.drag = false;
+            self.hasmoving = false;
+            self.hideCursor();
+            return self.cancelEvent(e);
+          });
+          
+          self.bind(document,"mouseup",self.onmouseup);
+          self.bind(document,"mousemove",self.onmousemove);
+          if (self.onclick) self.bind(document,"click",self.onclick);
+    
+          if (!self.cantouch) {
+            self.rail.mouseenter(function() {
+              self.showCursor();
+              self.rail.active = true;
+            });          
+            self.rail.mouseleave(function() { 
+              self.rail.active = false;
+              if (!self.rail.drag) self.hideCursor();
+            });
+            if (!self.isiframe) self.bind((self.isie&&self.ispage) ? document : self.docscroll,"mousewheel",self.onmousewheel);
+            self.bind(self.rail,"mousewheel",self.onmousewheel);
+          }
+
+          if (self.zoom) {
+            self.zoom.mouseenter(function() {
+              self.showCursor();
+              self.rail.active = true;
+            });          
+            self.zoom.mouseleave(function() { 
+              self.rail.active = false;
+              if (!self.rail.drag) self.hideCursor();
+            });
+          }
+          
+          if (!self.ispage&&!self.cantouch&&!(/HTML|BODY/.test(self.win[0].nodeName))) {
+            if (!self.win.attr("tabindex")) self.win.attr({"tabindex":tabindexcounter++});
+            
+            if (self.ischrome&&self.opt.disableoutline) self.win.css({"outline":"none"});
+            
+            self.win.focus(function(e) {
+              domfocus = (self.getTarget(e)).id||true;
+              self.hasfocus = true;
+              self.noticeCursor();
+            });
+            self.win.blur(function(e) {
+              domfocus = false;
+              self.hasfocus = false;
+            });
+            self.win.mouseenter(function(e) {
+              mousefocus = (self.getTarget(e)).id||true;
+              self.hasmousefocus = true;
+              self.noticeCursor();
+            });
+            self.win.mouseleave(function() {
+              mousefocus = false;
+              self.hasmousefocus = false;
+            });
           };
           
-          if (self.cursorgrabvalue) {
-            self.css((self.ispage)?self.doc:self.win,{'cursor':self.cursorgrabvalue});            
-            self.css(self.rail,{'cursor':self.cursorgrabvalue});
-          }
-        } else {
-          self.onmousedown = function(e) {
-            if (self.locked) return self.cancelEvent(e);
-            self.cancelScroll();
-            self.rail.drag = {x:e.pageX,y:e.clientY,sx:self.scroll.x,sy:self.scroll.y};
-            return self.cancelEvent(e);
-          };
-          self.onmouseup = function(e) {
-            if (self.rail.drag) {
-              self.rail.drag = false;
-              return self.cancelEvent(e);
-            }
-          };        
-          self.onmousemove = function(e) {
-            if (self.rail.drag) {
-              self.scroll.y = self.rail.drag.sy + (e.clientY-self.rail.drag.y);
-              if (self.scroll.y<0) self.scroll.y=0;
-              var my = self.scrollvaluemax;
-              if (self.scroll.y>my) self.scroll.y=my;
-              self.showCursor();
-              self.cursorfreezed = true;
-              self.doScroll(Math.round(self.scroll.y*self.scrollratio.y));          
-              return self.cancelEvent(e);
-            } else {
-              self.checkarea = true;
-            }
-          };
-        }
-
-        if (self.cantouch||self.opt.touchbehavior) {
-/*        
-          if (self.isios) {  // avoid click grey fx & scroll stuck
-            self.bind(document,"mousedown",function(e){
-              if (self.hasParent(e,self.iddoc)) self.onmousedown(e);
-            });            
-          } else {
-*/          
-            self.bind(self.win,"mousedown",self.onmousedown);
-//          }
-        }
-        
-        self.bind(self.cursor,"mousedown",self.onmousedown);          
-        self.bind(self.cursor,"mouseup",function(e) {
-          self.rail.drag = false;
-          self.hasmoving = false;
-          self.hideCursor();
-          return self.cancelEvent(e);
-        });
-        
-        self.bind(document,"mouseup",self.onmouseup);
-        self.bind(document,"mousemove",self.onmousemove);
-        if (self.onclick) self.bind(document,"click",self.onclick);
-        
-        if (!self.cantouch) {
-          self.rail.mouseenter(function() {
-            self.showCursor();
-            self.rail.active = true;
-          });          
-          self.rail.mouseleave(function() { 
-            self.rail.active = false;
-            if (!self.rail.drag) self.hideCursor();
-          });
-          if (!self.isiframe) self.bind((self.isie&&self.ispage) ? document : self.docscroll,"mousewheel",self.onmousewheel);
-          self.bind(self.rail,"mousewheel",self.onmousewheel);
-        }
-
-        if (self.zoom) {
-          self.zoom.mouseenter(function() {
-            self.showCursor();
-            self.rail.active = true;
-          });          
-          self.zoom.mouseleave(function() { 
-            self.rail.active = false;
-            if (!self.rail.drag) self.hideCursor();
-          });
-        }
-        if (!self.ispage&&!self.cantouch&&!(/HTML|BODY/.test(self.win[0].nodeName))) {
-          if (!self.win.attr("tabindex")) self.win.attr({"tabindex":tabindexcounter++});
-          self.win.focus(function(e) {
-            domfocus = (self.getTarget(e)).id||true;
-            self.hasfocus = true;
-            self.noticeCursor();
-          });
-          self.win.blur(function(e) {
-            domfocus = false;
-            self.hasfocus = false;
-          });
-          self.win.mouseenter(function(e) {
-            mousefocus = (self.getTarget(e)).id||true;
-            self.hasmousefocus = true;
-            self.noticeCursor();
-          });
-          self.win.mouseleave(function() {
-            mousefocus = false;
-            self.hasmousefocus = false;
-          });
-        };
+        }  // !ie9mobile
         
         //Thanks to http://www.quirksmode.org !!
         self.onkeypress = function(e) {
@@ -722,12 +890,28 @@
         self.bind(window,'orientationchange',self.resize);
         
         self.bind(window,"load",self.resize);
+
         
-/* DISABLED - No cross-browser implementation 
-        if (!self.ispage&&!self.haswrapper) {
-          self.bind(self.win,(self.isie&&!self.isie9)?"propertychange":"DOMAttrModified",self.onAttributeChange);
+// Trying a cross-browser implementation - good luck!
+
+        self.onAttributeChange = function(e) {
+          self.lazyResize();
         }
-*/        
+        
+        if (!self.ispage&&!self.haswrapper) {
+          // thanks to Filip http://stackoverflow.com/questions/1882224/        
+          if ("WebKitMutationObserver" in window) {
+            var observer = new WebKitMutationObserver(function(mutations) {
+              mutations.forEach(self.onAttributeChange);
+            });
+            observer.observe(self.win[0],{attributes:true,subtree:false});
+          } else {        
+            self.bind(self.win,(self.isie&&!self.isie9)?"propertychange":"DOMAttrModified",self.onAttributeChange);
+            if (self.isie9) self.win[0].attachEvent("onpropertychange",self.onAttributeChange); //IE9 DOMAttrModified bug
+          }
+        }
+        
+//
 
         if (!self.ispage&&self.opt.boxzoom) self.bind(window,"resize",self.resizeZoom);
         if (self.istextarea) self.bind(self.win,"mouseup",self.resize);
@@ -737,7 +921,7 @@
       }
       
       if (this.doc[0].nodeName == 'IFRAME') {
-        function oniframeload(e) {          
+        function oniframeload(e) {
           self.iframexd = false;
           try {
             var doc = 'contentDocument' in this ? this.contentDocument : this.contentWindow.document;
@@ -751,6 +935,12 @@
               html:self.doc.contents().find('html')[0],
               body:self.doc.contents().find('body')[0]
             };
+            self.getContentSize = function(){
+              return {
+                w:Math.max(self.iframe.html.scrollWidth,self.iframe.body.scrollWidth),
+                h:Math.max(self.iframe.html.scrollHeight,self.iframe.body.scrollHeight)
+              }
+            }            
             self.docscroll = $(this.contentWindow);
           }
           if (self.opt.iframeautoresize&&!self.isiframe) {
@@ -826,40 +1016,37 @@
       self.showCursor(py);
       self.hideCursor(tm);
     };
-    
-    this.getContentSize = function() {      
-      var pg = 
-        (self.ispage) ?
-        {
-          w:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth),
-          h:Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)
-        } 
-        : (self.haswrapper) ?
-        {
-          w:self.doc.outerWidth()+parseInt(self.win.css('paddingLeft'))+parseInt(self.win.css('paddingRight')),
-          h:self.doc.outerHeight()+parseInt(self.win.css('paddingTop'))+parseInt(self.win.css('paddingBottom'))
-        } 
-        : (self.iframe) ?
-        {
-          w:Math.max(self.iframe.html.scrollWidth,self.iframe.body.scrollWidth),
-          h:Math.max(self.iframe.html.scrollHeight,self.iframe.body.scrollHeight)
-        }        
-        :
-        {
+        
+    this.getContentSize = 
+      (self.ispage) ?
+        function(){
+          return {
+            w:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth),
+            h:Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)
+          }
+        }
+      : (self.haswrapper) ?
+        function(){
+          return {
+            w:self.doc.outerWidth()+parseInt(self.win.css('paddingLeft'))+parseInt(self.win.css('paddingRight')),
+            h:self.doc.outerHeight()+parseInt(self.win.css('paddingTop'))+parseInt(self.win.css('paddingBottom'))
+          }
+        }
+      : function() {        
+        return {
           w:self.docscroll[0].scrollWidth,
           h:self.docscroll[0].scrollHeight
-        };
-      return pg;
-    };
-    
+        }
+      };
+
     this.onResize = function(e,page) {
     
       if (!self.haswrapper&&!self.ispage) {        
-        var vis = (self.win.css('display')!='none');
-        if (!vis) {
+        if (self.win.css('display')=='none') {
           if (self.visibility) self.hideRail();
           return false;
         } else {
+          if (!self.visibility&&(self.getScrollTop()==0)) self.doScrollTo(Math.floor(self.scroll.y*self.scrollratio.y));
           if (!self.hidden&&!self.visibility) self.showRail();
         }        
       }
@@ -868,13 +1055,6 @@
       var premaxw = self.page.maxw;
 
       var preview = {h:self.view.h,w:self.view.w};
-
-/*      
-      self.view = {      
-        w:(self.ispage) ? self.win.width() : self.win.innerWidth(),
-        h:(self.ispage) ? self.win.height() : self.win.innerHeight()
-      }
-*/      
       
       self.view = {
         w:(self.ispage) ? self.win.width() : parseInt(self.win[0].clientWidth),
@@ -940,6 +1120,9 @@
     };
     
     this.resize = this.onResize;  // hide internal method -- in future name can change
+    this.lazyResize = function() {
+      self.delayed('resize',self.resize,250);
+    }
    
     this._bind = function(el,name,fn,bubble) {  // primitive bind
       self.events.push({e:el,n:name,f:fn});
@@ -960,7 +1143,10 @@
         if (self.cantouch && /mouseup|mousedown|mousemove/.test(name)) {  // touch device support
           var tt=(name=='mousedown')?'touchstart':(name=='mouseup')?'touchend':'touchmove';
           self._bind(el,tt,function(e){
-            if(e.touches.length<2){var ev=(e.touches.length)?e.touches[0]:e;ev.original=e;fn.call(this,ev);}
+            if (e.touches) {
+              if (e.touches.length<2) {var ev=(e.touches.length)?e.touches[0]:e;ev.original=e;fn.call(this,ev);}
+            } 
+            else if (e.changedTouches) {var ev=e.changedTouches[0];ev.original=e;fn.call(this,ev);}  //blackberry
           },bubble||false);
         }
         self._bind(el,name,fn,bubble||false);
@@ -998,14 +1184,11 @@
     
     // Thanks to http://www.switchonthecode.com !!
     this.cancelEvent = function(e) {
-      if (self.cantouch) {
-        e = e.original ? e.original : e||false;
-      } else {
-        e = e ? e : window.event||false;
-      }
+      var e = (e.original) ? e.original : (e) ? e : window.event||false;
       if (!e) return false;      
-      if(e.stopPropagation) e.stopPropagation();
       if(e.preventDefault) e.preventDefault();
+      if(e.stopPropagation) e.stopPropagation();
+      if(e.preventManipulation) e.preventManipulation();  //IE10
       e.cancelBubble = true;
       e.cancel = true;
       e.returnValue = false;
@@ -1080,7 +1263,8 @@
       var delta = e.detail ? e.detail * -1 : e.wheelDelta / 40;
       if (delta) {        
         if (self.scrollmom) self.scrollmom.y.stop();
-        self.doScrollBy(delta*self.opt.mousescrollstep);
+        self.lastdelta += (delta*self.opt.mousescrollstep);
+        self.synched("mousewheel",function(){if(!self.rail.drag){var dt=self.lastdelta;self.lastdelta=0;self.doScrollBy(dt)}});
       }
       return self.cancelEvent(e);
     };
@@ -1183,6 +1367,9 @@
 
     } else {
       this.doScroll = function(y) {  //no-trans
+      
+        if (self.newscrolly==y) return true;
+      
         var py = self.getScrollTop();
         self.newscrolly = y;
         
@@ -1284,10 +1471,17 @@
     self.onscroll = function(e) {    
       if (self.rail.drag) return;
       if (!self.cursorfreezed) {
+/*      
         self.delayed('onscroll',function(){
           self.scroll.y = Math.round(self.getScrollTop() * (1/self.scrollratio.y));
           self.noticeCursor();
         },30);
+*/
+        self.synched('scroll',function(){
+          self.scroll.y = Math.round(self.getScrollTop() * (1/self.scrollratio.y));
+          self.noticeCursor();
+        });
+        
       }
     };
     self.bind(self.docscroll,"scroll",self.onscroll);
@@ -1371,6 +1565,8 @@
     };
    
     this.init();
+    
+    $.nicescroll.push(this);
 
   };
   
@@ -1387,6 +1583,10 @@
     this.snapy = false;
     this.demuly = 0;
     
+    this.lastscrolly = -1;
+    
+    this.chky = 0;
+    
     this.timer = 0;
     
     this.time = function() {
@@ -1397,7 +1597,8 @@
       self.stop();
       self.lasttime = self.time();
       self.speedy = 0;
-      self.lasty = py;      
+      self.lasty = py;
+      self.lastscrolly = -1;
     };
     
     this.update = function(py) {
@@ -1414,6 +1615,7 @@
       if (self.timer) {
         clearTimeout(self.timer);
         self.timer = 0;
+        self.lastscrolly = -1;
       }    
     };
     
@@ -1426,9 +1628,9 @@
       }
     };
     
-    this.doMomentum = function() {
-      var l = self.lasttime;
+    this.doMomentum = function(tm) {
       var t = self.time();
+      var l = (tm) ? t+tm : self.lasttime;
       
       self.speedy = Math.min(60,self.speedy);
       
@@ -1439,21 +1641,41 @@
         var tm = t-l;
         var pageh = self.nc.page.maxh;
         self.demuly = 0;
+        
+        self.lastscrolly = self.nc.getScrollTop();
+        self.chky = self.lastscrolly;
+        
         var onscroll = function(){          
-          var ny = Math.floor(self.nc.getScrollTop() - (self.speedy*(1-self.demuly)));
+//          var ny = Math.floor(self.nc.getScrollTop() - (self.speedy*(1-self.demuly)));
+          var ny = Math.floor(self.lastscrolly - (self.speedy*(1-self.demuly)));
           if ((ny<0)||(ny>pageh)) {
             self.demuly+=0.08;
           } else {
             self.demuly+=0.01;
           }
-          self.nc.setScrollTop(ny);
-          self.nc.showCursor(ny);
+          self.lastscrolly = ny;
+          
+          self.nc.synched("domomentum",function(){
+          
+            var scy = self.nc.getScrollTop();          
+            if (scy!=self.chky) self.stop();          
+            self.chky=ny;
+          
+            self.nc.setScrollTop(ny);
+            if(self.timer) {
+              self.nc.showCursor(ny);              
+            } else {
+              self.nc.hideCursor();
+              self.doSnapy(ny);
+            }
+          });
+          
           if(self.demuly<1) {
             self.timer = setTimeout(onscroll,tm);
           } else {
             self.timer = 0;
-            self.nc.hideCursor();
-            self.doSnapy(ny);
+//            self.nc.hideCursor();
+//            self.doSnapy(ny);
           }
         };
         onscroll();
@@ -1482,6 +1704,13 @@
       return this;
     }
   };
+  
+/*  ====================================> TO INSPECT  
+  $.fx.step["scrollTop"] = function(fx){
+    if (fx.start=='') fx.start=$.cssHooks.scrollTop.get(fx.elem);
+    $.cssHooks.scrollTop.set(fx.elem,fx.now+fx.unit);
+  };  
+*/  
  
   jQuery.fn.scrollTop = function(value) {    
     if (typeof value == "undefined") {
@@ -1589,6 +1818,10 @@
   window.NiceScroll = {
     getjQuery:function(){return jQuery}
   };
+  
+  if (!$.nicescroll) {
+   $.nicescroll = new NiceScrollArray();
+  }
   
 })( jQuery );
   
