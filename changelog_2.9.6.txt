@@ -1,0 +1,7 @@
+Changelog nicescroll release 2.9.6
+http://areaaperta.com/nicescroll
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+Fixes
+- IE7/IE8, scrollbar displayed on wrong position for NaN value as border width (issues #47 #48)

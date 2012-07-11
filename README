@@ -1,5 +1,5 @@
 jquery.nicescroll
-v. 2.9.5 07-02-2012
+v. 2.9.6 07-11-2012
 copyright 2011-12 InuYaksa*2012
 licensed under the MIT
 http://areaaperta.com/nicescroll
@@ -11,9 +11,9 @@ Nicescroll as a Greasemonkey plugin: http://userscripts.org/scripts/show/119910
 
 Nicescroll (as nice scroll for browsers) is a jquery (since 1.5) plugin, for nice scrollbars with a very similar ios/mobile style.
 It supports DIVs, IFrames and document page (body) scrollbars.
-  Compatible with desktop browser: Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
-  Compatible with mobile device: iPad/iPhone/iPod, Android 2.2+, Blackberry phones and Playbook (WebWorks/Table OS), Windows Phone 7.5 Mango. 
-  So you have scrollable divs with momentum for iPad 4+ and you have consistent scrollable areas for all desktop and mobile platforms.
+Compatible with desktop browser: Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
+Compatible with mobile device: iPad/iPhone/iPod, Android 2.2+, Blackberry phones and Playbook (WebWorks/Table OS), Windows Phone 7.5 Mango. 
+So you have scrollable divs with momentum for iPad 4+ and you have consistent scrollable areas for all desktop and mobile platforms.
 
 Sexy zoom feature, you can "zoom-in" the content of any nicescroll'ed div. Nice to use and nice to see, all the content of the div in fullscreen mode. It works on desktop (double click on div) either in mobile/touch devices using pinch gesture.
 

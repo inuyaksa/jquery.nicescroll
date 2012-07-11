@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 2.9.5
+-- version 2.9.6
 -- copyright 2011-12 InuYaksa*2012
 -- licensed under the MIT
 --
@@ -49,7 +49,7 @@
 
     var self = this;
 
-    this.version = '2.9.5';
+    this.version = '2.9.6';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -389,14 +389,43 @@
       return (el!==false);
     };
     
+//inspired by http://forum.jquery.com/topic/width-includes-border-width-when-set-to-thin-medium-thick-in-ie
+    var _convertBorderWidth = {"thin":1,"medium":3,"thick":5};
+    function getWidthToPixel(dom,prop,chkheight) {
+      var wd = dom.css(prop);
+      var px = parseFloat(wd);
+      if (isNaN(px)) {
+        px = _convertBorderWidth[wd]||0;
+        var brd = (px==3) ? ((chkheight)?(self.win.outerHeight() - self.win.innerHeight()):(self.win.outerWidth() - self.win.innerWidth())) : 1; //DON'T TRUST CSS
+        if (self.isie8&&px) px+=1;
+        return (brd) ? px : 0;
+/*        
+        switch (wd) {
+          case "thin":
+            px = (self.isie8) ? 1 : 2;
+            break;
+          case "medium":
+            var brd = (chkheight)?(self.win.outerHeight() - self.win.innerHeight()):(self.win.outerWidth() - self.win.innerWidth()); //DON'T TRUST CSS
+            px = (brd) ? ((self.isie8) ? 3 : 4) : 0;
+            break;
+          case "thick":
+            px = (self.isie8) ? 5 : 6;
+            break;
+        }        
+*/        
+      }
+      return px;
+    };
+    
     this.updateScrollBar = function(len) {
       if (self.ishwscroll) {
         self.rail.css({height:self.win.innerHeight()});
       } else {
         var pos = self.win.offset();
-        pos.top+= parseFloat(self.win.css('border-top-width'));
-        var brd = (self.win.outerWidth() - self.win.innerWidth())/2;
-        pos.left+= self.win.outerWidth() - parseFloat(self.win.css('border-right-width')) - self.rail.width;
+        pos.top+= getWidthToPixel(self.win,'border-top-width',true);
+        
+//        var brd = (self.win.outerWidth() - self.win.innerWidth());
+        pos.left+= self.win.outerWidth() - getWidthToPixel(self.win,'border-right-width',false) - self.rail.width;
         
         var off = self.opt.railoffset;
         if (off) {
