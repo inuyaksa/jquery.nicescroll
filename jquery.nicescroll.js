@@ -1070,7 +1070,9 @@
       };
 
     this.onResize = function(e,page) {
-    
+      if (self.rail == false) {
+        return false;
+      }
       if (!self.haswrapper&&!self.ispage) {        
         if (self.win.css('display')=='none') {
           if (self.visibility) self.hideRail();
