@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 2.9.6
+-- version 2.9.7
 -- copyright 2011-12 InuYaksa*2012
 -- licensed under the MIT
 --
@@ -49,7 +49,7 @@
 
     var self = this;
 
-    this.version = '2.9.6';
+    this.version = '2.9.7';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -117,6 +117,7 @@
 // Let's start!  
     this.view = false;
     this.page = false;
+    this.observer = false;
     
     this.scroll = {x:0,y:0};
     this.scrollratio = {x:0,y:0};    
@@ -195,7 +196,7 @@
       this.transitionend = false;
       var check = ['transition','webkitTransition','MozTransition','OTransition','msTransition','KhtmlTransition'];
       var prefix = ['','-webkit-','-moz-','-o-','-ms-','-khtml-'];
-      var evs = ['transitionEnd','webkitTransitionEnd','transitionend','oTransitionEnd','msTransitionEnd','KhtmlTransitionEnd'];
+      var evs = ['transitionend','webkitTransitionEnd','transitionend','oTransitionEnd','msTransitionEnd','KhtmlTransitionEnd'];
       for(var a=0;a<check.length;a++) {
         if (check[a] in domtest.style) {
           this.transitionstyle = check[a];
@@ -930,10 +931,10 @@
         if (!self.ispage&&!self.haswrapper) {
           // thanks to Filip http://stackoverflow.com/questions/1882224/        
           if ("WebKitMutationObserver" in window) {
-            var observer = new WebKitMutationObserver(function(mutations) {
+            self.observer = new WebKitMutationObserver(function(mutations) {
               mutations.forEach(self.onAttributeChange);
             });
-            observer.observe(self.win[0],{attributes:true,subtree:false});
+            self.observer.observe(self.win[0],{attributes:true,subtree:false});
           } else {        
             self.bind(self.win,(self.isie&&!self.isie9)?"propertychange":"DOMAttrModified",self.onAttributeChange);
             if (self.isie9) self.win[0].attachEvent("onpropertychange",self.onAttributeChange); //IE9 DOMAttrModified bug
@@ -1069,7 +1070,9 @@
       };
 
     this.onResize = function(e,page) {
-    
+      if (self.rail == false) {
+        return false;
+      }
       if (!self.haswrapper&&!self.ispage) {        
         if (self.win.css('display')=='none') {
           if (self.visibility) self.hideRail();
@@ -1253,6 +1256,9 @@
     this.remove = function() {
       self.doZoomOut();
       self.unbindAll();
+      if (self.observer !== false) {
+        self.observer.disconnect();
+      }
       self.events = [];
       self.rail.remove();
       if (self.zoom) self.zoom.remove();
