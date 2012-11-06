@@ -82,7 +82,9 @@
       bouncescroll:false,
       spacebarenabled:true,
       railpadding:{top:0,right:0,left:0,bottom:0},
-      disableoutline:true
+      disableoutline:true,
+      zoomIn:function(){return true},
+      zoomOut:function(){return true}
     };
     
     if (myopt||false) {
@@ -1560,7 +1562,8 @@
       self.rail.css({"z-index":self.opt.zindex+110});
       self.zoom.css({"z-index":self.opt.zindex+112});      
       self.zoom.css('backgroundPosition','0px -18px');
-      self.resizeZoom();                
+      self.resizeZoom(); 
+      self.opt.zoomIn();
       return self.cancelEvent(e);
     };
 
@@ -1580,6 +1583,7 @@
       self.zoomrestore = false;
       self.zoom.css('backgroundPosition','0px 0px');
       self.onResize();
+      self.opt.zoomOut();
       return self.cancelEvent(e);
     };
     
