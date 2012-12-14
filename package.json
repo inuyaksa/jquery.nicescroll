@@ -27,7 +27,7 @@
         "ios",
         "mobile",
         "desktop",
-        "scrollbar"
+        "scrollbar",
         "touch"
     ],
     "homepage": "https://github.com/inuyaksa/jquery.nicescroll",
