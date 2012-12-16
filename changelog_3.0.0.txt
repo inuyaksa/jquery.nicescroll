@@ -6,14 +6,14 @@ New features
 - horizontal scrollbar - close #19
 - setCaption, enabling mouse capture for easiest mouse drag detection (IE5+/Firefox4+)
 - scroll events
-- zoomin/out events - close #97
+- zoomin/out events - close #60 close #97
 - sensitive rail, clicking on rail do page scroll (doubleclick function too)
 
 New parameters
 - horizrailenabled:true, when disabled horizontal scrollbar is native
-- railalign, vertical rail bar alignment (right/left)
+- railalign, vertical rail bar alignment (right/left) - close #49
 - railvalign, horizontal rail bar alignment (bottom/top)
-- enabletranslate3d:true, use translate css method to make a scroll (some old browsers couldn't make flicker)
+- enabletranslate3d:true, use translate css method to make a scroll (some old browsers couldn't make flicker) - close #54
 - enablemousewheel:true, enable mousewheel event manage
 - enablekeyboard:true, enable keyboard events manage
 - enabledomchangedetection:true, when false not check for DOM changing and don't use DOMMutation object - close #66
@@ -30,6 +30,7 @@ Changed features
 - autohidemode, new value "scroll" show cursors only on scroll - fix #81
 - detection of Pointer Lock API (used for chrome 22 detection only)
 - detection of Android devices
+- all browser, better outline removed - close #58
 
 Fixes
 - hwaccel scroll, reset transition values when scrolling end
@@ -39,9 +40,9 @@ Fixes
 - iPad, input range issue (googlecode issue 12)
 - webkit, fix observer remove (thanks to nkovacs) - fix #61
 - variable scope fixed #69
-- IE, remove dotted border on focused div #62
+- IE, remove dotted border on focused div - fix #62
 - Chrome Win7 on touch enable devices, mouse drag doesn't work - fix #78
-- resize event loop #82
+- resize event loop - fix #65 fix #82 fix #100
 - scrollwheel event on text node generate "undefined object" error - fix #67
 - div with position:fixed #88
 - "transition end" event simulated with setTimeout
@@ -55,3 +56,5 @@ Fixes
 - Chrome, iframe cursor dragging issue - fix #111 fix #117
 - FF18 nightly, touch support false positive - fix #115
 - Chrome on Android, scrolling not works
+- Chrome, scrolling issue ("in" operator) - fix #93
+- iPad, vertical scroll - fix #57
