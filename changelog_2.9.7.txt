@@ -1,7 +1,0 @@
-Changelog nicescroll release 2.9.7
-http://areaaperta.com/nicescroll
-https://github.com/inuyaksa/jquery.nicescroll
-
-
-Fixes
-- FF16, transitionend event detection fail #89

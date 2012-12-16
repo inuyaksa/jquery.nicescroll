@@ -1,9 +1,5 @@
-You can find new beta/RC released at http://code.google.com/p/jquery-nicescroll/
-Follow twitter https://twitter.com/nicescroll
-
-
 jquery.nicescroll
-v. 2.9.7 10-25-2012
+v. 3.0.0 12-16-2012
 copyright 2011-12 InuYaksa*2012
 licensed under the MIT
 http://areaaperta.com/nicescroll
@@ -13,20 +9,28 @@ https://twitter.com/nicescroll
 Nicescroll as a Greasemonkey plugin: http://userscripts.org/scripts/show/119910
 
 
-Nicescroll (as nice scroll for browsers) is a jquery (since 1.5) plugin, for nice scrollbars with a very similar ios/mobile style.
-It supports DIVs, IFrames and document page (body) scrollbars.
-Compatible with desktop browser: Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
-Compatible with mobile device: iPad/iPhone/iPod, Android 2.2+, Blackberry phones and Playbook (WebWorks/Table OS), Windows Phone 7.5 Mango. 
+Nicescroll is a jquery plugin, for nice scrollbars with a very similar ios/mobile style.
+
+NOW support HORIZONAL scrollbar too!
+
+It supports DIVs, IFrames, textarea, and document page (body) scrollbars.
+Compatible with all desktop browser: Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
+Compatible with mobile device: iPad/iPhone/iPod, Android 2.2+, Blackberry phones and Playbook (WebWorks/Table OS), Windows Phone 7.5 Mango.
+Compatible with all touch devices: iPad, Window Surface.
+Compabible with multi-input device (mouse with touch or pen): Window Surface, Chrome Desktop on touch notebook.
+Compatible with 2 directions mice: Apple Magic Mouse, Apple Mouser with 2-dir wheel, PC mouse with 2-dir wheel (if browser support it).
+
 So you have scrollable divs with momentum for iPad 4+ and you have consistent scrollable areas for all desktop and mobile platforms.
 
-Sexy zoom feature, you can "zoom-in" the content of any nicescroll'ed div. Nice to use and nice to see, all the content of the div in fullscreen mode. It works on desktop (double click on div) either in mobile/touch devices using pinch gesture.
+Sexy zoom feature, you can "zoom-in" the content of any nicescroll'ed div.
+Nice to use and nice to see, all the content of the div in fullscreen mode.
+It works on desktop (double click on div) either in mobile/touch devices using pinch gesture.
 
 On modern browsers hardware accelerated scrolling has implemented.
 Using animationFrame for a smoothest and cpu-saving scrolling. (when browser supports)
 
-Only vertical scrollbars supported in this version. (horizotal support on version 3 soon)
-
-Warning for IE6 users (why do you uses IE6 yet? Please updgrade to a more stable and modern browser), some feature can't work for limitation of the browser. Document (body) scrollbars can't appears, old (native browser) one is used. Some issues with IFrame scrolling.
+Warning for IE6 users (why do you uses IE6 yet? Please updgrade to a more stable and modern browser), some feature can't work for limitation of the browser.
+Document (body) scrollbars can't appears, old (native browser) one is used. Some issues with IFrame scrolling.
 
 
 * FEATURES
@@ -65,7 +69,7 @@ Copy image "zoomico.png" in the same folder of jquery.nicescroll.js.
 
 * HOW TO USE
 
-Recall ALWAYS in (document) ready statement.
+Initialize nicescroll ALWAYS in (document) ready statement.
 
 1. Simple mode, it styles document scrollbar:
 
@@ -108,6 +112,10 @@ var nice = $("#mydiv").getNiceScroll();
 
 $("#mydiv").getNiceScroll().hide();
 
+7. Check for scrollbars resize (when content or position have changed):
+
+$("#mydiv").getNiceScroll().resize();
+
 
 * CONFIGURATION PARAMETERS
 
@@ -138,7 +146,14 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 . spacebarenabled, enable page down scrolling when space bar has pressed (default:true)
 . railpadding, set padding for rail bar (default:{top:0,right:0,left:0,bottom:0})
 . disableoutline, for chrome browser, disable outline (orange hightlight) when selecting a div with nicescroll (default:true)
-
+. horizrailenabled, nicescroll can manage horizontal scroll (default:true)
+. railalign, alignment of vertical rail (defaul:"right")
+. railvalign, alignment of horizontal rail (defaul:"bottom")
+. enabletranslate3d, nicescroll can use css translate to scroll content (default:true)
+. enablemousewheel, nicescroll can manage mouse wheel events (default:true)
+. enablekeyboard, nicescroll can manage keyboard events (default:true)
+. smoothscroll, scroll with ease movement (default:true)
+. sensitiverail, click on rail make a scroll (default:true)
 
 * LICENSE
 

@@ -1,6 +1,6 @@
 {
     "name": "nicescroll",
-    "version": "2.9.7",
+    "version": "3.0.0",
     "title": "jQuery.NiceScroll",
     "author": {
         "name": "InuYaksa",
@@ -15,7 +15,7 @@
     "dependencies": {
         "jquery": ">=1.4.3"
     },
-    "description": "Nicescroll (as nice scroll for browsers) is a jquery (since 1.5) plugin, for nice scrollbars with a very similar ios/mobile style. It supports DIVs, IFrames and document page (body) scrollbars. Compatible with Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+ (all A-grade browsers). Compatible with iOS devices as iPad.",
+    "description": "Nicescroll is a jquery plugin, for nice customizabled scrollbars with a very similar ios/mobile style. It supports DIVs, IFrames and document page (body) scrollbars. Compatible with Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+ (all A-grade browsers). Compatible with iOS devices as iPad, Android, Blackberry, Windows Phone, and many many mobile and touch devices.",
     "keywords": [
         "nicescroll",
         "jquery",
@@ -28,7 +28,8 @@
         "mobile",
         "desktop",
         "scrollbar",
-        "touch"
+        "touch",
+        "android"
     ],
     "homepage": "https://github.com/inuyaksa/jquery.nicescroll",
     "contributors": [],

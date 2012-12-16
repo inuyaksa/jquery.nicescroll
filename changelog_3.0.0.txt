@@ -1,0 +1,57 @@
+Changelog nicescroll release 3.0.0
+http://areaaperta.com/nicescroll
+https://github.com/inuyaksa/jquery.nicescroll
+
+New features
+- horizontal scrollbar #19
+- setCaption, enabling mouse capture for easiest mouse drag detection (IE5+/Firefox4+)
+- scroll events
+- zoomin/out events #97
+- sensitive rail, clicking on rail do page scroll (doubleclick function too)
+
+New parameters
+- horizrailenabled:true, when disabled horizontal scrollbar is native
+- railalign, vertical rail bar alignment (right/left)
+- railvalign, horizontal rail bar alignment (bottom/top)
+- enabletranslate3d:true, use translate css method to make a scroll (some old browsers couldn't make flicker)
+- enablemousewheel:true, enable mousewheel event manage
+- enablekeyboard:true, enable keyboard events manage
+- enabledomchangedetection:true, when false not check for DOM changing and don't use DOMMutation object #66
+- smoothscroll:true, when disabled scroll doesn't use ease movement #79
+
+Changed features
+- detection engine optimization (speed and memory occupation)
+- optimization to scroll momentum
+- iOS5+, force hw acceleration on native scrolling (iOS 6 too)
+- railpadding, disabled "top" and "bottom" setting for performance optimization
+- bounce disabled on not scrollable direction [issue #53]
+- use backface-visibility:hidden only for iOS devices
+- bouncescroll default changed to true
+- autohidemode, new value "scroll" show cursors only on scroll #81
+- detection of Pointer Lock API (used for chrome 22 detection only)
+- detection of Android devices
+
+Fixes
+- hwaccel scroll, reset transition values when scrolling end
+- chrome scrollbar bug, when scrollbar has hidden, a void bar is displayed
+- iframe with touchbehavior enabled, grab cursor not displayed
+- railpadding not working, issue #52
+- iPad, input range issue (googlecode issue 12)
+- webkit, fix observer remove (thanks to nkovacs) #61
+- variable scope fixed #69
+- IE, remove dotted border on focused div #62
+- Chrome Win7 on touch enable devices, mouse drag doesn't work #78
+- resize event loop #82
+- scrollwheel event on text node generate "undefined object" error #67
+- div with position:fixed #88
+- "transition end" event simulated with setTimeout
+- FF16 false positive on "transitionend" event detection breaks hw scrolling #86
+- FF12 issue with matrix parsing #94
+- mousewheel freeze on dynamic content 
+- Chrome, add nicescroll after removed #90
+- IE, sudden resize event on removing nicescroll #105
+- zoom icon position not updated #109
+- Chrome, width bugfix not work on width set as percentuage #106
+- Chrome, iframe cursor dragging issue #111
+- FF18 nightly, touch support false positive #115
+- Chrome on Android, scrolling not works
