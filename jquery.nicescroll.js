@@ -1763,6 +1763,12 @@
       return self.hideRail().hideRailHr();
     };
     
+    this.toggle = function() {
+      if(self.hidden)
+      	return self.show();
+      return self.hide();
+    };
+    
     this.remove = function() {
       self.doZoomOut();
       self.unbindAll();      
@@ -2695,7 +2701,7 @@
   };  
   mplex(
     NiceScrollArray.prototype,
-    ['show','hide','onResize','resize','remove','stop','doScrollPos'],
+    ['show','hide','onResize','resize','remove','stop','doScrollPos','toggle'],
     function(e,n) {
       e[n] = function(){
         var args = arguments;
