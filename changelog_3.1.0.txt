@@ -1,0 +1,12 @@
+Changelog nicescroll release 3.1.0
+http://areaaperta.com/nicescroll
+https://github.com/inuyaksa/jquery.nicescroll
+
+New features
+- new method "toggle" (show/hide), thanks to rbravo - close #126
+
+Fixes
+- bouncescroll, can't disabling bounce scroll - close #121
+- added compatibility with Chrome "Emulate Touch Events" Mode
+- nicescroll into a parent nicescroll or native scrollable div - close #45 close #123
+- browsers wheelDeltaY enabled (Chrome 23, Safari+Mac 10.6), mousescrollstep ignored - close #127

@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.0.0
+-- version 3.1.0
 -- copyright 2011-12 InuYaksa*2012
 -- licensed under the MIT
 --
@@ -78,7 +78,7 @@
     d.ischrome = ("chrome" in window);
 		d.ischrome22 = (d.ischrome&&d.haspointerlock);
     
-    d.cantouch = ("ontouchstart" in document.documentElement);		
+    d.cantouch = ("ontouchstart" in document.documentElement)||("ontouchstart" in window);  // detection for Chrome Touch Emulation
     d.hasmstouch = (window.navigator.msPointerEnabled||false);  // IE10+ pointer events
 		
     d.ismac = /^mac$/i.test(navigator.platform);
@@ -149,7 +149,7 @@
 
     var self = this;
 
-    this.version = '3.0.0';
+    this.version = '3.1.0';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -209,6 +209,7 @@
     this.win = self.opt.win||(this.ispage?$(window):this.doc);
     this.docscroll = (this.ispage&&!this.haswrapper)?$(window):this.win;
     this.body = $("body");
+    this.viewport = false;
     
     this.isfixed = false;
     
@@ -284,20 +285,22 @@
     this.lastdeltax = 0;
     this.lastdeltay = 0;
     
-    var cap = this.detected = getBrowserDetection();    
+    this.detected = getBrowserDetection(); 
+    
+    var cap = $.extend({},this.detected);
  
     this.canhwscroll = (cap.hastransform&&self.opt.hwacceleration);
     this.ishwscroll = (this.canhwscroll&&self.haswrapper);
     
     this.istouchcapable = false;  // desktop devices with touch screen support
     
-//## Check Chrome 22 bug on touch devices
+//## Check Chrome desktop with touch support
     if (cap.cantouch&&cap.ischrome&&!cap.isios&&!cap.isandroid) {
       this.istouchcapable = true;
       cap.cantouch = false;  // parse normal desktop events
     }    
 
-//## Firefox 18 nightly build (desktop) false positive
+//## Firefox 18 nightly build (desktop) false positive (or desktop with touch support)
     if (cap.cantouch&&cap.ismozilla&&!cap.isios) {
       this.istouchcapable = true;
       cap.cantouch = false;  // parse normal desktop events
@@ -400,6 +403,7 @@
     // hw accelerated scroll
       this.doc.translate = {x:0,y:0,tx:"0px",ty:"0px"};
       
+      //this one can help to enable hw accel on ios6 http://indiegamr.com/ios6-html-hardware-acceleration-changes-and-how-to-fix-them/
       if (cap.hastranslate3d&&cap.isios) this.doc.css("-webkit-backface-visibility","hidden");  // prevent flickering http://stackoverflow.com/questions/3461441/      
       
       //derived from http://stackoverflow.com/questions/11236090/
@@ -520,12 +524,20 @@
       return px;
     };
     
+    this.getOffset = function() {
+      if (self.isfixed) return {top:parseFloat(self.win.css('top')),left:parseFloat(self.win.css('left'))};
+      if (!self.viewport) return self.win.offset();
+      var ww = self.win.offset();
+      var vp = self.viewport.offset();
+      return {top:ww.top-vp.top+self.viewport.scrollTop(),left:ww.left-vp.left+self.viewport.scrollLeft()};
+    };
+    
     this.updateScrollBar = function(len) {
       if (self.ishwscroll) {
         self.rail.css({height:self.win.innerHeight()});
         if (self.railh) self.railh.css({width:self.win.innerWidth()});
       } else {
-        var wpos = (self.isfixed) ? {top:parseFloat(self.win.css('top')),left:parseFloat(self.win.css('left'))}  : self.win.offset();        
+        var wpos = self.getOffset();
         var pos = {top:wpos.top,left:wpos.left};
         pos.top+= getWidthToPixel(self.win,'border-top-width',true);
         var brd = (self.win.outerWidth() - self.win.innerWidth())/2;
@@ -745,10 +757,13 @@
             self.isfixed = (self.win.css("position")=="fixed");
             var rlpos = (self.isfixed) ? "fixed" : "absolute";
             
+            if (!self.isfixed) self.viewport = self.getViewport(self.win[0]);
+            if (self.viewport) self.body = self.viewport;
+            
             rail.css({position:rlpos});
             if (self.zoom) self.zoom.css({position:rlpos});
             self.updateScrollBar();
-            self.body.append(rail);           
+            self.body.append(rail);
             if (self.zoom) self.body.append(self.zoom);
             if (self.railh) {
               railh.css({position:rlpos});
@@ -901,6 +916,11 @@
                   if (skp) return self.stopPropagation(e);
                 }
                 
+                if (!("clientX" in e) && ("changedTouches" in e)) {
+                  e.clientX = e.changedTouches[0].clientX;
+                  e.clientY = e.changedTouches[0].clientY;
+                }
+                
                 if (self.forcescreen) {
                   var le = e;
                   var e = {"original":(e.original)?e.original:e};
@@ -930,6 +950,7 @@
                     pc = {"tg":tg,"click":false};
                     self.preventclick = pc;
                   }
+                  
                 }
               }
               
@@ -937,7 +958,7 @@
             
             self.ontouchend = function(e) {
               if (e.pointerType&&e.pointerType!=2) return false;
-              if (self.rail.drag&&(self.rail.drag.pt==2)) {            
+              if (self.rail.drag&&(self.rail.drag.pt==2)) {
                 self.scrollmom.doMomentum();
                 self.rail.drag = false;
                 if (self.hasmoving) {
@@ -966,6 +987,14 @@
                   self.preventclick.click = self.preventclick.tg.onclick||false;                
                   self.preventclick.tg.onclick = self.onpreventclick;
                 }
+
+                var ev = $.extend({"original":e},e);
+                e = ev;
+                
+                if (("changedTouches" in e)) {
+                  e.clientX = e.changedTouches[0].clientX;
+                  e.clientY = e.changedTouches[0].clientY;
+                }                
                 
                 if (self.forcescreen) {
                   var le = e;
@@ -1039,8 +1068,8 @@
                     if (cap.isie10) document.selection.clear();
                   }
                 });
-
-                return self.cancelEvent(e);
+                
+                if (!cap.ischrome&&!self.istouchcapable) return self.cancelEvent(e);  //chrome touch emulation doesn't like!
               }
               
             };
@@ -1079,7 +1108,7 @@
             
           } else {
           
-            self.onmousedown = function(e,hronly) {            
+            self.onmousedown = function(e,hronly) {       
               if (self.rail.drag&&self.rail.drag.pt!=1) return;
               if (self.locked) return self.cancelEvent(e);            
               self.cancelScroll();              
@@ -1156,6 +1185,7 @@
           if (this.istouchcapable) {  //device with screen touch enabled
             self.bind(self.win,"touchstart",self.ontouchstart);
             self.bind(document,"touchend",self.ontouchend);
+            self.bind(document,"touchcancel",self.ontouchend);
             self.bind(document,"touchmove",self.ontouchmove);            
           }
           
@@ -1763,6 +1793,10 @@
       return self.hideRail().hideRailHr();
     };
     
+    this.toggle = function() {
+      return (self.hidden) ? self.show() : self.hide();
+    };
+    
     this.remove = function() {
       self.doZoomOut();
       self.unbindAll();      
@@ -1833,13 +1867,27 @@
       }
       return false;
     };
+
+    this.getViewport = function(me) {      
+      var dom = (me&&me.parentNode) ? me.parentNode : false;
+      while (dom&&(dom.nodeType==1)&&!(/BODY|HTML/.test(dom.nodeName))) {
+        var dd = $(dom);
+        var ov = dd.css('overflowY')||dd.css('overflowX')||dd.css('overflow')||'';
+        if ((/scroll|auto/.test(ov))&&(dom.clientHeight!=dom.scrollHeight)) return dd;
+        if (dd.getNiceScroll().length>0) return dd;
+        dom = (dom.parentNode) ? dom.parentNode : false;
+      }
+      return false;
+    };
     
     function execScrollWheel(e,hr) {
       var px = 0;
       var py = 0;
+      var rt = 1;
       if ("wheelDeltaY" in e) {
-        px = Math.floor(e.wheelDeltaX/2);
-        py = Math.floor(e.wheelDeltaY/2);
+        rt = self.opt.mousescrollstep/(16*3);
+        px = Math.floor(e.wheelDeltaX*rt);
+        py = Math.floor(e.wheelDeltaY*rt);
       } else {
         var delta = e.detail ? e.detail * -1 : e.wheelDelta / 40;
         if (delta) {
@@ -1958,6 +2006,15 @@
         var px = self.getScrollLeft();        
       
         if (((self.newscrolly-py)*(y-py)<0)||((self.newscrollx-px)*(x-px)<0)) self.cancelScroll();  //inverted movement detection      
+        
+        if (self.opt.bouncescroll==false) {
+          if (y<0) y=0;
+          else if (y>self.page.maxh) y=self.page.maxh;
+          if (x<0) x=0;
+          else if (x>self.page.maxw) x=self.page.maxw;
+        }
+        
+        if (x==self.newscrollx&&y==self.newscrolly) return false;
         
         self.newscrolly = y;
         self.newscrollx = x;
@@ -2695,7 +2752,7 @@
   };  
   mplex(
     NiceScrollArray.prototype,
-    ['show','hide','onResize','resize','remove','stop','doScrollPos'],
+    ['show','hide','toggle','onResize','resize','remove','stop','doScrollPos'],
     function(e,n) {
       e[n] = function(){
         var args = arguments;
