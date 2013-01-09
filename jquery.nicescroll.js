@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.1.0
+-- version 3.1.2
 -- copyright 2011-12 InuYaksa*2012
 -- licensed under the MIT
 --
@@ -149,7 +149,7 @@
 
     var self = this;
 
-    this.version = '3.1.0';
+    this.version = '3.1.2';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -190,7 +190,8 @@
       enablemousewheel:true,
       enablekeyboard:true,
       smoothscroll:true,
-      sensitiverail:true
+      sensitiverail:true,
+      enablemouselockapi:true
     };
     
 // Options for internal use
@@ -305,6 +306,13 @@
       this.istouchcapable = true;
       cap.cantouch = false;  // parse normal desktop events
     }    
+    
+//## disable MouseLock API on user request
+
+    if (!self.opt.enablemouselockapi) {
+      cap.hasmousecapture = false;
+      cap.haspointerlock = false;
+    }
     
     this.delayed = function(name,fn,tm,lazy) {
       var dd = self.delaylist[name];
@@ -780,6 +788,8 @@
         
         if (self.opt.autohidemode===false) {
           self.autohidedom = false;
+          self.rail.css({opacity:self.opt.cursoropacitymax});
+          if (self.railh) self.railh.css({opacity:self.opt.cursoropacitymax});
         }
         else if (self.opt.autohidemode===true) {
           self.autohidedom = $().add(self.rail);
@@ -1212,39 +1222,39 @@
 		
           if (!cap.cantouch&&!self.opt.touchbehavior) {
 					
-            self.rail.mouseenter(function() {
+            self.jqbind(self.rail,"mouseenter",function() {
               if (self.canshowonmouseevent) self.showCursor();
               self.rail.active = true;
             });
-            self.rail.mouseleave(function() { 
+            self.jqbind(self.rail,"mouseleave",function() { 
               self.rail.active = false;
               if (!self.rail.drag) self.hideCursor();
             });
             
             if (self.opt.sensitiverail) {
-              self.rail.click(function(e){self.doRailClick(e,false,false)});
-              self.rail.dblclick(function(e){self.doRailClick(e,true,false)});
-              self.cursor.click(function(e){self.cancelEvent(e)});
-              self.cursor.dblclick(function(e){self.cancelEvent(e)});
+              self.bind(self.rail,"click",function(e){self.doRailClick(e,false,false)});
+              self.bind(self.rail,"dblclick",function(e){self.doRailClick(e,true,false)});
+              self.bind(self.cursor,"click",function(e){self.cancelEvent(e)});
+              self.bind(self.cursor,"dblclick",function(e){self.cancelEvent(e)});
             }
             
             if (self.railh) {
-              self.railh.mouseenter(function() {
+              self.jqbind(self.railh,"mouseenter",function() {
                 if (self.canshowonmouseevent) self.showCursor();
                 self.rail.active = true;
               });          
-              self.railh.mouseleave(function() { 
+              self.jqbind(self.railh,"mouseleave",function() { 
                 self.rail.active = false;
                 if (!self.rail.drag) self.hideCursor();
               });
             }
 
 						if (self.zoom) {
-							self.zoom.mouseenter(function() {
+							self.jqbind(self.zoom,"mouseenter",function() {
 								if (self.canshowonmouseevent) self.showCursor();
 								self.rail.active = true;
 							});          
-							self.zoom.mouseleave(function() { 
+							self.jqbind(self.zoom,"mouseleave",function() { 
 								self.rail.active = false;
 								if (!self.rail.drag) self.hideCursor();
 							});
@@ -1261,22 +1271,22 @@
           if (!self.ispage&&!cap.cantouch&&!(/HTML|BODY/.test(self.win[0].nodeName))) {
             if (!self.win.attr("tabindex")) self.win.attr({"tabindex":tabindexcounter++});
             
-            self.win.focus(function(e) {
+            self.jqbind(self.win,"focus",function(e) {
               domfocus = (self.getTarget(e)).id||true;
               self.hasfocus = true;
               if (self.canshowonmouseevent) self.noticeCursor();
             });
-            self.win.blur(function(e) {
+            self.jqbind(self.win,"blur",function(e) {
               domfocus = false;
               self.hasfocus = false;
             });
             
-            self.win.mouseenter(function(e) {
+            self.jqbind(self.win,"mouseenter",function(e) {
               mousefocus = (self.getTarget(e)).id||true;
               self.hasmousefocus = true;
               if (self.canshowonmouseevent) self.noticeCursor();
             });
-            self.win.mouseleave(function() {
+            self.jqbind(self.win,"mouseleave",function() {
               mousefocus = false;
               self.hasmousefocus = false;
             });
@@ -1298,9 +1308,11 @@
           
           if (self.hasfocus||(self.hasmousefocus&&!domfocus)||(self.ispage&&!domfocus&&!mousefocus)) {
             var key = e.keyCode;
-            var ctrl = e.ctrlKey||false;
             
             if (self.locked&&key!=27) return self.cancelEvent(e);
+
+            var ctrl = e.ctrlKey||false;
+            var shift = e.shiftKey || false;
             
             var ret = false;
             switch (key) {
@@ -1350,7 +1362,7 @@
                 break;
               case 32:
                 if (self.opt.spacebarenabled) {
-                  self.doScrollBy(-self.view.h);
+                  (shift) ? self.doScrollBy(self.view.h) : self.doScrollBy(-self.view.h);
                   ret = true;
                 }
                 break;
@@ -1652,7 +1664,7 @@
      
       var sy = self.getScrollTop();
       if (sy>self.page.maxh) {
-        self.doScroll(self.page.maxh);
+        self.doScrollTop(self.page.maxh);
       } else {     
         self.scroll.y = Math.round(self.getScrollTop() * (1/self.scrollratio.y));
         self.scroll.x = Math.round(self.getScrollLeft() * (1/self.scrollratio.x));
@@ -1671,7 +1683,7 @@
     }
    
     this._bind = function(el,name,fn,bubble) {  // primitive bind
-      self.events.push({e:el,n:name,f:fn,b:bubble});
+      self.events.push({e:el,n:name,f:fn,b:bubble,q:false});
       if (el.addEventListener) {
         el.addEventListener(name,fn,bubble||false);
       }
@@ -1682,6 +1694,11 @@
         el["on"+name] = fn;        
       }        
     };
+   
+    this.jqbind = function(dom,name,fn) {  // use jquery bind for non-native events (mouseenter/mouseleave)
+      self.events.push({e:dom,n:name,f:fn,q:true});
+      $(dom).bind(name,fn);
+    }
    
     this.bind = function(dom,name,fn,bubble) {  // touch-oriented & fixing jquery bind
       var el = ("jquery" in dom) ? dom[0] : dom;
@@ -1724,7 +1741,7 @@
     this.unbindAll = function() {
       for(var a=0;a<self.events.length;a++) {
         var r = self.events[a];        
-        self._unbind(r.e,r.n,r.f,r.b);
+        (r.q) ? r.e.unbind(r.n,r.f) : self._unbind(r.e,r.n,r.f,r.b);
       }
     };
     
@@ -1798,6 +1815,8 @@
     };
     
     this.remove = function() {
+      self.stop();
+      if (self.cursortimeout) clearTimeout(self.cursortimeout);
       self.doZoomOut();
       self.unbindAll();      
       if (self.observer !== false) self.observer.disconnect();      
@@ -2444,6 +2463,9 @@
         height:$(window).height()-self.zoomrestore.padding.h+"px"
       });
       self.onResize();
+      
+      console.log(py);
+      
       self.setScrollTop(Math.min(self.page.maxh,py));
     };
    

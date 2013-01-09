@@ -1,0 +1,14 @@
+Changelog nicescroll release 3.1.2
+http://areaaperta.com/nicescroll
+https://github.com/inuyaksa/jquery.nicescroll
+
+New features
+- add support for key combo shift+space (same as pageup) - thanks to zcourts - close #132
+
+New options
+- enablemouselockapi:true, disable setCapture implementation, when you need native scroll on dragging object out of a div - close #134
+
+Fixes
+- when autohidemode=false cursor opacity not set to value cursoropacitymax - close #137
+- scrolling position not fixed when zooming out and positioned at bottom - close #136
+- remove function, some events remains bind to element - close #139
