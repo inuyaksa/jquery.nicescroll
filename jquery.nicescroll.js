@@ -1308,7 +1308,12 @@
           
           if (self.hasfocus||(self.hasmousefocus&&!domfocus)||(self.ispage&&!domfocus&&!mousefocus)) {
             var key = e.keyCode;
+<<<<<<< HEAD
             
+=======
+            var ctrl = e.ctrlKey||false;
+            var shift = e.shiftKey || false;
+>>>>>>> origin/master
             if (self.locked&&key!=27) return self.cancelEvent(e);
 
             var ctrl = e.ctrlKey||false;
@@ -1362,7 +1367,11 @@
                 break;
               case 32:
                 if (self.opt.spacebarenabled) {
+<<<<<<< HEAD
                   (shift) ? self.doScrollBy(self.view.h) : self.doScrollBy(-self.view.h);
+=======
+                  shift ? self.doScrollBy(self.view.h):self.doScrollBy(-self.view.h);
+>>>>>>> origin/master
                   ret = true;
                 }
                 break;
