@@ -1,0 +1,12 @@
+Changelog nicescroll release 3.1.4
+http://areaaperta.com/nicescroll
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+New options
+- cursorfixedheight:false, cursor with fixed height (high priority on cursorminheight) - close #146
+
+
+Fixes
+- missing sensitiverail for horizontal rail, thanks to aNt1X - close #147
+- Chrome, mousewheel on horizontal rail doesn't work - close #145

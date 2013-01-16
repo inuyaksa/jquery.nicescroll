@@ -1,8 +1,8 @@
 jquery.nicescroll
-v. 3.0.0 12-16-2012
+v. 3.1.4 01-16-2013
 copyright 2011-12 InuYaksa*2012
 licensed under the MIT
-http://areaaperta.com/nicescroll
+http://nicescroll.areaaperta.com
 https://github.com/inuyaksa/jquery.nicescroll
 https://twitter.com/nicescroll
 
@@ -154,9 +154,11 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 . enablekeyboard, nicescroll can manage keyboard events (default:true)
 . smoothscroll, scroll with ease movement (default:true)
 . sensitiverail, click on rail make a scroll (default:true)
+. enablemouselockapi, can use mouse caption lock API (same issue on object dragging) (default:true)
+. cursorfixedheight, set fixed height for cursor in pixel (default:false)
 
 * LICENSE
 
-Copyright 2011-12*InuYaksa
+Copyright 2011-13*InuYaksa
 Licensed under the MIT License, http://www.opensource.org/licenses/mit-license.php
 Images used for zoom icons have derived from OLPC interface, http://laptop.org/8.2.0/manual/Browse_ChangingView.html

@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.1.2
+-- version 3.1.4
 -- copyright 2011-12 InuYaksa*2012
 -- licensed under the MIT
 --
@@ -149,7 +149,7 @@
 
     var self = this;
 
-    this.version = '3.1.2';
+    this.version = '3.1.4';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -191,7 +191,9 @@
       enablekeyboard:true,
       smoothscroll:true,
       sensitiverail:true,
-      enablemouselockapi:true
+      enablemouselockapi:true,
+//      cursormaxheight:false,
+      cursorfixedheight:false
     };
     
 // Options for internal use
@@ -1247,6 +1249,14 @@
                 self.rail.active = false;
                 if (!self.rail.drag) self.hideCursor();
               });
+              
+              if (self.opt.sensitiverail) {
+                self.bind(self.railh, "click", function(e){self.doRailClick(e,false,true)});
+                self.bind(self.railh, "dblclick", function(e){self.doRailClick(e, true, true) });
+                self.bind(self.cursorh, "click", function (e) { self.cancelEvent(e) });
+                self.bind(self.cursorh, "dblclick", function (e) { self.cancelEvent(e) });
+              }
+              
             }
 
 						if (self.zoom) {
@@ -1645,10 +1655,10 @@
       if (!self.ispage) self.updateScrollBar(self.view);
 
       self.cursorheight = Math.min(self.view.h,Math.round(self.view.h * (self.view.h / self.page.h)));
-      self.cursorheight = Math.max(self.opt.cursorminheight,self.cursorheight);
+      self.cursorheight = (self.opt.cursorfixedheight) ? self.opt.cursorfixedheight : Math.max(self.opt.cursorminheight,self.cursorheight);
 
       self.cursorwidth = Math.min(self.view.w,Math.round(self.view.w * (self.view.w / self.page.w)));
-      self.cursorwidth = Math.max(self.opt.cursorminheight,self.cursorwidth);
+      self.cursorwidth = (self.opt.cursorfixedheight) ? self.opt.cursorfixedheight : Math.max(self.opt.cursorminheight,self.cursorwidth);
       
       self.scrollvaluemax = self.view.h-self.cursorheight-self.cursor.hborder;
       
@@ -1907,6 +1917,10 @@
         rt = self.opt.mousescrollstep/(16*3);
         px = Math.floor(e.wheelDeltaX*rt);
         py = Math.floor(e.wheelDeltaY*rt);
+        if (hr&&(px==0)&&py) {  // classic vertical-only mousewheel + browser with x/y support 
+          px = py;
+          py = 0;
+        }
       } else {
         var delta = e.detail ? e.detail * -1 : e.wheelDelta / 40;
         if (delta) {
