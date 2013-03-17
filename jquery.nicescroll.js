@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.1.4
+-- version 3.1.5
 -- copyright 2011-12 InuYaksa*2012
 -- licensed under the MIT
 --
@@ -149,7 +149,7 @@
 
     var self = this;
 
-    this.version = '3.1.4';
+    this.version = '3.1.5';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -940,7 +940,11 @@
                   e.clientY = le.screenY;    
                 }
                 
-                self.rail.drag = {x:e.clientX,y:e.clientY,sx:self.scroll.x,sy:self.scroll.y,st:self.getScrollTop(),sl:self.getScrollLeft(),pt:2};
+                self.rail.drag = {x:e.clientX,y:e.clientY,sx:self.scroll.x,sy:self.scroll.y,st:self.getScrollTop(),sl:self.getScrollLeft(),pt:2,dl:false};
+                
+                if (!self.rail.scrollable&&self.railh.scrollable) self.rail.drag.ck = "v";
+                else if (self.rail.scrollable&&!self.railh.scrollable) self.rail.drag.ck = "h";
+                else self.rail.drag.dl = "f";
                 
                 if (self.opt.touchbehavior&&self.isiframe&&cap.isie) {
                   var wp = self.win.position();
@@ -1025,6 +1029,8 @@
                 
                 var fy = e.clientY + ofy;
                 var my = (fy-self.rail.drag.y);
+                var fx = e.clientX + ofx;
+                var mx = (fx-self.rail.drag.x);
                 
                 var ny = self.rail.drag.st-my;
                 
@@ -1042,12 +1048,7 @@
                   if (ny>self.page.maxh) {ny=self.page.maxh;fy=0}
                 }
                   
-                var fx = e.clientX + ofx;
-                  
                 if (self.railh&&self.railh.scrollable) {
-
-                  var mx = (fx-self.rail.drag.x);
-                  
                   var nx = self.rail.drag.sl-mx;
                   
                   if (self.ishwscroll&&self.opt.bouncescroll) {                  
@@ -1065,7 +1066,31 @@
                   }
                 
                 }
-                              
+                
+                var grabbed = false;
+                if (self.rail.drag.dl) {
+                  grabbed = true;
+                  if (self.rail.drag.dl=="v") nx = self.rail.drag.sl;
+                  else if (self.rail.drag.dl=="h") ny = self.rail.drag.st;                  
+                } else {
+                  var ay = Math.abs(my);
+                  var ax = Math.abs(mx);
+                  if (self.rail.drag.ck=="v") {    
+                    if (ay>12&&((ax-ay)<0)) {
+                      self.rail.drag = false;
+                      return true;
+                    }
+                    else if (ax>12) self.rail.drag.dl="f";
+                  }
+                  else if (self.rail.drag.ck=="h") {
+                    if (ax>12&&((ay-ax)<0)) {
+                      self.rail.drag = false;
+                      return true;
+                    }
+                    else if (ay>12) self.rail.drag.dl="f";
+                  }  
+                }
+                
                 self.synched("touchmove",function(){
                   if (self.rail.drag&&(self.rail.drag.pt==2)) {
                     if (self.prepareTransition) self.prepareTransition(0);
@@ -1081,7 +1106,8 @@
                   }
                 });
                 
-                if (!cap.ischrome&&!self.istouchcapable) return self.cancelEvent(e);  //chrome touch emulation doesn't like!
+                if (cap.ischrome&&self.istouchcapable) grabbed=false;  //chrome touch emulation doesn't like!
+                if (grabbed) return self.cancelEvent(e);
               }
               
             };
@@ -1888,6 +1914,7 @@
     
     this.isScrollable = function(e) {      
       var dom = (e.target) ? e.target : e;
+      if (dom.nodeName == 'OPTION') return true;
       while (dom&&(dom.nodeType==1)&&!(/BODY|HTML/.test(dom.nodeName))) {
         var dd = $(dom);
         var ov = dd.css('overflowY')||dd.css('overflowX')||dd.css('overflow')||'';
@@ -1950,7 +1977,7 @@
       }
       if (self.opt.preservenativescrolling&&self.checkarea) {
         self.checkarea = false;
-        self.nativescrollingarea = self.isScrollable(e); 
+        self.nativescrollingarea = self.isScrollable(e);         
       }
       if (self.nativescrollingarea) return true; // this isn't my business
       if (self.locked) return self.cancelEvent(e);
@@ -2477,8 +2504,6 @@
         height:$(window).height()-self.zoomrestore.padding.h+"px"
       });
       self.onResize();
-      
-      console.log(py);
       
       self.setScrollTop(Math.min(self.page.maxh,py));
     };
