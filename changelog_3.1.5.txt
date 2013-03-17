@@ -5,4 +5,4 @@ https://github.com/inuyaksa/jquery.nicescroll
 
 Fixes
 - Nicescroll on a horizontal scrollable div prevents page vertical scrolling on mobile - close #128 close #152 close #180
-- Can't scroll with mousewheel inside a <select> element - close #170
+- Can't scroll with mousewheel inside a <select> element - close #166
