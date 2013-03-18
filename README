@@ -1,5 +1,5 @@
 jquery.nicescroll
-v. 3.1.5 03-17-2013
+v. 3.1.8 03-18-2013
 copyright 2011-12-13 InuYaksa*2013
 licensed under the MIT
 http://nicescroll.areaaperta.com
@@ -156,6 +156,8 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 . sensitiverail, click on rail make a scroll (default:true)
 . enablemouselockapi, can use mouse caption lock API (same issue on object dragging) (default:true)
 . cursorfixedheight, set fixed height for cursor in pixel (default:false)
+. hidecursordelay, set the delay in microseconds to fading out scrollbars (default:400)
+. directionlockdeadzone, dead zone in pixels for direction lock activation (default:6)
 
 * LICENSE
 

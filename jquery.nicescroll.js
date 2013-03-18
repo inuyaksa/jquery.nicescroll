@@ -1,6 +1,6 @@
 /* jquery.nicescroll
--- version 3.1.5
--- copyright 2011-12 InuYaksa*2012
+-- version 3.1.8
+-- copyright 2011-12-13 InuYaksa*2013
 -- licensed under the MIT
 --
 -- http://areaaperta.com/nicescroll
@@ -44,6 +44,48 @@
             window.msCancelRequestAnimationFrame     || 
             false;
   })();  
+  
+  var _globaloptions = {
+      zindex:"auto",
+      cursoropacitymin:0,
+      cursoropacitymax:1,
+      cursorcolor:"#424242",
+      cursorwidth:"5px",
+      cursorborder:"1px solid #fff",
+      cursorborderradius:"5px",
+      scrollspeed:60,
+      mousescrollstep:8*3,
+      touchbehavior:false,
+      hwacceleration:true,
+      usetransition:true,
+      boxzoom:false,
+      dblclickzoom:true,
+      gesturezoom:true,
+      grabcursorenabled:true,
+      autohidemode:true,
+      background:"",
+      iframeautoresize:true,
+      cursorminheight:32,
+      preservenativescrolling:true,
+      railoffset:false,
+      bouncescroll:true,
+      spacebarenabled:true,
+      railpadding:{top:0,right:0,left:0,bottom:0},
+      disableoutline:true,
+      horizrailenabled:true,
+      railalign:"right",
+      railvalign:"bottom",
+      enabletranslate3d:true,
+      enablemousewheel:true,
+      enablekeyboard:true,
+      smoothscroll:true,
+      sensitiverail:true,
+      enablemouselockapi:true,
+//      cursormaxheight:false,
+      cursorfixedheight:false,      
+      directionlockdeadzone:6,
+      hidecursordelay:400
+  }
   
   var browserdetected = false;
   
@@ -149,52 +191,17 @@
 
     var self = this;
 
-    this.version = '3.1.5';
+    this.version = '3.1.8';
     this.name = 'nicescroll';
     
     this.me = me;
     
     this.opt = {
       doc:$("body"),
-      win:false,
-      zindex:9000,
-      cursoropacitymin:0,
-      cursoropacitymax:1,
-      cursorcolor:"#424242",
-      cursorwidth:"5px",
-      cursorborder:"1px solid #fff",
-      cursorborderradius:"5px",
-      scrollspeed:60,
-      mousescrollstep:8*3,
-      touchbehavior:false,
-      hwacceleration:true,
-      usetransition:true,
-      boxzoom:false,
-      dblclickzoom:true,
-      gesturezoom:true,
-      grabcursorenabled:true,
-      autohidemode:true,
-      background:"",
-      iframeautoresize:true,
-      cursorminheight:32,
-      preservenativescrolling:true,
-      railoffset:false,
-      bouncescroll:true,
-      spacebarenabled:true,
-      railpadding:{top:0,right:0,left:0,bottom:0},
-      disableoutline:true,
-      horizrailenabled:true,
-      railalign:"right",
-      railvalign:"bottom",
-      enabletranslate3d:true,
-      enablemousewheel:true,
-      enablekeyboard:true,
-      smoothscroll:true,
-      sensitiverail:true,
-      enablemouselockapi:true,
-//      cursormaxheight:false,
-      cursorfixedheight:false
+      win:false
     };
+    
+    $.extend(this.opt,_globaloptions);
     
 // Options for internal use
     this.opt.snapbackspeed = 80;
@@ -619,6 +626,14 @@
       
       if (cap.hasmstouch) self.css((self.ispage)?$("html"):self.win,{'-ms-touch-action':'none'});
       
+      self.zindex = "auto";
+      if (!self.ispage&&self.opt.zindex=="auto") {
+        var zi = self.win.prop('zIndex');
+        if (!isNaN(zi)) self.zindex = zi;
+      } else {
+        self.zindex = self.opt.zindex;
+      }
+      
 /*      
       self.ispage = true;
       self.haswrapper = true;
@@ -657,6 +672,7 @@
         
         var rail = $(document.createElement('div'));
         rail.attr('id',self.id);
+        rail.addClass('nicescroll-rails');
         
         var v,a,kp = ["left","right"];  //"top","bottom"
         for(var n in kp) {
@@ -668,7 +684,7 @@
         rail.append(cursor);
         
         rail.width = Math.max(parseFloat(self.opt.cursorwidth),cursor.outerWidth()) + self.opt.railpadding['left'] + self.opt.railpadding['right'];
-        rail.css({width:rail.width+"px",'zIndex':(self.ispage)?self.opt.zindex:self.opt.zindex+2,"background":self.opt.background});        
+        rail.css({width:rail.width+"px",'zIndex':self.zindex,"background":self.opt.background});        
         
         rail.visibility = true;
         rail.scrollable = true;
@@ -684,7 +700,7 @@
           zoom = document.createElement('div');          
           self.bind(zoom,"click",self.doZoom);
           self.zoom = $(zoom);
-          self.zoom.css({"cursor":"pointer",'z-index':self.opt.zindex,'backgroundImage':'url('+scriptpath+'zoomico.png)','height':18,'width':18,'backgroundPosition':'0px 0px'});
+          self.zoom.css({"cursor":"pointer",'z-index':self.zindex,'backgroundImage':'url('+scriptpath+'zoomico.png)','height':18,'width':18,'backgroundPosition':'0px 0px'});
           if (self.opt.dblclickzoom) self.bind(self.win,"dblclick",self.doZoom);
           if (cap.cantouch&&self.opt.gesturezoom) {
             self.ongesturezoom = function(e) {
@@ -720,8 +736,9 @@
           
           var railh = $(document.createElement('div'));
           railh.attr('id',self.id+'-hr');
+          railh.addClass('nicescroll-rails');
           railh.height = 1+Math.max(parseFloat(self.opt.cursorwidth),cursor.outerHeight());
-          railh.css({height:railh.height+"px",'zIndex':(self.ispage)?self.opt.zindex:self.opt.zindex+2,"background":self.opt.background});
+          railh.css({height:railh.height+"px",'zIndex':self.zindex,"background":self.opt.background});
           
           railh.append(cursor);
           
@@ -768,7 +785,10 @@
             var rlpos = (self.isfixed) ? "fixed" : "absolute";
             
             if (!self.isfixed) self.viewport = self.getViewport(self.win[0]);
-            if (self.viewport) self.body = self.viewport;
+            if (self.viewport) {
+              self.body = self.viewport;              
+              if ((/relative|absolute/.test(self.viewport.css("position")))==false) self.css(self.viewport,{"position":"relative"});
+            }            
             
             rail.css({position:rlpos});
             if (self.zoom) self.zoom.css({position:rlpos});
@@ -942,9 +962,28 @@
                 
                 self.rail.drag = {x:e.clientX,y:e.clientY,sx:self.scroll.x,sy:self.scroll.y,st:self.getScrollTop(),sl:self.getScrollLeft(),pt:2,dl:false};
                 
-                if (!self.rail.scrollable&&self.railh.scrollable) self.rail.drag.ck = "v";
-                else if (self.rail.scrollable&&!self.railh.scrollable) self.rail.drag.ck = "h";
-                else self.rail.drag.dl = "f";
+                if (self.ispage||!self.opt.directionlockdeadzone) {
+                  self.rail.drag.dl = "f";
+                } else {
+                
+                  var view = {
+                    w:$(window).width(),
+                    h:$(window).height()
+                  };
+                  
+                  var page = {
+                    w:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth),
+                    h:Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)
+                  }
+                  
+                  var maxh = Math.max(0,page.h - view.h);
+                  var maxw = Math.max(0,page.w - view.w);                
+                
+                  if (!self.rail.scrollable&&self.railh.scrollable) self.rail.drag.ck = (maxh>0) ? "v" : false;
+                  else if (self.rail.scrollable&&!self.railh.scrollable) self.rail.drag.ck = (maxw>0) ? "h" : false;
+                  else self.rail.drag.ck = false;
+                  if (!self.rail.drag.ck) self.rail.drag.dl = "f";
+                }
                 
                 if (self.opt.touchbehavior&&self.isiframe&&cap.isie) {
                   var wp = self.win.position();
@@ -1075,19 +1114,26 @@
                 } else {
                   var ay = Math.abs(my);
                   var ax = Math.abs(mx);
+                  var dz = self.opt.directionlockdeadzone;
                   if (self.rail.drag.ck=="v") {    
-                    if (ay>12&&((ax-ay)<0)) {
-                      self.rail.drag = false;
+                    if (ay>dz&&(ax<=(ay*0.3))) {
+                      self.rail.drag = false;                      
                       return true;
                     }
-                    else if (ax>12) self.rail.drag.dl="f";
+                    else if (ax>dz) {
+                      self.rail.drag.dl="f";                      
+                      $("body").scrollTop($("body").scrollTop());  // stop iOS native scrolling (when active javascript has blocked)
+                    }
                   }
                   else if (self.rail.drag.ck=="h") {
-                    if (ax>12&&((ay-ax)<0)) {
-                      self.rail.drag = false;
+                    if (ax>dz&&(ay<=(az*0.3))) {
+                      self.rail.drag = false;                      
                       return true;
                     }
-                    else if (ay>12) self.rail.drag.dl="f";
+                    else if (ay>dz) {                      
+                      self.rail.drag.dl="f";
+                      $("body").scrollLeft($("body").scrollLeft());  // stop iOS native scrolling (when active javascript has blocked)
+                    }
                   }  
                 }
                 
@@ -1415,10 +1461,10 @@
         
         if (self.opt.enablekeyboard) self.bind(document,(cap.isopera&&!cap.isopera12)?"keypress":"keydown",self.onkeypress);
         
-        self.bind(window,'resize',self.resize);
-        self.bind(window,'orientationchange',self.resize);
+        self.bind(window,'resize',self.lazyResize);
+        self.bind(window,'orientationchange',self.lazyResize);
         
-        self.bind(window,"load",self.resize);
+        self.bind(window,"load",self.lazyResize);
 		
         if (cap.ischrome&&!self.ispage&&!self.haswrapper) { //chrome void scrollbar bug
           var tmp=self.win.attr("style");
@@ -1430,7 +1476,7 @@
 // Trying a cross-browser implementation - good luck!
 
         self.onAttributeChange = function(e) {
-          self.lazyResize();
+          self.lazyResize(250);
         }
         
         if (!self.ispage&&!self.haswrapper) {
@@ -1449,9 +1495,9 @@
 //
 
         if (!self.ispage&&self.opt.boxzoom) self.bind(window,"resize",self.resizeZoom);
-        if (self.istextarea) self.bind(self.win,"mouseup",self.resize);
+        if (self.istextarea) self.bind(self.win,"mouseup",self.lazyResize);
         
-        self.resize();
+        self.lazyResize(30);
         
       }
       
@@ -1491,7 +1537,7 @@
             var hh=Math.max(doc.getElementsByTagName('html')[0].scrollHeight,doc.body.scrollHeight);
             self.doc.height(hh);          
           }
-          self.resize();
+          self.lazyResize(30);
           
           if (cap.isie7) self.css($(self.iframe.html),{'overflow-y':'hidden'});
           //self.css($(doc.body),{'overflow-y':'hidden'});
@@ -1570,7 +1616,7 @@
            self.cursoractive = false;
          }
          self.cursortimeout = 0;
-      },tm||400);
+      },tm||self.opt.hidecursordelay);
     };
     
     this.noticeCursor = function(tm,py,px) {
@@ -1712,10 +1758,12 @@
       return self;
     };
     
-    this.resize = function(){self.delayed('resize',self.onResize,30);return self;} // event debounce
+    this.resize = self.onResize;
     
-    this.lazyResize = function() {
-      self.delayed('resize',self.resize,250);
+    this.lazyResize = function(tm) {   // event debounce
+      tm = (isNaN(tm)) ? 30 : tm;
+      self.delayed('resize',self.resize,tm);
+      return self;
     }
    
     this._bind = function(el,name,fn,bubble) {  // primitive bind
@@ -2454,13 +2502,13 @@
         "position":(cap.isios4)?"absolute":"fixed",
         "top":0,
         "left":0,
-        "z-index":self.opt.zindex+100,
+        "z-index":parseInt(self.zindex)+100,
         "margin":"0px"
       });
       var bkg = self.win.css("backgroundColor");      
       if (bkg==""||/transparent|rgba\(0, 0, 0, 0\)|rgba\(0,0,0,0\)/.test(bkg)) self.win.css("backgroundColor","#fff");
-      self.rail.css({"z-index":self.opt.zindex+110});
-      self.zoom.css({"z-index":self.opt.zindex+112});      
+      self.rail.css({"z-index":parseInt(self.zindex)+110});
+      self.zoom.css({"z-index":parseInt(self.zindex)+112});      
       self.zoom.css('backgroundPosition','0px -18px');
       self.resizeZoom();
       
@@ -2480,8 +2528,8 @@
         $(window).scrollTop(self.zoomrestore.scrollTop);
       }
       
-      self.rail.css({"z-index":(self.ispage)?self.opt.zindex:self.opt.zindex+2});
-      self.zoom.css({"z-index":self.opt.zindex});
+      self.rail.css({"z-index":self.zindex});
+      self.zoom.css({"z-index":self.zindex});
       self.zoomrestore = false;
       self.zoom.css('backgroundPosition','0px 0px');
       self.onResize();
@@ -2874,6 +2922,7 @@
   
   if (!$.nicescroll) {
    $.nicescroll = new NiceScrollArray();
+   $.nicescroll.options = _globaloptions;
   }
   
 })( jQuery );
