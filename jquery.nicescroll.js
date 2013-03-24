@@ -1749,7 +1749,6 @@
       else if (!self.hidden&&!self.railh.visibility) self.showRailHr();
       
       if (self.istextarea&&self.win.css('resize')&&self.win.css('resize')!='none') self.view.h-=20;      
-      if (!self.ispage) self.updateScrollBar(self.view);
 
       self.cursorheight = Math.min(self.view.h,Math.round(self.view.h * (self.view.h / self.page.h)));
       self.cursorheight = (self.opt.cursorfixedheight) ? self.opt.cursorfixedheight : Math.max(self.opt.cursorminheight,self.cursorheight);
@@ -1763,6 +1762,8 @@
         self.railh.width = (self.page.maxh>0) ? (self.view.w-self.rail.width) : self.view.w;
         self.scrollvaluemaxw = self.railh.width-self.cursorwidth-self.cursorh.wborder;
       }
+      
+      if (!self.ispage) self.updateScrollBar(self.view);
       
       self.scrollratio = {
         x:(self.page.maxw/self.scrollvaluemaxw),

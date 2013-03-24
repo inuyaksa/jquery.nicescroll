@@ -13,3 +13,4 @@ Changed features
 Fixes
 - zindex=auto, recurve check for use correct zindex value - fixes #149
 - horiz scrollbar position issue - fixes #154
+- horizontal cursor width not updated - fixes #150
