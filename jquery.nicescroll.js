@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.1.8
+-- version 3.1.9
 -- copyright 2011-12-13 InuYaksa*2013
 -- licensed under the MIT
 --
@@ -84,7 +84,8 @@
 //      cursormaxheight:false,
       cursorfixedheight:false,      
       directionlockdeadzone:6,
-      hidecursordelay:400
+      hidecursordelay:400,
+      nativeparentscrolling:true
   }
   
   var browserdetected = false;
@@ -191,7 +192,7 @@
 
     var self = this;
 
-    this.version = '3.1.8';
+    this.version = '3.1.9';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -284,6 +285,7 @@
     this.cursoractive = true; // user can interact with cursors
     
     this.nativescrollingarea = false;
+    this.checkarea = 0;
     
     this.events = [];  // event list for unbind
     
@@ -342,6 +344,15 @@
         setTimeout(function(){fn.call();},0);
       }
     };
+    
+    this.debounced = function(name,fn,tm) {
+      var dd = self.delaylist[name];
+      var nw = (new Date()).getTime();      
+      self.delaylist[name] = fn;
+      if (!dd) {        
+        setTimeout(function(){var fn=self.delaylist[name];self.delaylist[name]=false;fn.call();},tm);
+      }
+    }
     
     this.synched = function(name,fn) {
     
@@ -527,6 +538,18 @@
       return (el!==false);
     };
     
+    function getZIndex() {
+      var dom = self.win;
+      if ("zIndex" in dom) return dom.zIndex();  // use jQuery UI method when available
+      while (dom.length>0) {        
+        if (dom[0].nodeType==9) return false;
+        var zi = dom.css('zIndex');        
+        if (!isNaN(zi)&&zi!=0) return zi;
+        dom = dom.parent();
+      }
+      return false;
+    };
+    
 //inspired by http://forum.jquery.com/topic/width-includes-border-width-when-set-to-thin-medium-thick-in-ie
     var _convertBorderWidth = {"thin":1,"medium":3,"thick":5};
     function getWidthToPixel(dom,prop,chkheight) {
@@ -628,8 +651,7 @@
       
       self.zindex = "auto";
       if (!self.ispage&&self.opt.zindex=="auto") {
-        var zi = self.win.prop('zIndex');
-        if (!isNaN(zi)) self.zindex = zi;
+        self.zindex = getZIndex();
       } else {
         self.zindex = self.opt.zindex;
       }
@@ -737,7 +759,7 @@
           var railh = $(document.createElement('div'));
           railh.attr('id',self.id+'-hr');
           railh.addClass('nicescroll-rails');
-          railh.height = 1+Math.max(parseFloat(self.opt.cursorwidth),cursor.outerHeight());
+          railh.height = Math.max(parseFloat(self.opt.cursorwidth),cursor.outerHeight());
           railh.css({height:railh.height+"px",'zIndex':self.zindex,"background":self.opt.background});
           
           railh.append(cursor);
@@ -1244,9 +1266,12 @@
                   }
                 });
                 return self.cancelEvent(e);
-              } else {
+              } 
+/*              
+              else {
                 self.checkarea = true;
               }
+*/              
               
             };
           }
@@ -1984,7 +2009,7 @@
       return false;
     };
     
-    function execScrollWheel(e,hr) {
+    function execScrollWheel(e,hr,chkscroll) {
       var px = 0;
       var py = 0;
       var rt = 1;
@@ -2005,17 +2030,27 @@
       if (px) {
         if (self.scrollmom) {self.scrollmom.stop()}
         self.lastdeltax+=px;
-        self.synched("mousewheelx",function(){var dt=self.lastdeltax;self.lastdeltax=0;if(!self.rail.drag){self.doScrollLeftBy(dt)}});
+        self.debounced("mousewheelx",function(){var dt=self.lastdeltax;self.lastdeltax=0;if(!self.rail.drag){self.doScrollLeftBy(dt)}},120);
       }
       if (py) {
+        if (self.opt.nativeparentscrolling&&chkscroll) {
+          if (py<0) {
+            if (self.getScrollTop()>=self.page.maxh) return true;
+          } else {
+            if (self.getScrollTop()<=0) return true;
+          }
+        }
         if (self.scrollmom) {self.scrollmom.stop()}
         self.lastdeltay+=py;
-        self.synched("mousewheely",function(){var dt=self.lastdeltay;self.lastdeltay=0;if(!self.rail.drag){self.doScrollBy(dt)}});
-      }          
+        self.debounced("mousewheely",function(){var dt=self.lastdeltay;self.lastdeltay=0;if(!self.rail.drag){self.doScrollBy(dt)}},120);
+      }
+      return self.cancelEvent(e);
     };
     
     this.onmousewheel = function(e) {
       if (self.locked) return true;
+      if (self.rail.drag) return self.cancelEvent(e);
+      
       if (!self.rail.scrollable) {
         if (self.railh&&self.railh.scrollable) {
           return self.onmousewheelhr(e);
@@ -2023,32 +2058,37 @@
           return true;
         }
       }
-      if (self.opt.preservenativescrolling&&self.checkarea) {
-        self.checkarea = false;
-        self.nativescrollingarea = self.isScrollable(e);         
+      var nw = +(new Date());
+      var chk = false;
+      if (self.opt.preservenativescrolling&&((self.checkarea+600)<nw)) {
+//        self.checkarea = false;
+        self.nativescrollingarea = self.isScrollable(e);
+        chk = true;
       }
+      self.checkarea = nw;
       if (self.nativescrollingarea) return true; // this isn't my business
-      if (self.locked) return self.cancelEvent(e);
-      if (self.rail.drag) return self.cancelEvent(e);
-      
-      execScrollWheel(e,false);
-      
-      return self.cancelEvent(e);
+//      if (self.locked) return self.cancelEvent(e);
+      var ret = execScrollWheel(e,false,chk);
+      if (ret) self.checkarea = 0;
+      return ret;
     };
 
     this.onmousewheelhr = function(e) {
       if (self.locked||!self.railh.scrollable) return true;
-      if (self.opt.preservenativescrolling&&self.checkarea) {
-        self.checkarea = false;
+      if (self.rail.drag) return self.cancelEvent(e);
+      
+      var nw = +(new Date());
+      var chk = false;
+      if (self.opt.preservenativescrolling&&((self.checkarea+600)<nw)) {
+//        self.checkarea = false;
         self.nativescrollingarea = self.isScrollable(e); 
+        chk = true;
       }
+      self.checkarea = nw;
       if (self.nativescrollingarea) return true; // this isn't my business
       if (self.locked) return self.cancelEvent(e);
-      if (self.rail.drag) return self.cancelEvent(e);
 
-      execScrollWheel(e,true);
-      
-      return self.cancelEvent(e);
+      return execScrollWheel(e,true,chk);
     };
     
     this.stop = function() {
@@ -2760,7 +2800,7 @@
  
   var _scrollTop = jQuery.fn.scrollTop; // preserve original function
    
-  $.cssHooks["pageYOffset"] = {
+  jQuery.cssHooks["pageYOffset"] = {
     get: function(elem,computed,extra) {      
       var nice = $.data(elem,'__nicescroll')||false;
       return (nice&&nice.ishwscroll) ? nice.getScrollTop() : _scrollTop.call(elem);
@@ -2771,14 +2811,14 @@
       return this;
     }
   };
-
+  
 /*  
   $.fx.step["scrollTop"] = function(fx){    
     $.cssHooks["scrollTop"].set( fx.elem, fx.now + fx.unit );
   };
 */  
   
-  jQuery.fn.scrollTop = function(value) {
+  jQuery.fn.scrollTop = function(value) {    
     if (typeof value == "undefined") {
       var nice = (this[0]) ? $.data(this[0],'__nicescroll')||false : false;
       return (nice&&nice.ishwscroll) ? nice.getScrollTop() : _scrollTop.call(this);
