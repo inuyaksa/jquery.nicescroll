@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.1.9
+-- version 3.1.9a
 -- copyright 2011-12-13 InuYaksa*2013
 -- licensed under the MIT
 --
@@ -120,6 +120,7 @@
     
     d.ischrome = ("chrome" in window);
 		d.ischrome22 = (d.ischrome&&d.haspointerlock);
+    d.ischrome26 = (d.ischrome&&("transition" in domtest.style));  // issue with transform detection (maintain prefix)
     
     d.cantouch = ("ontouchstart" in document.documentElement)||("ontouchstart" in window);  // detection for Chrome Touch Emulation
     d.hasmstouch = (window.navigator.msPointerEnabled||false);  // IE10+ pointer events
@@ -165,6 +166,10 @@
         break;
       }
     }
+    if (d.ischrome26) {  // use always prefix
+      d.prefixstyle = prefix[1];
+    }
+    
     d.hastransition = (d.transitionstyle);
     
     function detectCursorGrab() {      
@@ -192,7 +197,7 @@
 
     var self = this;
 
-    this.version = '3.1.9';
+    this.version = '3.1.9a';
     this.name = 'nicescroll';
     
     this.me = me;
