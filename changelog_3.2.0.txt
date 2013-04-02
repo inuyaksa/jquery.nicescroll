@@ -1,0 +1,21 @@
+Changelog nicescroll release 3.1.9
+http://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+New options
+- enablescrollonselection, enable auto-scrolling of content when selection text (default:true)
+
+New features
+- chrome/firefox, detection of div removing to remove nicescroll automatically too, using Mutation Observer - close #160
+- desktop browsers, auto-scrolling on div when selecting text - close #184
+
+
+Changed features
+- cursor:pointer to rails, thanks to MacGuyv3r
+
+
+Fixes
+- zindex problem with zoomout/zoomin
+- chrome 26+, hw scroll doesn't work, transform css property detection issue - close #187
+- wrapped div scroll, bounce hangs
+- grabcursorenabled doesn't work - commit ed40d2b - thanks to bmxpert1

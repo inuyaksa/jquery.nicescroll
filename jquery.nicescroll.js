@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.1.9a
+-- version 3.2.0
 -- copyright 2011-12-13 InuYaksa*2013
 -- licensed under the MIT
 --
@@ -16,6 +16,7 @@
   var zoomactive = false;
   var tabindexcounter = 5000;
   var ascrailcounter = 2000;
+  var globalmaxzindex = 0;
   
   var $ = jQuery;  // sandbox
  
@@ -44,6 +45,8 @@
             window.msCancelRequestAnimationFrame     || 
             false;
   })();  
+  
+  var clsMutationObserver = window.MutationObserver || window.WebKitMutationObserver || false;
   
   var _globaloptions = {
       zindex:"auto",
@@ -85,7 +88,8 @@
       cursorfixedheight:false,      
       directionlockdeadzone:6,
       hidecursordelay:400,
-      nativeparentscrolling:true
+      nativeparentscrolling:true,
+      enablescrollonselection:true
   }
   
   var browserdetected = false;
@@ -186,6 +190,8 @@
 
     d.hasmousecapture = ("setCapture" in domtest);
     
+    d.hasMutationObserver = (clsMutationObserver !== false);
+    
     domtest = null;  //memory released
 
     browserdetected = d;
@@ -197,7 +203,7 @@
 
     var self = this;
 
-    this.version = '3.1.9a';
+    this.version = '3.2.0';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -269,6 +275,7 @@
     this.scrollmom = false;
     
     this.observer = false;
+    this.observerremover = false;  // observer on parent for remove detection
     
     do {
       this.id = "ascrail"+(ascrailcounter++);
@@ -277,6 +284,7 @@
     this.rail = false;
     this.cursor = false;
     this.cursorfreezed = false;  
+    this.selectiondrag = false;
     
     this.zoom = false;
     this.zoomactive = false;
@@ -549,7 +557,7 @@
       while (dom.length>0) {        
         if (dom[0].nodeType==9) return false;
         var zi = dom.css('zIndex');        
-        if (!isNaN(zi)&&zi!=0) return zi;
+        if (!isNaN(zi)&&zi!=0) return parseInt(zi);
         dom = dom.parent();
       }
       return false;
@@ -661,6 +669,10 @@
         self.zindex = self.opt.zindex;
       }
       
+      if (!self.ispage&&self.zindex) {
+        if (self.zindex>globalmaxzindex) globalmaxzindex=self.zindex;
+      }
+      
 /*      
       self.ispage = true;
       self.haswrapper = true;
@@ -711,7 +723,7 @@
         rail.append(cursor);
         
         rail.width = Math.max(parseFloat(self.opt.cursorwidth),cursor.outerWidth()) + self.opt.railpadding['left'] + self.opt.railpadding['right'];
-        rail.css({width:rail.width+"px",'zIndex':self.zindex,"background":self.opt.background});        
+        rail.css({width:rail.width+"px",'zIndex':self.zindex,"background":self.opt.background,cursor:"pointer"});        
         
         rail.visibility = true;
         rail.scrollable = true;
@@ -765,7 +777,7 @@
           railh.attr('id',self.id+'-hr');
           railh.addClass('nicescroll-rails');
           railh.height = Math.max(parseFloat(self.opt.cursorwidth),cursor.outerHeight());
-          railh.css({height:railh.height+"px",'zIndex':self.zindex,"background":self.opt.background});
+          railh.css({height:railh.height+"px",'zIndex':self.zindex,"background":self.opt.background,cursor:"pointer"});
           
           railh.append(cursor);
           
@@ -1212,7 +1224,7 @@
             
             self.onmousemove = self.ontouchmove;
             
-            if (cap.cursorgrabvalue) {
+            if (self.opt.grabcursorenabled&&cap.cursorgrabvalue) {
               self.css((self.ispage)?self.doc:self.win,{'cursor':cap.cursorgrabvalue});            
               self.css(self.rail,{'cursor':cap.cursorgrabvalue});
             }
@@ -1242,6 +1254,7 @@
                 return self.cancelEvent(e);
               }
             };        
+            
             self.onmousemove = function(e) {
 
               if (self.rail.drag) {
@@ -1270,6 +1283,7 @@
                     else self.doScrollTop(Math.round(self.scroll.y*self.scrollratio.y));
                   }
                 });
+                
                 return self.cancelEvent(e);
               } 
 /*              
@@ -1277,8 +1291,56 @@
                 self.checkarea = true;
               }
 */              
-              
             };
+
+            function checkSelectionScroll(e) {
+              if (!self.selectiondrag) return;
+              
+              if (e) {
+                var ww = self.win.outerHeight();
+                var df = (e.pageY - self.selectiondrag.top);
+                if (df>0&&df<ww) df=0;
+                if (df>=ww) df-=ww;
+                self.selectiondrag.df = df;                
+              }
+              if (self.selectiondrag.df==0) return;
+              
+              var rt = -Math.floor(self.selectiondrag.df/6)*2;              
+//              self.doScrollTop(self.getScrollTop(true)+rt);
+              self.doScrollBy(rt);
+              
+              self.debounced("doselectionscroll",function(){checkSelectionScroll()},50);
+            }
+            
+            if ("getSelection" in document) {  // A grade - Major browsers
+              self.hasTextSelected = function() {  
+                return (document.getSelection().rangeCount>0);
+              }
+            } 
+            else if ("selection" in document) {  //IE9-
+              self.hasTextSelected = function() {
+                return (document.selection.type != "None");
+              }
+            } 
+            else {
+              self.hasTextSelected = function() {  // no support
+                return false;
+              }
+            }            
+            
+            self.onselectionstart = function(e) {
+              if (self.ispage) return;
+              self.selectiondrag = self.win.offset();
+            }
+            self.onselectionend = function(e) {
+              self.selectiondrag = false;
+            }
+            self.onselectiondrag = function(e) {              
+              if (!self.selectiondrag) return;
+              if (self.hasTextSelected()) self.debounced("selectionscroll",function(){checkSelectionScroll(e)},250);
+            }
+            
+            
           }
 
           if (cap.cantouch||self.opt.touchbehavior) {
@@ -1340,6 +1402,12 @@
               self.bind(self.rail,"dblclick",function(e){self.doRailClick(e,true,false)});
               self.bind(self.cursor,"click",function(e){self.cancelEvent(e)});
               self.bind(self.cursor,"dblclick",function(e){self.cancelEvent(e)});
+            }
+            
+            if (!self.ispage&&self.opt.enablescrollonselection) {
+              self.bind(self.win[0],"mousedown",self.onselectionstart);
+              self.bind(document,"mouseup",self.onselectionend);
+              self.bind(document,"mousemove",self.onselectiondrag);
             }
             
             if (self.railh) {
@@ -1496,12 +1564,13 @@
         
         self.bind(window,"load",self.lazyResize);
 		
-        if (cap.ischrome&&!self.ispage&&!self.haswrapper) { //chrome void scrollbar bug
+        if (cap.ischrome&&!self.ispage&&!self.haswrapper) { //chrome void scrollbar bug - it persists in version 26
           var tmp=self.win.attr("style");
 					var ww = parseFloat(self.win.css("width"))+1;
           self.win.css('width',ww);
           self.synched("chromefix",function(){self.win.attr("style",tmp)});
         }
+        
         
 // Trying a cross-browser implementation - good luck!
 
@@ -1510,15 +1579,30 @@
         }
         
         if (!self.ispage&&!self.haswrapper) {
-          // thanks to Filip http://stackoverflow.com/questions/1882224/        
-          if ("WebKitMutationObserver" in window) {
-            self.observer = new WebKitMutationObserver(function(mutations) {
+          // redesigned MutationObserver for Chrome18+/Firefox14+/iOS6+ with support for: remove div, add/remove content
+          if (clsMutationObserver !== false) {
+            self.observer = new clsMutationObserver(function(mutations) {            
               mutations.forEach(self.onAttributeChange);
             });
-            self.observer.observe(self.win[0],{attributes:true,subtree:false});
+            self.observer.observe(self.win[0],{childList: true, characterData: false, attributes: true, subtree: false});
+            
+            self.observerremover = new clsMutationObserver(function(mutations) {
+               mutations.forEach(function(mo){
+                 if (mo.removedNodes.length>0) {
+                   for (var dd in mo.removedNodes) {
+                     if (mo.removedNodes[dd]==self.win[0]) return self.remove();
+                   }
+                 }
+               });
+            });
+            self.observerremover.observe(self.win[0].parentNode,{childList: true, characterData: false, attributes: false, subtree: false});
+            
           } else {        
-            self.bind(self.win,(cap.isie&&!cap.isie9)?"propertychange":"DOMAttrModified",self.onAttributeChange);
+            self.bind(self.win,(cap.isie&&!cap.isie9)?"propertychange":"DOMAttrModified",self.onAttributeChange);            
             if (cap.isie9) self.win[0].attachEvent("onpropertychange",self.onAttributeChange); //IE9 DOMAttrModified bug
+            self.bind(self.win,"DOMNodeRemoved",function(e){
+              if (e.target==self.win[0]) self.remove();
+            });
           }
         }
         
@@ -1588,7 +1672,7 @@
           if (cap.cantouch||self.opt.touchbehavior) {
             self.bind(doc,"mousedown",self.onmousedown);
             self.bind(doc,"mousemove",function(e){self.onmousemove(e,true)});
-            if (cap.cursorgrabvalue) self.css($(doc.body),{'cursor':cap.cursorgrabvalue});
+            if (self.opt.grabcursorenabled&&cap.cursorgrabvalue) self.css($(doc.body),{'cursor':cap.cursorgrabvalue});
           }
           
           self.bind(doc,"mouseup",self.onmouseup);
@@ -1837,6 +1921,10 @@
           if (e) {
             if (e.srcElement) e.target=e.srcElement;
           }
+          if (!("pageY" in e)) {
+            e.pageX = e.clientX + self.getScrollLeft();
+            e.pageY = e.clientY + self.getScrollTop(); 
+          }
           return ((fn.call(el,e)===false)||bubble===false) ? self.cancelEvent(e) : true;
         });
       } 
@@ -1934,7 +2022,8 @@
       if (self.cursortimeout) clearTimeout(self.cursortimeout);
       self.doZoomOut();
       self.unbindAll();      
-      if (self.observer !== false) self.observer.disconnect();      
+      if (self.observer !== false) self.observer.disconnect();
+      if (self.observerremover !== false) self.observerremover.disconnect();      
       self.events = [];
       if (self.cursor) {
         self.cursor.remove();
@@ -2168,7 +2257,7 @@
           else if (x>self.page.maxw) x=self.page.maxw;
         }
         
-        if (x==self.newscrollx&&y==self.newscrolly) return false;
+        if (self.scrollrunning&&x==self.newscrollx&&y==self.newscrolly) return false;
         
         self.newscrolly = y;
         self.newscrollx = x;
@@ -2548,13 +2637,13 @@
         "position":(cap.isios4)?"absolute":"fixed",
         "top":0,
         "left":0,
-        "z-index":parseInt(self.zindex)+100,
+        "z-index":globalmaxzindex+100,
         "margin":"0px"
       });
       var bkg = self.win.css("backgroundColor");      
       if (bkg==""||/transparent|rgba\(0, 0, 0, 0\)|rgba\(0,0,0,0\)/.test(bkg)) self.win.css("backgroundColor","#fff");
-      self.rail.css({"z-index":parseInt(self.zindex)+110});
-      self.zoom.css({"z-index":parseInt(self.zindex)+112});      
+      self.rail.css({"z-index":globalmaxzindex+101});
+      self.zoom.css({"z-index":globalmaxzindex+102});      
       self.zoom.css('backgroundPosition','0px -18px');
       self.resizeZoom();
       
