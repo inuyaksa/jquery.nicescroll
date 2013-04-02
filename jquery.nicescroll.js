@@ -1212,7 +1212,7 @@
             
             self.onmousemove = self.ontouchmove;
             
-            if (cap.cursorgrabvalue) {
+            if (cap.cursorgrabvalue&&self.opt.grabcursorenabled) {
               self.css((self.ispage)?self.doc:self.win,{'cursor':cap.cursorgrabvalue});            
               self.css(self.rail,{'cursor':cap.cursorgrabvalue});
             }
