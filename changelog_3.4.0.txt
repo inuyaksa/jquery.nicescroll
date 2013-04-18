@@ -1,0 +1,26 @@
+Changelog nicescroll release 3.4.0
+http://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+New options
+- rtlmode, horizontal div scrolling starts at left side (default:false)
+- cursordragontouch, drag cursor in touch / touchbehavior mode also (default:false) - #177
+
+Changed features
+- new wheel event routine, more responsive and consistent scrolling by mousewheel - fixes #193
+- change speed on scrolling by cursors, more responsive
+- change speed on drag scrolling, more responsive
+
+Fixes
+- IE8, cursor not hidden with autohidemode=true - close #183
+- IE8-, detection of rail active click event position not correct
+
+
+TODO
+- railpadding
+- railpadding top & bottom settings ignored - thanks to simovinci.bellissimo
+- honorcssoverflow
+- autohidemode:hover
+- check 2D scrolling
+- check text selection on cursor drag

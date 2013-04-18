@@ -1,5 +1,5 @@
 jquery.nicescroll
-v. 3.2.0 04-03-2013
+v. 3.4.0 18-04-2013
 copyright 2011-12-13 InuYaksa*2013
 licensed under the MIT
 http://nicescroll.areaaperta.com
@@ -160,6 +160,8 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 . directionlockdeadzone, dead zone in pixels for direction lock activation (default:6)
 . nativeparentscrolling , detect bottom of content and let parent to scroll, as native scroll does (default:true)
 . enablescrollonselection, enable auto-scrolling of content when selection text (default:true)
+. rtlmode, horizontal div scrolling starts at left side (default:false)
+. cursordragontouch, drag cursor in touch / touchbehavior mode also (default:false)
 
 * LICENSE
 
