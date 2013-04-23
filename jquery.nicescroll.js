@@ -2101,6 +2101,7 @@
     };
     
     this.remove = function() {
+
       self.stop();
       if (self.cursortimeout) clearTimeout(self.cursortimeout);
       self.doZoomOut();
@@ -2110,23 +2111,18 @@
       self.events = [];
       if (self.cursor) {
         self.cursor.remove();
-        self.cursor = null;
       }
       if (self.cursorh) {
         self.cursorh.remove();
-        self.cursorh = null;
       }
       if (self.rail) {
         self.rail.remove();
-        self.rail = null;
       }
       if (self.railh) {
         self.railh.remove();
-        self.railh = null;
       }
       if (self.zoom) {
         self.zoom.remove();
-        self.zoom = null;
       }
       for(var a=0;a<self.saved.css.length;a++) {
         var d=self.saved.css[a];
@@ -2134,11 +2130,12 @@
       }
       self.saved = false;      
       self.me.data('__nicescroll',''); //erase all traces
-	  self.me = null;
-	  self.doc = null;
-	  self.docscroll = null;
-	  self.win = null;
-      return self;
+  	  for (var i in self) {
+        self[i] = null;
+        delete self[i];
+      }
+      delete this;
+      
     };
     
     this.scrollstart = function(fn) {
@@ -3121,7 +3118,9 @@
         wrapper = false;        
       }
     }
+    // TODO clear this array
     var ret = new NiceScrollArray();
+
     if (typeof opt=="undefined") opt = {};
     
     if (wrapper||false) {      
