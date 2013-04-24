@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.4.0
+-- version 3.4.1
 -- copyright 2011-12-13 InuYaksa*2013
 -- licensed under the MIT
 --
@@ -210,7 +210,7 @@
 
     var self = this;
 
-    this.version = '3.4.0';
+    this.version = '3.4.1';
     this.name = 'nicescroll';
     
     this.me = me;
