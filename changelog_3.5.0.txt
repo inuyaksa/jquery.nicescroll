@@ -1,0 +1,37 @@
+Changelog nicescroll release 3.5.0
+http://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+New options
+- oneaxismousemode, it permits horizontal scrolling with mousewheel on horizontal only content, if false (vertical-only) mousewheel don't scroll horizontally, if value is auto detects two-axis mouse. (default:"auto")
+- autohidemove:leave, scrollbars are always visible when pointer lays hover the scrollable div - close #235
+
+Changed features
+- disable nicescroll on Opera Mini
+
+Fixes
+- chrome + windows8 + touchscreen, can't click on links - close #203
+- enable scrolling on content toggle
+- a typo in NiceScroll javascript causes crash on touch screen use - Thanks to HiTechMagic for the fix - close #210
+- IE9+ event onpropertychange not unbind on nicescroll remove
+- jQuery error on getNiceScroll with index with empty result
+- memory leak fixed by GianlucaGuarini - thanks a lot! - fixes #194
+- remove forEach polyfill, it breaks jQuery.each() in IE8 - fixes #214
+- touch & touchbehavior, fixed IFrame dragging - fixes #217
+- iOS & IFrame, autofix content to avoid content clipping - derived by http://blog.derraab.com/2012/04/02/avoid-iframe-content-clipping-with-css-transform-on-ios/ - fixes #217
+- cursordragontouch:true, can't drag horizontal cursor - fixes #177
+- scrollable div in a fixed position container - fixes #216
+
+
+TODO
+- railpadding
+- railpadding top & bottom settings ignored - thanks to simovinci.bellissimo
+- honorcssoverflow
+- autohidemode:hover
+- check 2D scrolling
+- check text selection on cursor drag (testing)
+- recursive position:fixed check
+- check horiz mouse wheel scrolling speed on chrome
+- mouse pan scroll
+
