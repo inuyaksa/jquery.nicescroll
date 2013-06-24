@@ -11,7 +11,7 @@ Nicescroll as a Greasemonkey plugin: http://userscripts.org/scripts/show/119910
 
 Nicescroll is a jquery plugin, for nice scrollbars with a very similar ios/mobile style.
 
-NOW support HORIZONAL scrollbar too!
+NOW supports HORIZONAL scrollbar too!
 
 It supports DIVs, IFrames, textarea, and document page (body) scrollbars.
 Compatible with all desktop browser: Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
@@ -115,6 +115,11 @@ $("#mydiv").getNiceScroll().hide();
 7. Check for scrollbars resize (when content or position have changed):
 
 $("#mydiv").getNiceScroll().resize();
+
+8. Scrolling to a position:
+
+Scroll X Axis - $("#mydiv").getNiceScroll().doScrollLeft(x, duration);
+Scroll Y Axis - $("#mydiv").getNiceScroll().doScrollTop(y, duration);
 
 
 * CONFIGURATION PARAMETERS
