@@ -32,7 +32,15 @@
         "android"
     ],
     "homepage": "https://github.com/inuyaksa/jquery.nicescroll",
-    "contributors": [],
+    "contributors": [
+        "inuyaksa",
+        "GianlucaGuarini",
+        "nkovacs",
+        "zcourts",
+        "philleepflorence",
+        "gustavnikolaj",
+        "laychopy"
+    ],
     "files": [
         "jquery.nicescroll.js",
         "jquery.nicescroll.min.js",

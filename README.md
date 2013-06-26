@@ -71,56 +71,56 @@ Copy image "zoomico.png" in the same folder of jquery.nicescroll.js.
 * HOW TO USE
 
 Initialize nicescroll ALWAYS in (document) ready statement.
-
-1. Simple mode, it styles document scrollbar:
 '''javascript
-$(document).ready(
-  function() {  
-    $("html").niceScroll();
-  }
-);
 
-2. Instance with object returned:
+  1. Simple mode, it styles document scrollbar:
+  $(document).ready(
+    function() {  
+      $("html").niceScroll();
+    }
+  );
 
-var nice = false;
-$(document).ready(
-  function() {  
-    nice = $("html").niceScroll();
-  }
-);
+  2. Instance with object returned:
 
-3. Style a DIV and chage cursor color:
+  var nice = false;
+  $(document).ready(
+    function() {  
+      nice = $("html").niceScroll();
+    }
+  );
 
-$(document).ready(
-  function() {  
-    $("#thisdiv").niceScroll({cursorcolor:"#00F"});
-  }
-);
+  3. Style a DIV and chage cursor color:
 
-4. DIV with "wrapper", formed by two divs, the first is the vieport, the latter is the content:
+  $(document).ready(
+    function() {  
+      $("#thisdiv").niceScroll({cursorcolor:"#00F"});
+    }
+  );
 
-$(document).ready(
-  function() {
-    $("#viewportdiv").niceScroll("#wrapperdiv",{cursorcolor:"#00F"});
-  }
-);
+  4. DIV with "wrapper", formed by two divs, the first is the vieport, the latter is the content:
 
-5. Get nicescroll object:
+  $(document).ready(
+    function() {
+      $("#viewportdiv").niceScroll("#wrapperdiv",{cursorcolor:"#00F"});
+    }
+  );
 
-var nice = $("#mydiv").getNiceScroll();
+  5. Get nicescroll object:
 
-6. Hide scrollbars:
+  var nice = $("#mydiv").getNiceScroll();
 
-$("#mydiv").getNiceScroll().hide();
+  6. Hide scrollbars:
 
-7. Check for scrollbars resize (when content or position have changed):
+  $("#mydiv").getNiceScroll().hide();
 
-$("#mydiv").getNiceScroll().resize();
+  7. Check for scrollbars resize (when content or position have changed):
 
-8. Scrolling to a position:
+  $("#mydiv").getNiceScroll().resize();
 
-Scroll X Axis - $("#mydiv").getNiceScroll().doScrollLeft(x, duration);
-Scroll Y Axis - $("#mydiv").getNiceScroll().doScrollTop(y, duration);
+  8. Scrolling to a position:
+
+  Scroll X Axis - $("#mydiv").getNiceScroll().doScrollLeft(x, duration);
+  Scroll Y Axis - $("#mydiv").getNiceScroll().doScrollTop(y, duration);
 '''
 
 * CONFIGURATION PARAMETERS
