@@ -1,4 +1,5 @@
 jquery.nicescroll
+=================
 v. 3.5.0 06-24-2013
 copyright 2011-12-13 InuYaksa*2013
 licensed under the MIT
@@ -72,7 +73,7 @@ Copy image "zoomico.png" in the same folder of jquery.nicescroll.js.
 Initialize nicescroll ALWAYS in (document) ready statement.
 
 1. Simple mode, it styles document scrollbar:
-
+'''javascript
 $(document).ready(
   function() {  
     $("html").niceScroll();
@@ -120,7 +121,7 @@ $("#mydiv").getNiceScroll().resize();
 
 Scroll X Axis - $("#mydiv").getNiceScroll().doScrollLeft(x, duration);
 Scroll Y Axis - $("#mydiv").getNiceScroll().doScrollTop(y, duration);
-
+'''
 
 * CONFIGURATION PARAMETERS
 
