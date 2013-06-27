@@ -121,6 +121,11 @@ Initialize nicescroll ALWAYS in (document) ready statement.
 		Scroll X Axis - $("#mydiv").getNiceScroll().doScrollLeft(x, duration);
 		Scroll Y Axis - $("#mydiv").getNiceScroll().doScrollTop(y, duration);
 
+8. Scrolling to a position:
+
+Scroll X Axis - $("#mydiv").getNiceScroll().doScrollLeft(x, duration);
+Scroll Y Axis - $("#mydiv").getNiceScroll().doScrollTop(y, duration);
+
 
 * CONFIGURATION PARAMETERS
 
