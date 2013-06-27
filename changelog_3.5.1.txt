@@ -1,0 +1,20 @@
+Changelog nicescroll release 3.5.1
+http://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+Fixes
+- when touchbehavior enabled, intercept DOM0 click event - fixes #162
+
+
+TODO
+- railpadding
+- railpadding top & bottom settings ignored - thanks to simovinci.bellissimo
+- honorcssoverflow
+- autohidemode:hover
+- check 2D scrolling
+- check text selection on cursor drag (testing)
+- recursive position:fixed check
+- check horiz mouse wheel scrolling speed on chrome
+- mouse pan scroll
+

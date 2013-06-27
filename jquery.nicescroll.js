@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.5.0
+-- version 3.5.1
 -- copyright 2011-12-13 InuYaksa*2013
 -- licensed under the MIT
 --
@@ -205,7 +205,7 @@
 
     var self = this;
 
-    this.version = '3.5.0';
+    this.version = '3.5.1';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -981,8 +981,10 @@
             self.ontouchstart = function(e) {
               if (e.pointerType&&e.pointerType!=2) return false;
               
+							self.hasmoving = false;
+							
               if (!self.locked) {
-              
+							
                 if (cap.hasmstouch) {
                   var tg = (e.target) ? e.target : false;
                   while (tg) {
@@ -1054,9 +1056,24 @@
                   var ip = (tg)?/INPUT|SELECT|TEXTAREA/i.test(tg.nodeName):false;
                   if (!ip) {
                     if (!self.ispage&&cap.hasmousecapture) tg.setCapture();                   
-//                  return self.cancelEvent(e);
-                    return (self.opt.touchbehavior) ? self.cancelEvent(e) : self.stopPropagation(e);
+
+										if (self.opt.touchbehavior) {										
+										  if (tg.onclick&&!(tg._onclick||false)) {  // intercept DOM0 onclick event
+//											  console.log('pre.click');
+												tg._onclick = tg.onclick;
+												tg.onclick = function(e){
+												  var df = (+new Date()) - self.scrollmom.lasttime;
+//												  console.log('click:'+df);
+												  if (self.hasmoving) return false;
+													tg._onclick.call(this,e);
+												}
+											}
+											return self.cancelEvent(e);
+									  }
+
+                    return self.stopPropagation(e);
                   }
+									
                   if (/SUBMIT|CANCEL|BUTTON/i.test($(tg).attr('type'))) {
                     pc = {"tg":tg,"click":false};
                     self.preventclick = pc;
@@ -1072,8 +1089,7 @@
               if (self.rail.drag&&(self.rail.drag.pt==2)) {
                 self.scrollmom.doMomentum();
                 self.rail.drag = false;
-                if (self.hasmoving) {
-                  self.hasmoving = false;
+                if (self.hasmoving) {                  
                   self.lastmouseup = true;
                   self.hideCursor();
                   if (cap.hasmousecapture) document.releaseCapture();
@@ -1804,7 +1820,7 @@
   
     this.onResize = function(e,page) {
     
-	  if (!self.win) return false;
+			if (!self||!self.win) return false;
 	
       if (!self.haswrapper&&!self.ispage) {
         if (self.win.css('display')=='none') {
