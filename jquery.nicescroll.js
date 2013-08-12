@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.5.1
+-- version 3.5.2
 -- copyright 2011-12-13 InuYaksa*2013
 -- licensed under the MIT
 --
@@ -205,7 +205,7 @@
 
     var self = this;
 
-    this.version = '3.5.1';
+    this.version = '3.5.2';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -1535,6 +1535,7 @@
             var tp = tg.getAttribute('type')||tg.type||false;            
             if ((!tp)||!(/submit|button|cancel/i.tp)) return true;
           }
+          if ($(tg).attr('contenteditable')) return true;
           
           if (self.hasfocus||(self.hasmousefocus&&!domfocus)||(self.ispage&&!domfocus&&!mousefocus)) {
             var key = e.keyCode;
