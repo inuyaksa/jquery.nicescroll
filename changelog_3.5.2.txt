@@ -1,10 +1,10 @@
-Changelog nicescroll release 3.5.1
+Changelog nicescroll release 3.5.2
 http://nicescroll.areaaperta.com/
 https://github.com/inuyaksa/jquery.nicescroll
 
 
 Fixes
-- when touchbehavior enabled, intercept DOM0 click event - fixes #162
+- Don't intercept keyboard events when inside contentEditable fields
 
 
 TODO
