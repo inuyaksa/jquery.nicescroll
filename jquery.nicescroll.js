@@ -1415,6 +1415,7 @@
             self.railh&&self.railh.css({"cursor":"default"});          
           
             self.jqbind(self.rail,"mouseenter",function() {
+              if (!self.win.is(":visible")) return false
               if (self.canshowonmouseevent) self.showCursor();
               self.rail.active = true;
             });
@@ -1432,6 +1433,7 @@
 
             if (self.railh) {
               self.jqbind(self.railh,"mouseenter",function() {
+                if (!self.win.is(":visible")) return false
                 if (self.canshowonmouseevent) self.showCursor();
                 self.rail.active = true;
               });          
