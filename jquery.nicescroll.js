@@ -1,6 +1,6 @@
 /* jquery.nicescroll
--- version 3.5.1
--- copyright 2011-12-13 InuYaksa*2013
+-- version 3.5.4
+-- copyright 2013-11-13 InuYaksa*2013
 -- licensed under the MIT
 --
 -- http://areaaperta.com/nicescroll
@@ -8,7 +8,15 @@
 --
 */
 
-(function(jQuery){
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+		// AMD. Register as anonymous module.
+		define(['jquery'], factory);
+	} else {
+		// Browser globals.
+		factory(jQuery);
+	}
+}(function(jQuery){
 
   // globals
   var domfocus = false;
@@ -26,7 +34,7 @@
     var path=scripts[scripts.length-1].src.split('?')[0];
     return (path.split('/').length>0) ? path.split('/').slice(0,-1).join('/')+'/' : '';
   }
-  var scriptpath = getScriptPath();
+//  var scriptpath = getScriptPath();
   
   var vendors = ['ms','moz','webkit','o'];
   
@@ -88,10 +96,11 @@
       overflowx:true,
       overflowy:true,
       cursordragspeed:0.3,
-      rtlmode:false,
+      rtlmode:"auto",
       cursordragontouch:false,
-      oneaxismousemode:"auto"
-  }
+      oneaxismousemode:"auto",
+			scriptpath:getScriptPath()
+  };
   
   var browserdetected = false;
   
@@ -199,13 +208,13 @@
     browserdetected = d;
     
     return d;  
-  }
+  };
   
   var NiceScrollClass = function(myopt,me) {
 
     var self = this;
 
-    this.version = '3.5.1';
+    this.version = '3.5.4';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -228,7 +237,7 @@
     
     this.doc = self.opt.doc;
     this.iddoc = (this.doc&&this.doc[0])?this.doc[0].id||'':'';    
-    this.ispage = /BODY|HTML/.test((self.opt.win)?self.opt.win[0].nodeName:this.doc[0].nodeName);
+    this.ispage = /^BODY|HTML/.test((self.opt.win)?self.opt.win[0].nodeName:this.doc[0].nodeName);
     this.haswrapper = (self.opt.win!==false);
     this.win = self.opt.win||(this.ispage?$(window):this.doc);
     this.docscroll = (this.ispage&&!this.haswrapper)?$(window):this.win;
@@ -272,7 +281,8 @@
     this.cursorheight = 20;
     this.scrollvaluemax = 0;
     
-    this.checkrtlmode = false;
+		this.isrtlmode = false; //(this.opt.rtlmode=="auto") ? (this.win.css("direction")=="rtl") : (this.opt.rtlmode===true);
+//    this.checkrtlmode = false;
     
     this.scrollrunning = false;
     
@@ -300,6 +310,8 @@
     this.locked = false;
     this.hidden = false; // rails always hidden
     this.cursoractive = true; // user can interact with cursors
+		
+		this.wheelprevented = false;  //prevent mousewheel event
     
     this.overflowx = self.opt.overflowx;
     this.overflowy = self.opt.overflowy;
@@ -353,14 +365,14 @@
       if (dd&&dd.last+tm>nw&&!dd.tt) {      
         self.delaylist[name] = {
           last:nw+tm,
-          tt:setTimeout(function(){self.delaylist[name].tt=0;fn.call();},tm)
+          tt:setTimeout(function(){if(self||false){self.delaylist[name].tt=0;fn.call()}},tm)
         }
       }
       else if (!dd||!dd.tt) {
         self.delaylist[name] = {
           last:nw,
           tt:0
-        }
+        };
         setTimeout(function(){fn.call();},0);
       }
     };
@@ -372,21 +384,23 @@
       if (!dd) {        
         setTimeout(function(){var fn=self.delaylist[name];self.delaylist[name]=false;fn.call();},tm);
       }
-    }
+    };
     
+		var _onsync = false;
+		
     this.synched = function(name,fn) {
     
       function requestSync() {
-        if (self.onsync) return;
+        if (_onsync) return;
         setAnimationFrame(function(){
-          self.onsync = false;
+          _onsync = false;
           for(name in self.synclist){
             var fn = self.synclist[name];
             if (fn) fn.call(self);
             self.synclist[name] = false;
           }
         });
-        self.onsync = true;
+        _onsync = true;
       };    
     
       self.synclist[name] = fn;
@@ -396,7 +410,7 @@
     
     this.unsynched = function(name) {
       if (self.synclist[name]) self.synclist[name] = false;
-    }
+    };
     
     this.css = function(el,pars) {  // save & set
       for(var n in pars) {
@@ -499,6 +513,8 @@
         this.notifyScrollEvent = function(el,add) {}; //NOPE
       }
       
+			var cxscrollleft = -1; //(this.isrtlmode) ? 1 : -1;
+			
       if (cap.hastranslate3d&&self.opt.enabletranslate3d) {
         this.setScrollTop = function(val,silent) {
           self.doc.translate.y = val;
@@ -508,7 +524,7 @@
         };
         this.setScrollLeft = function(val,silent) {          
           self.doc.translate.x = val;
-          self.doc.translate.tx = (val*-1)+"px";
+          self.doc.translate.tx = (val*cxscrollleft)+"px";
           self.doc.css(cap.trstyle,"translate3d("+self.doc.translate.tx+","+self.doc.translate.ty+",0px)");          
           if (!silent) self.notifyScrollEvent(self.win[0]);
         };
@@ -521,7 +537,7 @@
         };
         this.setScrollLeft = function(val,silent) {        
           self.doc.translate.x = val;
-          self.doc.translate.tx = (val*-1)+"px";
+          self.doc.translate.tx = (val*cxscrollleft)+"px";
           self.doc.css(cap.trstyle,"translate("+self.doc.translate.tx+","+self.doc.translate.ty+")");
           if (!silent) self.notifyScrollEvent(self.win[0]);
         };
@@ -643,7 +659,6 @@
         cur = (hr) ? ((e.pageX - self.railh.offset().left - (self.cursorwidth/2)) * self.scrollratio.x) : ((e.pageY - self.rail.offset().top - (self.cursorheight/2)) * self.scrollratio.y);
         fn(cur);
       } else {
-//        console.log(e.pageY);
         fn = (hr) ? self.doScrollLeftBy : self.doScrollBy;
         cur = (hr) ? self.scroll.x : self.scroll.y;
         pos = (hr) ? e.pageX - self.railh.offset().left : e.pageY - self.rail.offset().top;
@@ -651,7 +666,7 @@
         (cur>=pos) ? fn(pg) : fn(-pg);
       }
     
-    }
+    };
     
     self.hasanimationframe = (setAnimationFrame);
     self.hascancelanimationframe = (clearAnimationFrame);
@@ -752,7 +767,7 @@
           zoom = document.createElement('div');          
           self.bind(zoom,"click",self.doZoom);
           self.zoom = $(zoom);
-          self.zoom.css({"cursor":"pointer",'z-index':self.zindex,'backgroundImage':'url('+scriptpath+'zoomico.png)','height':18,'width':18,'backgroundPosition':'0px 0px'});
+          self.zoom.css({"cursor":"pointer",'z-index':self.zindex,'backgroundImage':'url('+self.opt.scriptpath+'zoomico.png)','height':18,'width':18,'backgroundPosition':'0px 0px'});
           if (self.opt.dblclickzoom) self.bind(self.win,"dblclick",self.doZoom);
           if (cap.cantouch&&self.opt.gesturezoom) {
             self.ongesturezoom = function(e) {
@@ -964,7 +979,7 @@
                 },100);
               }
             }
-          }
+          };
           
           var top = self.getScrollTop();
           var lef = self.getScrollLeft();
@@ -1031,7 +1046,7 @@
                   var page = {
                     w:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth),
                     h:Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)
-                  }
+                  };
                   
                   var maxh = Math.max(0,page.h - view.h);
                   var maxw = Math.max(0,page.w - view.w);                
@@ -1059,12 +1074,9 @@
 
 										if (self.opt.touchbehavior) {										
 										  if (tg.onclick&&!(tg._onclick||false)) {  // intercept DOM0 onclick event
-//											  console.log('pre.click');
 												tg._onclick = tg.onclick;
 												tg.onclick = function(e){
-												  var df = (+new Date()) - self.scrollmom.lasttime;
-//												  console.log('click:'+df);
-												  if (self.hasmoving) return false;
+													if (self.hasmoving) return false;
 													tg._onclick.call(this,e);
 												}
 											}
@@ -1160,8 +1172,8 @@
                 }
                   
                 if (self.railh&&self.railh.scrollable) {
-                  var nx = self.rail.drag.sl-mx;
-                  
+                  var nx = self.rail.drag.sl-mx;; //(self.isrtlmode) ? mx-self.rail.drag.sl : self.rail.drag.sl-mx;
+									
                   if (self.ishwscroll&&self.opt.bouncescroll) {                  
                     if (nx<0) {
                       nx = Math.round(nx/2);
@@ -1243,6 +1255,7 @@
               self.saved["csspointerevents"] = self.doc.css("pointer-events");
               self.css(self.doc,{"pointer-events":"none"});
             }
+						self.hasmoving=false;
             return self.cancelEvent(e);
           };
           
@@ -1253,6 +1266,7 @@
               if(self.rail.drag.pt!=1)return;
               self.rail.drag = false;
               //if (!self.rail.active) self.hideCursor();
+							if (self.hasmoving) self.triggerScrollEnd();  // TODO - check &&!self.scrollrunning
               return self.cancelEvent(e);
             }
           };        
@@ -1264,6 +1278,7 @@
               if (cap.ischrome&&e.which==0) return self.onmouseup(e);
               
               self.cursorfreezed = true;
+							self.hasmoving = true;
                   
               if (self.rail.drag.hr) {
                 self.scroll.x = self.rail.drag.sx + (e.clientX-self.rail.drag.x);
@@ -1343,35 +1358,35 @@
               self.doScrollBy(rt);
               
               self.debounced("doselectionscroll",function(){checkSelectionScroll()},50);
-            }
+            };
             
             if ("getSelection" in document) {  // A grade - Major browsers
               self.hasTextSelected = function() {  
                 return (document.getSelection().rangeCount>0);
-              }
+              };
             } 
             else if ("selection" in document) {  //IE9-
               self.hasTextSelected = function() {
                 return (document.selection.type != "None");
-              }
+              };
             } 
             else {
               self.hasTextSelected = function() {  // no support
                 return false;
-              }
+              };
             }            
             
             self.onselectionstart = function(e) {
               if (self.ispage) return;
               self.selectiondrag = self.win.offset();
-            }
+            };
             self.onselectionend = function(e) {
               self.selectiondrag = false;
-            }
+            };
             self.onselectiondrag = function(e) {              
               if (!self.selectiondrag) return;
               if (self.hasTextSelected()) self.debounced("selectionscroll",function(){checkSelectionScroll(e)},250);
-            }
+            };
             
             
           }
@@ -1399,6 +1414,11 @@
 
           if (self.railh) {
             self.bind(self.cursorh,"mousedown",function(e){self.onmousedown(e,true)});
+
+            self.bind(self.cursorh,"mouseup",self.onmouseup);
+
+						
+/*						
             self.bind(self.cursorh,"mouseup",function(e){
               if (self.rail.drag&&self.rail.drag.pt==2) return;
               self.rail.drag = false;
@@ -1407,6 +1427,8 @@
               if (cap.hasmousecapture) document.releaseCapture();
               return self.cancelEvent(e);
             });
+*/
+						
           }
 		
           if (self.opt.cursordragontouch||!cap.cantouch&&!self.opt.touchbehavior) {
@@ -1415,6 +1437,7 @@
             self.railh&&self.railh.css({"cursor":"default"});          
           
             self.jqbind(self.rail,"mouseenter",function() {
+						  if (!self.win.is(":visible")) return false;
               if (self.canshowonmouseevent) self.showCursor();
               self.rail.active = true;
             });
@@ -1432,6 +1455,7 @@
 
             if (self.railh) {
               self.jqbind(self.railh,"mouseenter",function() {
+							  if (!self.win.is(":visible")) return false;
                 if (self.canshowonmouseevent) self.showCursor();
                 self.rail.active = true;
               });          
@@ -1497,7 +1521,7 @@
 						if (self.railh) self.bind(self.railh,"mousewheel",self.onmousewheelhr);
 					}						
 						
-          if (!self.ispage&&!cap.cantouch&&!(/HTML|BODY/.test(self.win[0].nodeName))) {
+          if (!self.ispage&&!cap.cantouch&&!(/HTML|^BODY/.test(self.win[0].nodeName))) {
             if (!self.win.attr("tabindex")) self.win.attr({"tabindex":tabindexcounter++});
             
             self.jqbind(self.win,"focus",function(e) {
@@ -1535,6 +1559,8 @@
             var tp = tg.getAttribute('type')||tg.type||false;            
             if ((!tp)||!(/submit|button|cancel/i.tp)) return true;
           }
+					
+					if ($(tg).attr('contenteditable')) return true;
           
           if (self.hasfocus||(self.hasmousefocus&&!domfocus)||(self.ispage&&!domfocus&&!mousefocus)) {
             var key = e.keyCode;
@@ -1609,6 +1635,15 @@
         
         if (self.opt.enablekeyboard) self.bind(document,(cap.isopera&&!cap.isopera12)?"keypress":"keydown",self.onkeypress);
         
+				self.bind(document,"keydown",function(e){
+				  var ctrl = e.ctrlKey||false;
+					if (ctrl) self.wheelprevented = true;
+				});
+				self.bind(document,"keyup",function(e){
+				  var ctrl = e.ctrlKey||false;
+					if (!ctrl) self.wheelprevented = false;
+				});
+				
         self.bind(window,'resize',self.lazyResize);
         self.bind(window,'orientationchange',self.lazyResize);
         
@@ -1626,7 +1661,7 @@
 
         self.onAttributeChange = function(e) {
           self.lazyResize(250);
-        }
+        };
         
         if (!self.ispage&&!self.haswrapper) {
           // redesigned MutationObserver for Chrome18+/Firefox14+/iOS6+ with support for: remove div, add/remove content
@@ -1661,7 +1696,7 @@
         if (!self.ispage&&self.opt.boxzoom) self.bind(window,"resize",self.resizeZoom);
         if (self.istextarea) self.bind(self.win,"mouseup",self.lazyResize);
         
-        self.checkrtlmode = true;
+//        self.checkrtlmode = true;
         self.lazyResize(30);
         
       }
@@ -1691,8 +1726,8 @@
               return {
                 w:Math.max(self.iframe.html.scrollWidth,self.iframe.body.scrollWidth),
                 h:Math.max(self.iframe.html.scrollHeight,self.iframe.body.scrollHeight)
-              }
-            }            
+              };
+            };            
             self.docscroll = $(self.iframe.body);//$(this.contentWindow);
           }
           
@@ -1763,7 +1798,7 @@
           self.scroll.y = Math.round(py * 1/self.scrollratio.y);
         }
         if (typeof px != "undefined") {
-          self.scroll.x = Math.round(px * 1/self.scrollratio.x);
+          self.scroll.x = Math.round(px * 1/self.scrollratio.x);  //-cxscrollleft * Math.round(px * 1/self.scrollratio.x);
         }
       }
       
@@ -1910,10 +1945,12 @@
         self.scrollvaluemaxw = self.railh.width-self.cursorwidth-self.cursorh.wborder;
       }
       
+/*			
       if (self.checkrtlmode&&self.railh) {
         self.checkrtlmode = false;
         if (self.opt.rtlmode&&self.scroll.x==0) self.setScrollLeft(self.page.maxw);
       }
+*/			
       
       if (!self.ispage) self.updateScrollBar(self.view);
       
@@ -1942,7 +1979,7 @@
       tm = (isNaN(tm)) ? 30 : tm;
       self.delayed('resize',self.resize,tm);
       return self;
-    }
+    };
    
 // modified by MDN https://developer.mozilla.org/en-US/docs/DOM/Mozilla_event_reference/wheel
     function _modernWheelEvent(dom,name,fn,bubble) {      
@@ -1991,7 +2028,7 @@
     this.jqbind = function(dom,name,fn) {  // use jquery bind for non-native events (mouseenter/mouseleave)
       self.events.push({e:dom,n:name,f:fn,q:true});
       $(dom).bind(name,fn);
-    }
+    };
    
     this.bind = function(dom,name,fn,bubble) {  // touch-oriented & fixing jquery bind
       var el = ("jquery" in dom) ? dom[0] : dom;
@@ -2070,7 +2107,7 @@
       if (e.stopPropagation) return e.stopPropagation();
       if (e.cancelBubble) e.cancelBubble=true;
       return false;
-    }
+    };
     
     this.showRail = function() {
       if ((self.page.maxh!=0)&&(self.ispage||self.win.css('display')!='none')) {
@@ -2180,29 +2217,29 @@
     this.scrollstart = function(fn) {
       this.onscrollstart = fn;
       return self;
-    }
+    };
     this.scrollend = function(fn) {
       this.onscrollend = fn;
       return self;
-    }
+    };
     this.scrollcancel = function(fn) {
       this.onscrollcancel = fn;
       return self;
-    }
+    };
     
     this.zoomin = function(fn) {
       this.onzoomin = fn;
       return self;
-    }
+    };
     this.zoomout = function(fn) {
       this.onzoomout = fn;
       return self;
-    }
+    };
     
     this.isScrollable = function(e) {      
       var dom = (e.target) ? e.target : e;
       if (dom.nodeName == 'OPTION') return true;
-      while (dom&&(dom.nodeType==1)&&!(/BODY|HTML/.test(dom.nodeName))) {
+      while (dom&&(dom.nodeType==1)&&!(/^BODY|HTML/.test(dom.nodeName))) {
         var dd = $(dom);
         var ov = dd.css('overflowY')||dd.css('overflowX')||dd.css('overflow')||'';
         if (/scroll|auto/.test(ov)) return (dom.clientHeight!=dom.scrollHeight);
@@ -2213,7 +2250,7 @@
 
     this.getViewport = function(me) {      
       var dom = (me&&me.parentNode) ? me.parentNode : false;
-      while (dom&&(dom.nodeType==1)&&!(/BODY|HTML/.test(dom.nodeName))) {
+      while (dom&&(dom.nodeType==1)&&!(/^BODY|HTML/.test(dom.nodeName))) {
         var dd = $(dom);
         if (/fixed|absolute/.test(dd.css("position"))) return dd;        
         var ov = dd.css('overflowY')||dd.css('overflowX')||dd.css('overflow')||'';
@@ -2221,9 +2258,19 @@
         if (dd.getNiceScroll().length>0) return dd;
         dom = (dom.parentNode) ? dom.parentNode : false;
       }
-      return false;
+      return (dom) ? $(dom) : false;
     };
-    
+		
+		this.triggerScrollEnd = function() {
+			if (!self.onscrollend) return;
+			
+			var px = self.getScrollLeft();
+			var py = self.getScrollTop();
+		
+			var info = {"type":"scrollend","current":{"x":px,"y":py},"end":{"x":px,"y":py}};
+			self.onscrollend.call(self,info);		
+		}
+		
     function execScrollWheel(e,hr,chkscroll) {
       var px,py;
       var rt = 1;
@@ -2245,7 +2292,7 @@
       if (px) {
         if (self.scrollmom) {self.scrollmom.stop()}
         self.lastdeltax+=px;
-        self.debounced("mousewheelx",function(){var dt=self.lastdeltax;self.lastdeltax=0;if(!self.rail.drag){self.doScrollLeftBy(dt)}},120);
+        self.debounced("mousewheelx",function(){var dt=self.lastdeltax;self.lastdeltax=0;if(!self.rail.drag){self.doScrollLeftBy(dt)}},15);
       }
       if (py) {
         if (self.opt.nativeparentscrolling&&chkscroll&&!self.ispage&&!self.zoomactive) {
@@ -2257,7 +2304,7 @@
         }
         if (self.scrollmom) {self.scrollmom.stop()}
         self.lastdeltay+=py;
-        self.debounced("mousewheely",function(){var dt=self.lastdeltay;self.lastdeltay=0;if(!self.rail.drag){self.doScrollBy(dt)}},120);
+        self.debounced("mousewheely",function(){var dt=self.lastdeltay;self.lastdeltay=0;if(!self.rail.drag){self.doScrollBy(dt)}},15);
       }
       
       e.stopImmediatePropagation();
@@ -2266,6 +2313,7 @@
     };
     
     this.onmousewheel = function(e) {          
+		  if (self.wheelprevented) return;
       if (self.locked) {
         self.debounced("checkunlock",self.resize,250);
         return true;
@@ -2300,6 +2348,7 @@
     };
 
     this.onmousewheelhr = function(e) {
+			if (self.wheelprevented) return;
       if (self.locked||!self.railh.scrollable) return true;
       if (self.rail.drag) return self.cancelEvent(e);
       
@@ -2330,17 +2379,17 @@
       var sp = Math.round(self.opt.scrollspeed*10);
       var ex = Math.min(sp,Math.round((dif / 20) * self.opt.scrollspeed));
       return (ex>20) ? ex : 0;
-    }
+    };
     
     if (!self.opt.smoothscroll) {
       this.doScrollLeft = function(x,spd) {  //direct
         var y = self.getScrollTop();
         self.doScrollPos(x,y,spd);
-      }      
+      };      
       this.doScrollTop = function(y,spd) {   //direct
         var x = self.getScrollLeft();
         self.doScrollPos(x,y,spd);
-      }
+      };
       this.doScrollPos = function(x,y,spd) {  //direct
         var nx = (x>self.page.maxw) ? self.page.maxw : x;
         if (nx<0) nx=0;
@@ -2350,7 +2399,7 @@
           self.setScrollTop(ny);
           self.setScrollLeft(nx);
         });
-      }
+      };
       this.cancelScroll = function() {}; // direct
     } 
     else if (self.ishwscroll&&cap.hastransition&&self.opt.usetransition) {
@@ -2367,12 +2416,12 @@
       this.doScrollLeft = function(x,spd) {  //trans
         var y = (self.scrollrunning) ? self.newscrolly : self.getScrollTop();
         self.doScrollPos(x,y,spd);
-      }      
+      };      
       
       this.doScrollTop = function(y,spd) {   //trans
         var x = (self.scrollrunning) ? self.newscrollx : self.getScrollLeft();
         self.doScrollPos(x,y,spd);
-      }
+      };
       
       this.doScrollPos = function(x,y,spd) {  //trans
    
@@ -2429,11 +2478,11 @@
             if (cap.transitionend) {
               if (!self.scrollendtrapped) {
                 self.scrollendtrapped = true;
-                self.bind(self.doc,cap.transitionend,self.onScrollEnd,false); //I have got to do something usefull!!
+                self.bind(self.doc,cap.transitionend,self.onScrollTransitionEnd,false); //I have got to do something usefull!!
               }
             } else {              
               if (self.scrollendtrapped) clearTimeout(self.scrollendtrapped);
-              self.scrollendtrapped = setTimeout(self.onScrollEnd,ms);  // simulate transitionend event
+              self.scrollendtrapped = setTimeout(self.onScrollTransitionEnd,ms);  // simulate transitionend event
             }
             
             var py = top;
@@ -2451,7 +2500,7 @@
             if (self.scrollendtrapped) self.scrollrunning = true;
             self.setScrollTop(self.newscrolly);
             self.setScrollLeft(self.newscrollx);
-            if (!self.scrollendtrapped) self.onScrollEnd();
+            if (!self.scrollendtrapped) self.onScrollTransitionEnd();
           });
           
           
@@ -2466,7 +2515,7 @@
         self.scrollrunning = false;
         if (!cap.transitionend) clearTimeout(cap.transitionend);
         self.scrollendtrapped = false;
-        self._unbind(self.doc,cap.transitionend,self.onScrollEnd);        
+        self._unbind(self.doc,cap.transitionend,self.onScrollTransitionEnd);     
         self.prepareTransition(0);
         self.setScrollTop(py); // fire event onscroll
         if (self.railh) self.setScrollLeft(px);
@@ -2479,8 +2528,8 @@
         self.showCursor(py,px);
         return self;
       };
-      this.onScrollEnd = function() {                
-        if (self.scrollendtrapped) self._unbind(self.doc,cap.transitionend,self.onScrollEnd);
+      this.onScrollTransitionEnd = function() {                
+        if (self.scrollendtrapped) self._unbind(self.doc,cap.transitionend,self.onScrollTransitionEnd);
         self.scrollendtrapped = false;        
         self.prepareTransition(0);
         if (self.timerscroll&&self.timerscroll.tm) clearInterval(self.timerscroll.tm);
@@ -2501,8 +2550,9 @@
         if((py!=self.newscrolly)||(px!=self.newscrollx)) return self.doScrollPos(px,py,self.opt.snapbackspeed);
         
         if (self.onscrollend&&self.scrollrunning) {
-          var info = {"type":"scrollend","current":{"x":px,"y":py},"end":{"x":self.newscrollx,"y":self.newscrolly}};
-          self.onscrollend.call(self,info);
+//          var info = {"type":"scrollend","current":{"x":px,"y":py},"end":{"x":self.newscrollx,"y":self.newscrolly}};
+//          self.onscrollend.call(self,info);
+						self.triggerScrollEnd();
         } 
         self.scrollrunning = false;
         
@@ -2513,12 +2563,12 @@
       this.doScrollLeft = function(x,spd) {  //no-trans
         var y = (self.scrollrunning) ? self.newscrolly : self.getScrollTop();
         self.doScrollPos(x,y,spd);
-      }
+      };
 
       this.doScrollTop = function(y,spd) {  //no-trans
         var x = (self.scrollrunning) ? self.newscrollx : self.getScrollLeft();
         self.doScrollPos(x,y,spd);
-      }
+      };
 
       this.doScrollPos = function(x,y,spd) {  //no-trans
         var y = ((typeof y == "undefined")||(y===false)) ? self.getScrollTop(true) : y;
@@ -2637,8 +2687,11 @@
             if ((scx!=self.newscrollx)||(sc!=self.newscrolly)) self.doScrollPos(scx,sc);
             else {
               if (self.onscrollend) {
+/*							
                 var info = {"type":"scrollend","current":{"x":sx,"y":sy},"end":{"x":self.newscrollx,"y":self.newscrolly}};
                 self.onscrollend.call(self,info);
+*/
+								self.triggerScrollEnd();
               }             
             } 
           } else {
@@ -2705,7 +2758,7 @@
       }
       if (self.bouncescroll) {
         var haf = Math.round(self.view.w/2);
-        if (nx<-haf) nx=-haf
+        if (nx<-haf) nx=-haf;
         else if (nx>(self.page.maxw+haf)) nx = (self.page.maxw+haf);
       }
       self.cursorfreezed = false;    
@@ -2719,7 +2772,7 @@
     
     this.doScrollTo = function(pos,relative) {
       var ny = (relative) ? Math.round(pos*self.scrollratio.y) : pos;
-      if (ny<0) ny=0
+      if (ny<0) ny=0;
       else if (ny>self.page.maxh) ny = self.page.maxh;
       self.cursorfreezed = false;
       self.doScrollTop(pos);
@@ -2924,7 +2977,7 @@
         snap=true;
       }
       
-      if (snap) self.nc.doScrollPos(nx,ny,self.nc.opt.snapbackspeed);
+      (snap) ? self.nc.doScrollPos(nx,ny,self.nc.opt.snapbackspeed) : self.nc.triggerScrollEnd();
     };
     
     this.doMomentum = function(gp) {
@@ -3059,7 +3112,7 @@
         (nice&&nice.ishwscroll) ? nice.setScrollTop(parseInt(value)) : _scrollTop.call($(this),value);
       });
     }
-  }
+  };
 
 // override jQuery scrollLeft
  
@@ -3093,7 +3146,7 @@
         (nice&&nice.ishwscroll) ? nice.setScrollLeft(parseInt(value)) : _scrollLeft.call($(this),value);
       });
     }
-  }
+  };
   
   var NiceScrollArray = function(doms) {
     var self = this;
@@ -3115,7 +3168,7 @@
     };
     
     if (doms) {
-      for(a=0;a<doms.length;a++) {
+      for(var a=0;a<doms.length;a++) {
         var nice = $.data(doms[a],'__nicescroll')||false;
         if (nice) {
           this[this.length]=nice;
@@ -3196,5 +3249,5 @@
    $.nicescroll.options = _globaloptions;
   }
   
-})( jQuery );
+}));
   

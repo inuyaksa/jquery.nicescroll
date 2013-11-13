@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>jQuery NiceScroll Browser Detection</title>
+<style type="text/css">
+.testok {
+	background-color: #71FF71;
+}
+.testko {
+	background-color: #FF6C6C;
+}
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+.divs {
+	padding-top: 4px;
+}
+.num {
+	font-size: 10px;
+	color: #525252;
+	vertical-align: super;
+}
+</style>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.nicescroll.min.js"></script>
+
+<script>
+  var nice = false;
+
+  $(document).ready(function() {
+    nice = $("html").niceScroll();
+  });
+  
+  var obj = window;//$(window);
+  
+  console.log(obj.length);
+  console.log("selector" in obj);
+  
+</script>
+
+<script>
+  
+  function toCell(px,py,ok) {
+    $("#tab1").find('tr').eq(py).find('td').eq(px).addClass((ok)?'testok':'testko');
+  };
+  
+  $(window).load(function() {
+    $("#div1").html($("#div1").html()+' '+nice.version);
+	$("#div2").html($("#div2").html()+' '+navigator.userAgent);
+
+	toCell(1,1,nice.detected.ismozilla);
+	
+	toCell(2,1,(nice.detected.iswebkit));
+	
+	toCell(3,1,nice.detected.isie);
+	toCell(3,2,nice.detected.isie10);
+	toCell(3,3,nice.detected.isie9);
+	toCell(3,4,nice.detected.isie8);
+	toCell(3,5,nice.detected.isie7);
+	toCell(3,6,nice.detected.isieold);
+
+	toCell(4,1,nice.detected.isopera);
+  toCell(4,2,nice.detected.isopera12);
+  toCell(4,3,nice.detected.isoperamini);
+	
+	toCell(5,1,nice.detected.isios);
+	toCell(5,2,nice.detected.isios4);
+
+  toCell(6,1,nice.detected.ischrome);
+	toCell(6,2,nice.detected.ischrome22);
+  toCell(6,3,nice.detected.ischrome26);
+
+	
+	toCell(0,8,nice.detected.cantouch);
+	toCell(3,8,nice.detected.hasmstouch);
+
+	toCell(1,10,nice.detected.hastransform);
+	toCell(1,11,nice.detected.hastranslate3d);
+	toCell(2,10,nice.detected.hastransition);
+	toCell(2,11,!!nice.detected.transitionend);
+	toCell(3,10,nice.hasanimationframe);
+	toCell(3,11,nice.hascancelanimationframe);
+  toCell(4,10,nice.detected.hasMutationObserver);
+
+	toCell(1,12,nice.detected.hasmousecapture);
+	toCell(2,12,((nice.detected.cursorgrabvalue!='')&&(nice.detected.cursorgrabvalue.substr(0,3)!='url')));
+	toCell(3,12,nice.detected.haspointerlock);
+
+	toCell(1,14,!nice.detected.cantouch);  
+	toCell(2,14,!nice.detected.cantouch);  
+	toCell(3,14,nice.detected.cantouch||nice.istouchcapable||nice.hasmstouch);
+  toCell(4,14,nice.detected.isie9mobile);  
+	
+  });
+  
+</script>
+
+</head>
+
+<body>
+<p>CHECK YOU BROWSER PAGE</p>
+<div id="div1">NiceScroll version:</div>
+<div id="div2">You browser user agent:</div>
+<table border="0" cellpadding="6" cellspacing="2" id="tab1">
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td bgcolor="#E0E0E9">Browser class</td>
+    <td bgcolor="#E0E0E9">Mozilla</td>
+    <td bgcolor="#E0E0E9">WebKit</td>
+    <td bgcolor="#E0E0E9">IE</td>
+    <td bgcolor="#E0E0E9">Opera</td>
+    <td bgcolor="#E0E0E9">iOS <span class="num">(7)</span></td>
+		<td bgcolor="#E0E0E9">Chrome</td>
+  </tr>
+  <tr>
+    <td bgcolor="#E0E0E9">Families</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">IE10+</td>
+    <td bgcolor="#E0E0E9">Opera&nbsp;12</td>
+    <td bgcolor="#E0E0E9">iOS4- <span class="num">(6)</span></td>
+		<td bgcolor="#E0E0E9">Chrome 22+</td>
+  </tr>
+  <tr>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">IE9+</td>
+    <td bgcolor="#E0E0E9">Opera&nbsp;Mini</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+		<td bgcolor="#E0E0E9">Chrome 26+</td>
+  </tr>
+  <tr>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">IE8</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+		<td bgcolor="#E0E0E9">&nbsp;</td>
+  </tr>
+  <tr>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">IE7</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+		<td bgcolor="#E0E0E9">&nbsp;</td>
+  </tr>
+  <tr>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">IE6- <span class="num">(1)</span></td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+		<td bgcolor="#E0E0E9">&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+		<td>&nbsp;</td>
+  </tr>
+  <tr bgcolor="#E0E0E9">
+    <td>Touch</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>MSPointer</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+		<td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+		<td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td bgcolor="#E0E0E9">Browser capabilities</td>
+    <td bgcolor="#E0E0E9">Transform <span class="num">(2)</span></td>
+    <td bgcolor="#E0E0E9">Transition <span class="num">(4)</span></td>
+    <td bgcolor="#E0E0E9">AnimationFrame <span class="num">(5)</span></td>
+    <td bgcolor="#E0E0E9">MutationObserver</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+		<td bgcolor="#E0E0E9">&nbsp;</td>
+  </tr>
+  <tr>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">translate3d <span class="num">(3)</span></td>
+    <td bgcolor="#E0E0E9">transitionEnd</td>
+    <td bgcolor="#E0E0E9">cancelAnimationFrame</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+		<td bgcolor="#E0E0E9">&nbsp;</td>
+  </tr>
+  <tr>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">setCapture</td>
+    <td bgcolor="#E0E0E9">cursor:grab</td>
+    <td bgcolor="#E0E0E9">Pointer Lock API</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
+		<td bgcolor="#E0E0E9">&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+		<td>&nbsp;</td>
+  </tr>
+  <tr bgcolor="#E0E0E9">
+    <td>Input</td>
+    <td>Keyboard</td>
+    <td>Mouse</td>
+    <td>Touch/Pen</td>
+    <td>WP7.1(8)</td>
+    <td>&nbsp;</td>
+		<td>&nbsp;</td>
+  </tr>  
+</table>
+<p>&nbsp; </p>
+
+<p>(1) position:fixed not supported, scrollbar for page and zoom features disabled<br />
+  (2) hardware scroll for wrapped div<br />
+(3) hardware scroll preferable for mobile devices<br />
+(4) transition (animation) used for scroll content (hw full implementation)<br />
+(5) more smooth native scroll and cpu saving<br />
+(6) some problem with zoom feature for browser limitation<br />
+(7) use native scrollbar for page<br />
+(8) simulated touch support for WP7.1 Mango</p>
+<p>&nbsp; </p>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26840957-1']);
+  _gaq.push(['_setDomainName', '.areaaperta.com']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+Changelog nicescroll release 3.5.4
+http://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+New options
+- scriptpath, user configurable scriptpath option (thanks to beebs93) - #309
+
+
+Changed features
+- changed name of ambiguous functions onscrollend and onScrollEnd (renamed to onScrollTransitionEnd)
+- plugin is AMD compatible (thanks to romansk) - #293
+- Ctrl + mouse wheel, restored zoom native function of browsers (Firefox, Chrome) - #275
+
+
+Fixes
+- Remove - Uncaught TypeError: Cannot set property 'onsync' of null #247
+- code parsed with js lint to check for missing semicolons (thanks to gavaz87)
+- fixed some variable scope (thanks to Microsoftsun)
+- scrollend event not fired on iOS - #248
+- JS Error in console: Uncaught TypeError: Cannot read property 'defaultView' of null - #245 (some side effects)
+- Removing bugs with null objects (thanks to clearcode) - #229
+- hiden scrollbar when main content is invisible (thanks to williamherry) - #268
+- Fix keyboard capturing in contenteditable fields thanks to dylanpyle) - #272
+- Problem on expresion: /BODY|HTML/.test(dom.nodeName) - #292
+
+
+TODO
+- checking on IE10 & IE11
+- railpadding
+- railpadding top & bottom settings ignored - thanks to simovinci.bellissimo
+- honorcssoverflow
+- autohidemode:hover
+- check 2D scrolling
+- check text selection on cursor drag (testing)
+- recursive position:fixed check
+- check horiz mouse wheel scrolling speed on chrome
+- mouse pan scroll
+- check snappy
+
