@@ -2248,7 +2248,7 @@
       if (px) {
         if (self.scrollmom) {self.scrollmom.stop()}
         self.lastdeltax+=px;
-        self.debounced("mousewheelx",function(){var dt=self.lastdeltax;self.lastdeltax=0;if(!self.rail.drag){self.doScrollLeftBy(dt)}},120);
+        self.debounced("mousewheelx",function(){var dt=self.lastdeltax;self.lastdeltax=0;if(!self.rail.drag){self.doScrollLeftBy(dt)}},0);
       }
       if (py) {
         if (self.opt.nativeparentscrolling&&chkscroll&&!self.ispage&&!self.zoomactive) {
@@ -2260,7 +2260,7 @@
         }
         if (self.scrollmom) {self.scrollmom.stop()}
         self.lastdeltay+=py;
-        self.debounced("mousewheely",function(){var dt=self.lastdeltay;self.lastdeltay=0;if(!self.rail.drag){self.doScrollBy(dt)}},120);
+        self.debounced("mousewheely",function(){var dt=self.lastdeltay;self.lastdeltay=0;if(!self.rail.drag){self.doScrollBy(dt)}},0);
       }
       
       e.stopImmediatePropagation();
