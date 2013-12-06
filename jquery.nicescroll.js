@@ -22,7 +22,7 @@
   var domfocus = false;
   var mousefocus = false;
   var zoomactive = false;
-  var tabindexcounter = 5000;
+  var tabindexcounter = 0;
   var ascrailcounter = 2000;
   var globalmaxzindex = 0;
   
