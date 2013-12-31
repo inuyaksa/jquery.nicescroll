@@ -16,9 +16,6 @@
       "url": "MIT.LICENSE"
     }
   ],
-  "dependencies": {
-    "jquery": ">=1.4.3"
-  },
   "description": "Nicescroll is a jquery plugin, for nice customizabled scrollbars with a very similar ios/mobile style. It supports DIVs, IFrames and document page (body) scrollbars. Compatible with Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+ (all A-grade browsers). Compatible with iOS devices as iPad, Android, Blackberry, Windows Phone, and many many mobile and touch devices.",
   "keywords": [
     "nicescroll",
@@ -50,7 +47,8 @@
     "jquery.nicescroll.min.js",
     "zoomico.png"
   ],
-  "devDependencies": {
-    "jshint": "~2.4.0"
-  }
+  "dependencies": {
+    "jquery": ">=1.4.3"
+  },
+  "devDependencies": {}
 }
