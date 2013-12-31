@@ -21,7 +21,7 @@
   // globals
   var domfocus = false;
   var mousefocus = false;
-  var zoomactive = false;
+  // var zoomactive = false;
   var tabindexcounter = 5000;
   var ascrailcounter = 2000;
   var globalmaxzindex = 0;
@@ -434,7 +434,6 @@
     
     this.debounced = function(name, fn, tm) {
       var dd = self.delaylist[name];
-      var nw = (new Date()).getTime();      
       self.delaylist[name] = fn;
       if (!dd) {        
         setTimeout(function() {
@@ -694,7 +693,6 @@
         var wpos = self.getOffset();
         var pos = {top:wpos.top, left:wpos.left};
         pos.top += getWidthToPixel(self.win, 'border-top-width', true);
-        var brd = (self.win.outerWidth() - self.win.innerWidth())/2;
         pos.left += self.rail.align ?
                     self.win.outerWidth() - getWidthToPixel(self.win, 'border-right-width') - self.rail.width:
                     getWidthToPixel(self.win, 'border-left-width');
@@ -1028,8 +1026,8 @@
               } 
             }            
             
-            rail.css({position:rlpos});
-            if (self.zoom) self.zoom.css({position:rlpos});
+            rail.css("position", rlpos);
+            if (self.zoom) self.zoom.css("position", rlpos);
             self.updateScrollBar();
             self.body.append(rail);
             if (self.zoom) self.body.append(self.zoom);
@@ -1093,7 +1091,7 @@
           }
 */          
   
-          self.onmangotouch = function(e) {
+          self.onmangotouch = function() {
             var py = self.getScrollTop();
             var px = self.getScrollLeft();
             
@@ -1112,7 +1110,7 @@
             if (self.mangotouch.lazy) clearTimeout(self.mangotouch.lazy);
             
             if (tm-self.mangotouch.tm > 80 || self.mangotouch.dry !== dry || self.mangotouch.drx !== drx) {
-//              trace('RESET+'+(tm-self.mangotouch.tm));
+              // trace('RESET+'+(tm-self.mangotouch.tm));
               self.scrollmom.stop();
               self.scrollmom.reset(px,py);
               self.mangotouch.sy = py;
@@ -1129,7 +1127,6 @@
                 self.mangotouch.sx - dfx,
                 self.mangotouch.sy - dfy
               );
-              var gap = tm - self.mangotouch.tm;              
               self.mangotouch.tm = tm;
               
 //              trace('MOVE:'+df+" - "+gap);
@@ -1964,7 +1961,7 @@
         
 // Trying a cross-browser implementation - good luck!
 
-        self.onAttributeChange = function(e) {
+        self.onAttributeChange = function() {
           self.lazyResize(250);
         };
         
@@ -2033,14 +2030,13 @@
       }
       
       if (this.doc[0].nodeName === 'IFRAME') {
-        var oniframeload= function(e) {
+        var oniframeload= function() {
           self.iframexd = false;
           var doc;
           try {
             doc = 'contentDocument' in this ?
                   this.contentDocument :
                   this.contentWindow.document;
-            var a = doc.domain;
           } catch(e) {
             self.iframexd = true;
             doc = false;
@@ -3271,7 +3267,7 @@
       if (pg.h !== self.page.h || pg.w !== self.page.w) self.resize(false,pg);
     };
     
-    self.onscroll = function(e) {
+    self.onscroll = function() {
       if (!self.rail.drag && !self.cursorfreezed) {
         self.synched('scroll',function(){
           self.scroll.y = Math.round(self.getScrollTop() * (1/self.scrollratio.y));
