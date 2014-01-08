@@ -1,0 +1,17 @@
+{
+    "name": "jquery.nicescroll",
+    "version": "3.5.4",
+    "main": [
+        "./jquery.nicescroll.js",
+        "./jquery.nicescroll.min.js",
+        "./zoomico.png"
+    ],
+    "ignore": [
+        "**/.*",
+        "demo",
+        "package.json"
+    ],
+    "dependencies": {
+        "jquery": ">=1.4.3"
+    }
+}
