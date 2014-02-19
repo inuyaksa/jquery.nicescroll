@@ -74,6 +74,7 @@
       cursorminheight:32,
       preservenativescrolling:true,
       railoffset:false,
+      railhoffset:false,
       bouncescroll:true,
       spacebarenabled:true,
       railpadding:{top:0,right:0,left:0,bottom:0},
@@ -633,6 +634,11 @@
 				
 				if (self.railh&&!self.locked) {
 					var pos = {top:wpos.top,left:wpos.left};
+          var off = self.opt.railhoffset;
+          if (!!off) {
+            if (!!off.top) pos.top+=off.top;
+            if (!!off.left) pos.left+=off.left;
+          }
 					var y = (self.railh.align) ? pos.top + getWidthToPixel(self.win,'border-top-width',true) + self.win.innerHeight() - self.railh.height : pos.top + getWidthToPixel(self.win,'border-top-width',true);
 					var x = pos.left + getWidthToPixel(self.win,'border-left-width');
 					self.railh.css({top:y,left:x,width:self.railh.width});
