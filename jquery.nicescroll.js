@@ -1274,7 +1274,12 @@
           self.onmousemove = function(e) {
             if (self.rail.drag) {
               if(self.rail.drag.pt!=1)return;
-              
+
+              if (!self.rail.visibility && !self.railh.visibility) {
+                self.rail.drag = false;
+                return;
+              }
+
               if (cap.ischrome&&e.which==0) return self.onmouseup(e);
               
               self.cursorfreezed = true;
