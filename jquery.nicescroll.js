@@ -338,8 +338,8 @@
     
     this.istouchcapable = false;  // desktop devices with touch screen support
     
-//## Check Chrome desktop with touch support
-    if (cap.cantouch&&cap.ischrome&&!cap.isios&&!cap.isandroid) {
+//## Check WebKit-based desktop with touch support
+    if (cap.cantouch&&cap.iswebkit&&!cap.isios&&!cap.isandroid) {
       this.istouchcapable = true;
       cap.cantouch = false;  // parse normal desktop events
     }    
