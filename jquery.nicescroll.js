@@ -992,8 +992,11 @@
           if (cap.cantouch||self.istouchcapable||self.opt.touchbehavior||cap.hasmstouch) {
           
             self.scrollmom = new ScrollMomentumClass2D(self);
-          
+            
+            var touches = [];
+
             self.ontouchstart = function(e) {
+              if (e.pointerId) touches[e.pointerId] = true;
               if (e.pointerType&&e.pointerType!=2) return false;
               
 							self.hasmoving = false;
@@ -1097,6 +1100,7 @@
             };
             
             self.ontouchend = function(e) {
+              if (e.pointerId) delete touches[e.pointerId];
               if (e.pointerType&&e.pointerType!=2) return false;
               if (self.rail.drag&&(self.rail.drag.pt==2)) {
                 self.scrollmom.doMomentum();
@@ -1114,7 +1118,7 @@
             var moveneedoffset = (self.opt.touchbehavior&&self.isiframe&&!cap.hasmousecapture);
             
             self.ontouchmove = function(e,byiframe) {
-              
+              if (Object.keys(touches).length > 1 || (e.touches && e.touches.length > 1)) return false;
               if (e.pointerType&&e.pointerType!=2) return false;
     
               if (self.rail.drag&&(self.rail.drag.pt==2)) {
