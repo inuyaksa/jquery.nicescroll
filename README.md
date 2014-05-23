@@ -146,6 +146,10 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 - bouncescroll, enable scroll bouncing at the end of content as mobile-like (only hw accell) (default:false)
 - spacebarenabled, enable page down scrolling when space bar has pressed (default:true)
 - railpadding, set padding for rail bar (default:{top:0,right:0,left:0,bottom:0})
+- railmargin, set margin for rail bar (default:{top:0,right:0,left:0,bottom:0}) 
+- railhpadding, set padding for hrail bar (default:{top:-1,right:-1,left:-1,bottom:-1}), if no specific railhpadding is set it'll mirror the settings from rail bar when mirrorrails is set to true
+- railhmargin, set margin for hrail bar (default:{top:-1,right:-1,left:-1,bottom:-1}), if no specific railhmargin is set it'll mirror the settings from rail bar when mirrorrails is set to true
+- mirrorrails, if no specific railhmargin/railhpadding is set it'll mirror the settings from rail bar (default:true)
 - disableoutline, for chrome browser, disable outline (orange hightlight) when selecting a div with nicescroll (default:true)
 - horizrailenabled, nicescroll can manage horizontal scroll (default:true)
 - railalign, alignment of vertical rail (defaul:"right")

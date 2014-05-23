@@ -49,7 +49,11 @@
 <script>
   $(document).ready(function() {
   
-	var nice = $("html").niceScroll();  // The document page (body)
+	var nice = $("html").niceScroll({
+    //mirrorrails:true,
+    railmargin:{left:10,right:10,top:10,bottom:10},
+    railpadding:{left:0,right:20,top:10,bottom:40}
+  });  // The document page (body)
 	
 	$("#div1").html($("#div1").html()+' '+nice.version);
     

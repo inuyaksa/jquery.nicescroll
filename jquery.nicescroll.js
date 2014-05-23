@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.5.4
+-- version 3.5.4 -- MODIFIED
 -- copyright 2013-11-13 InuYaksa*2013
 -- licensed under the MIT
 --
@@ -77,6 +77,11 @@
       bouncescroll:true,
       spacebarenabled:true,
       railpadding:{top:0,right:0,left:0,bottom:0},
+      railmargin:{top:0,right:0,left:0,bottom:0}, 
+      railhpadding:{top:-1,right:-1,left:-1,bottom:-1}, //padding for hrail, if no custom input it'll take padding rail
+      railhmargin:{top:-1,right:-1,left:-1,bottom:-1}, //margin for hrail, if no custom input it'll take margin rail
+      mirrorrails:true, //If no margin or paddings for horizontal rail are provided, it'll copy them from the vertical rail
+
       disableoutline:true,
       horizrailenabled:true,
       railalign:"right",
@@ -235,6 +240,18 @@
       }
     }
     
+    //If mirrorring of rail margin is not disabled AND there is no custom settings done, it'll copy the margins of the vertical rail to the horizontal rail
+    if(this.opt.mirrorrails && this.opt.railhmargin.top==-1){this.opt.railhmargin.top=this.opt.railmargin.left};
+    if(this.opt.mirrorrails && this.opt.railhmargin.right==-1){this.opt.railhmargin.right=this.opt.railmargin.bottom};
+    if(this.opt.mirrorrails && this.opt.railhmargin.left==-1){this.opt.railhmargin.left=this.opt.railmargin.top};
+    if(this.opt.mirrorrails && this.opt.railhmargin.bottom==-1){this.opt.railhmargin.bottom=this.opt.railmargin.right};
+    
+    //If mirrorring of rail padding is not disabled AND there is no custom settings done, it'll copy the paddings of the vertical rail to the horizontal rail
+    if(this.opt.mirrorrails && this.opt.railhpadding.top==-1){this.opt.railhpadding.top=this.opt.railpadding.left;};
+    if(this.opt.mirrorrails && this.opt.railhpadding.right==-1){this.opt.railhpadding.right=this.opt.railpadding.bottom};
+    if(this.opt.mirrorrails && this.opt.railhpadding.left==-1){this.opt.railhpadding.left=this.opt.railpadding.top};
+    if(this.opt.mirrorrails && this.opt.railhpadding.bottom==-1){this.opt.railhpadding.bottom=this.opt.railpadding.right};
+
     this.doc = self.opt.doc;
     this.iddoc = (this.doc&&this.doc[0])?this.doc[0].id||'':'';    
     this.ispage = /^BODY|HTML/.test((self.opt.win)?self.opt.win[0].nodeName:this.doc[0].nodeName);
@@ -609,9 +626,12 @@
     };
     
     this.updateScrollBar = function(len) {
+      var boxoffsetv = self.opt.railmargin['top']+self.opt.railmargin['bottom'];
+      var boxoffseth = self.opt.railhmargin['left']+self.opt.railhmargin['right'];
+
       if (self.ishwscroll) {
-        self.rail.css({height:self.win.innerHeight()});
-        if (self.railh) self.railh.css({width:self.win.innerWidth()});
+        self.rail.css({height:self.win.innerHeight()-boxoffsetv});
+        if (self.railh) self.railh.css({width:self.win.innerWidth()-boxoffseth});
       } else {
         var wpos = self.getOffset();
         var pos = {top:wpos.top,left:wpos.left};
@@ -625,7 +645,7 @@
           if (self.rail.align&&off.left) pos.left+=off.left;
         }
         
-				if (!self.locked) self.rail.css({top:pos.top,left:pos.left,height:(len)?len.h:self.win.innerHeight()});
+				if (!self.locked) self.rail.css({top:pos.top,left:pos.left,height:(len)?len.h-boxoffsetv:self.win.innerHeight()-boxoffsetv});
 				
 				if (self.zoom) {				  
 				  self.zoom.css({top:pos.top+1,left:(self.rail.align==1) ? pos.left-20 : pos.left+self.rail.width+4});
@@ -634,8 +654,8 @@
 				if (self.railh&&!self.locked) {
 					var pos = {top:wpos.top,left:wpos.left};
 					var y = (self.railh.align) ? pos.top + getWidthToPixel(self.win,'border-top-width',true) + self.win.innerHeight() - self.railh.height : pos.top + getWidthToPixel(self.win,'border-top-width',true);
-					var x = pos.left + getWidthToPixel(self.win,'border-left-width');
-					self.railh.css({top:y,left:x,width:self.railh.width});
+					var x = pos.left + getWidthToPixel(self.win,'border-left-width') + self.opt.railhmargin['left'];
+					self.railh.css({top:y-self.opt.railhmargin['top'],left:x,width:self.railh.width-boxoffseth});
 				}
 		
 				
@@ -741,11 +761,13 @@
         rail.attr('id',self.id);
         rail.addClass('nicescroll-rails');
         
-        var v,a,kp = ["left","right"];  //"top","bottom"
+        var v,a,kp = ["left","right","top","bottom"];
         for(var n in kp) {
           a=kp[n];
           v = self.opt.railpadding[a];
           (v) ? rail.css("padding-"+a,v+"px") : self.opt.railpadding[a] = 0;
+          v2 = self.opt.railmargin[a];
+          (v2) ? rail.css("margin-"+a,v2+"px") : self.opt.railmargin[a] = 0;
         }
         
         rail.append(cursor);
@@ -807,6 +829,15 @@
           railh.height = Math.max(parseFloat(self.opt.cursorwidth),cursor.outerHeight());
           railh.css({height:railh.height+"px",'zIndex':self.zindex,"background":self.opt.background});
           
+          var v,v2,a,kp = ["left","right","top","bottom"]; 
+          for(var n in kp) {
+            a=kp[n];
+            v = self.opt.railhpadding[a];
+            (v) ? railh.css("padding-"+a,v+"px") : self.opt.railhpadding[a] = 0;
+            v2 = self.opt.railhmargin[a]; 
+            (v2) ? railh.css("margin-"+a,v2+"px") : self.opt.railhmargin[a] = 0;
+          }
+          
           railh.append(cursor);
           
           railh.visibility = true;
@@ -823,11 +854,11 @@
 //        
         
         if (self.ispage) {
-          rail.css({position:"fixed",top:"0px",height:"100%"});
+          rail.css({position:"fixed",top:"0px",height:self.win.height()-self.opt.railpadding['top']-self.opt.railpadding['bottom']-self.opt.railmargin['top']-self.opt.railmargin['bottom']});
           (rail.align) ? rail.css({right:"0px"}) : rail.css({left:"0px"});
           self.body.append(rail);
           if (self.railh) {
-            railh.css({position:"fixed",left:"0px",width:"100%"});
+            railh.css({position:"fixed",left:"0px",width:self.win.width()-self.opt.railhpadding['left']-self.opt.railhpadding['right']-self.opt.railhmargin['left']-self.opt.railhmargin['right']});
             (railh.align) ? railh.css({bottom:"0px"}) : railh.css({top:"0px"});
             self.body.append(railh);
           }
@@ -1936,13 +1967,13 @@
       self.cursorheight = (self.opt.cursorfixedheight) ? self.opt.cursorfixedheight : Math.max(self.opt.cursorminheight,self.cursorheight);
 
       self.cursorwidth = Math.min(self.view.w,Math.round(self.view.w * (self.view.w / self.page.w)));
-      self.cursorwidth = (self.opt.cursorfixedheight) ? self.opt.cursorfixedheight : Math.max(self.opt.cursorminheight,self.cursorwidth);
+      self.cursorwidth = (self.opt.cursorfixedheight) ? self.opt.cursorfixedheight : Math.max(self.opt.cursorminheight,self.cursorwidth-self.opt.railhpadding['left']-self.opt.railhpadding['right']);
       
-      self.scrollvaluemax = self.view.h-self.cursorheight-self.cursor.hborder;
+      self.scrollvaluemax = self.view.h-self.cursorheight-self.cursor.hborder-self.opt.railpadding['top']-self.opt.railpadding['bottom']-self.opt.railmargin['top']-self.opt.railmargin['bottom'];
       
       if (self.railh) {
         self.railh.width = (self.page.maxh>0) ? (self.view.w-self.rail.width) : self.view.w;
-        self.scrollvaluemaxw = self.railh.width-self.cursorwidth-self.cursorh.wborder;
+        self.scrollvaluemaxw = self.railh.width-self.cursorwidth-self.cursorh.wborder-self.opt.railhpadding['left']-self.opt.railhpadding['right']-self.opt.railhmargin['left']-self.opt.railhmargin['right'];
       }
       
 /*			
