@@ -610,8 +610,12 @@
 
     this.updateScrollBar = function(len) {
       if (self.ishwscroll) {
-        self.rail.css({height:self.win.innerHeight()});
-        if (self.railh) self.railh.css({width:self.win.innerWidth()});
+        self.rail.css({
+            height: self.win.innerHeight() - (self.opt.railpadding.top + self.opt.railpadding.bottom)
+        });
+        if (self.railh) self.railh.css({
+            width: self.win.innerWidth() - (self.opt.railpadding.left + self.opt.railpadding.right)
+        });
       } else {
         var wpos = self.getOffset();
         var pos = {top:wpos.top,left:wpos.left};
@@ -625,7 +629,12 @@
           if (self.rail.align&&off.left) pos.left+=off.left;
         }
 
-				if (!self.locked) self.rail.css({top:pos.top,left:pos.left,height:(len)?len.h:self.win.innerHeight()});
+				if (!self.locked)
+					self.rail.css({
+						top:pos.top,
+						left:pos.left,
+						height: ((len) ? len.h : self.win.innerHeight()) - (self.opt.railpadding.top + self.opt.railpadding.bottom)
+					});
 
 				if (self.zoom) {
 				  self.zoom.css({top:pos.top+1,left:(self.rail.align==1) ? pos.left-20 : pos.left+self.rail.width+4});
@@ -741,7 +750,7 @@
         rail.attr('id',self.id);
         rail.addClass('nicescroll-rails');
 
-        var v,a,kp = ["left","right"];  //"top","bottom"
+        var v,a,kp = ["left","right","top","bottom"];
         for(var n in kp) {
           a=kp[n];
           v = self.opt.railpadding[a];
@@ -1904,6 +1913,7 @@
         self.setScrollTop(0);
         self.rail.scrollable = false;
       } else {
+      	self.page.maxh -= (self.opt.railpadding.top + self.opt.railpadding.bottom);
         self.rail.scrollable = true;
       }
 
@@ -1916,6 +1926,7 @@
         self.setScrollLeft(0);
         self.railh.scrollable = false;
       } else {
+      	self.page.maxw -= (self.opt.railpadding.left + self.opt.railpadding.right);
         self.railh.scrollable = true;
       }
 
@@ -1938,11 +1949,11 @@
       self.cursorwidth = Math.min(self.view.w,Math.round(self.view.w * (self.view.w / self.page.w)));
       self.cursorwidth = (self.opt.cursorfixedheight) ? self.opt.cursorfixedheight : Math.max(self.opt.cursorminheight,self.cursorwidth);
 
-      self.scrollvaluemax = self.view.h-self.cursorheight-self.cursor.hborder;
+      self.scrollvaluemax = self.view.h - self.cursorheight - self.cursor.hborder - (self.opt.railpadding.top + self.opt.railpadding.bottom);
 
       if (self.railh) {
         self.railh.width = (self.page.maxh>0) ? (self.view.w-self.rail.width) : self.view.w;
-        self.scrollvaluemaxw = self.railh.width-self.cursorwidth-self.cursorh.wborder;
+        self.scrollvaluemaxw = self.railh.width - self.cursorwidth - self.cursorh.wborder - (self.opt.railpadding.left + self.opt.railpadding.right);
       }
 
 /*
