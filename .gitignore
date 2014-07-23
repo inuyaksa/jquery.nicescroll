@@ -1,0 +1,5 @@
+# ignore the dot files
+.DS_Store
+
+# ignore the nodejs stuff
+node_modules
