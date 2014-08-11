@@ -142,9 +142,6 @@
     d.hasmstouch = (window.MSPointerEvent||false);  // IE10 pointer events
     d.hasw3ctouch = (window.PointerEvent||false); //IE11 pointer events, following W3C Pointer Events spec
 
-    console.log(d.hasmstouch ? "ms" : "no ms");
-    console.log(d.hasw3ctouch ? "w3c" : "no w3c");
-
     d.ismac = /^mac$/i.test(navigator.platform);
 
     d.isios = (d.cantouch && /iphone|ipad|ipod/i.test(navigator.platform));
