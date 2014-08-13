@@ -994,7 +994,7 @@
             self.scrollmom = new ScrollMomentumClass2D(self);
           
             self.ontouchstart = function(e) {
-              if (e.pointerType&&e.pointerType!=2) return false;
+              if (e.pointerType&&e.pointerType!=2&&e.pointerType!="touch") return false;
               
 							self.hasmoving = false;
 							
@@ -1097,7 +1097,7 @@
             };
             
             self.ontouchend = function(e) {
-              if (e.pointerType&&e.pointerType!=2) return false;
+              if (e.pointerType&&e.pointerType!=2&&e.pointerType!="touch") return false;
               if (self.rail.drag&&(self.rail.drag.pt==2)) {
                 self.scrollmom.doMomentum();
                 self.rail.drag = false;
@@ -1115,7 +1115,7 @@
             
             self.ontouchmove = function(e,byiframe) {
               
-              if (e.pointerType&&e.pointerType!=2) return false;
+              if (e.pointerType&&e.pointerType!=2&&e.pointerType!="touch") return false;
     
               if (self.rail.drag&&(self.rail.drag.pt==2)) {
                 if (cap.cantouch&&(typeof e.original == "undefined")) return true;  // prevent ios "ghost" events by clickable elements
