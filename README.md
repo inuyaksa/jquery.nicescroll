@@ -68,103 +68,91 @@ Copy image "zoomico.png" in the same folder of jquery.nicescroll.js.
 
 Initialize nicescroll ALWAYS in (document) ready statement.
 ```javascript
-
-  1. Simple mode, it styles document scrollbar:
-  $(document).ready(
-    function() {  
-      $("html").niceScroll();
-    }
-  );
-
-  2. Instance with object returned:
-
-  var nice = false;
-  $(document).ready(
-    function() {  
-      nice = $("html").niceScroll();
-    }
-  );
-
-  3. Style a DIV and chage cursor color:
-
-  $(document).ready(
-    function() {  
-      $("#thisdiv").niceScroll({cursorcolor:"#00F"});
-    }
-  );
-
-  4. DIV with "wrapper", formed by two divs, the first is the vieport, the latter is the content:
-
-  $(document).ready(
-    function() {
-      $("#viewportdiv").niceScroll("#wrapperdiv",{cursorcolor:"#00F"});
-    }
-  );
-
-  5. Get nicescroll object:
-
-  var nice = $("#mydiv").getNiceScroll();
-
-  6. Hide scrollbars:
-
-  $("#mydiv").getNiceScroll().hide();
-
-  7. Check for scrollbars resize (when content or position have changed):
-
-  $("#mydiv").getNiceScroll().resize();
-
-  8. Scrolling to a position:
-
-  Scroll X Axis - $("#mydiv").getNiceScroll().doScrollLeft(x, duration);
-  Scroll Y Axis - $("#mydiv").getNiceScroll().doScrollTop(y, duration);
+    // 1. Simple mode, it styles document scrollbar:
+    $(document).ready(function() {  
+        $("html").niceScroll();
+    });
+    
+    // 2. Instance with object returned:
+    var nice = false;
+    $(document).ready(function() {  
+        nice = $("html").niceScroll();
+    });
+    
+    // 3. Style a DIV and chage cursor color:
+    $(document).ready(function() {  
+        $("#thisdiv").niceScroll({cursorcolor:"#00F"});
+    });
+    
+    // 4. DIV with "wrapper", formed by two divs, the first is the vieport, the latter is the content:
+    $(document).ready(function() {
+        $("#viewportdiv").niceScroll("#wrapperdiv",{cursorcolor:"#00F"});
+    });
+    
+    // 5. Get nicescroll object:
+    var nice = $("#mydiv").getNiceScroll();
+    
+    // 6. Hide scrollbars:
+    $("#mydiv").getNiceScroll().hide();
+    
+    // 7. Check for scrollbars resize (when content or position have changed):
+    $("#mydiv").getNiceScroll().resize();
+    
+    // 8. Scrolling to a position:
+    $("#mydiv").getNiceScroll().doScrollLeft(x, duration); // Scroll X Axis
+    $("#mydiv").getNiceScroll().doScrollTop(y, duration); // Scroll Y Axis
 ```
 
 ## CONFIGURATION PARAMETERS
 When you call "niceScroll" you can pass some parameters to custom visual aspects:
-  
-- cursorcolor - change cursor color in hex, default is "#000000"
-- cursoropacitymin - change opacity very cursor is inactive (scrollabar "hidden" state), range from 1 to 0, default is 0 (hidden)
-- cursoropacitymax - change opacity very cursor is active (scrollabar "visible" state), range from 1 to 0, default is 1 (full opacity)
-- cursorwidth - cursor width in pixel, default is 5 (you can write "5px" too)
-- cursorborder - css definition for cursor border, default is "1px solid #fff"
-- cursorborderradius - border radius in pixel for cursor, default is "4px"
-- zindex - change z-index for scrollbar div, default value is 9999
-- scrollspeed - scrolling speed, default value is 60
-- mousescrollstep - scrolling speed with mouse wheel, default value is 40 (pixel)
-- touchbehavior - enable cursor-drag scrolling like touch devices in desktop computer, default is false
-- hwacceleration - use hardware accelerated scroll when supported, default is true
-- boxzoom - enable zoom for box content, default is false
-- dblclickzoom - (only when boxzoom=true) zoom activated when double click on box, default is true
-- gesturezoom - (only when boxzoom=true and with touch devices) zoom activated when pinch out/in on box, default is true
-- grabcursorenabled, display "grab" icon for div with touchbehavior = true, default is true
-- autohidemode, how hide the scrollbar works, true=default / "cursor" = only cursor hidden / false = do not hide
-- background, change css for rail background, default is ""
-- iframeautoresize, autoresize iframe on load event (default:true)
-- cursorminheight, set the minimum cursor height in pixel (default:20)
-- preservenativescrolling, you can scroll native scrollable areas with mouse, bubbling mouse wheel event (default:true)
-- railoffset, you can add offset top/left for rail position (default:false)
-- bouncescroll, enable scroll bouncing at the end of content as mobile-like (only hw accell) (default:false)
-- spacebarenabled, enable page down scrolling when space bar has pressed (default:true)
-- railpadding, set padding for rail bar (default:{top:0,right:0,left:0,bottom:0})
-- disableoutline, for chrome browser, disable outline (orange hightlight) when selecting a div with nicescroll (default:true)
-- horizrailenabled, nicescroll can manage horizontal scroll (default:true)
-- railalign, alignment of vertical rail (defaul:"right")
-- railvalign, alignment of horizontal rail (defaul:"bottom")
-- enabletranslate3d, nicescroll can use css translate to scroll content (default:true)
-- enablemousewheel, nicescroll can manage mouse wheel events (default:true)
-- enablekeyboard, nicescroll can manage keyboard events (default:true)
-- smoothscroll, scroll with ease movement (default:true)
-- sensitiverail, click on rail make a scroll (default:true)
-- enablemouselockapi, can use mouse caption lock API (same issue on object dragging) (default:true)
-- cursorfixedheight, set fixed height for cursor in pixel (default:false)
-- hidecursordelay, set the delay in microseconds to fading out scrollbars (default:400)
-- directionlockdeadzone, dead zone in pixels for direction lock activation (default:6)
-- nativeparentscrolling , detect bottom of content and let parent to scroll, as native scroll does (default:true)
-- enablescrollonselection, enable auto-scrolling of content when selection text (default:true)
-- rtlmode, horizontal div scrolling starts at left side (default:false)
-- cursordragontouch, drag cursor in touch / touchbehavior mode also (default:false)
-- oneaxismousemode, it permits horizontal scrolling with mousewheel on horizontal only content, if false (vertical-only) mousewheel don't scroll horizontally, if value is auto detects two-axis mouse (default:"auto")
-- scriptpath, define custom path for boxmode icons (default:"" => same script path)
+
+```javascript
+    $("#thisdiv").niceScroll({
+        cursorcolor: "#000000", // change cursor color in hex
+        cursoropacitymin: 0, // change opacity when cursor is inactive (scrollabar "hidden" state), range from 1 to 0
+        cursoropacitymax: 1, // change opacity when cursor is active (scrollabar "visible" state), range from 1 to 0
+        cursorwidth: 5, // cursor width in pixel (you can also write "5px")
+        cursorborder: "1px solid #fff", // css definition for cursor border
+        cursorborderradius: "4px", // border radius in pixel for cursor
+        zindex: 9999, // change z-index for scrollbar div
+        scrollspeed: 60, // scrolling speed
+        mousescrollstep: 40, // scrolling speed with mouse wheel (pixel)
+        touchbehavior: false, // enable cursor-drag scrolling like touch devices in desktop computer
+        hwacceleration: true, // use hardware accelerated scroll when supported
+        boxzoom: false, // enable zoom for box content
+        dblclickzoom: true, // (only when boxzoom=true) zoom activated when double click on box
+        gesturezoom: true, // (only when boxzoom=true and with touch devices) zoom activated when pinch out/in on box
+        grabcursorenabled: true // (only when touchbehavior=true) display "grab" icon
+        autohidemode: true, // how hide the scrollbar works, possible values: true, "cursor" (only cursor hidden), false (do not hide),
+        background: "", // change css for rail background
+        iframeautoresize: true, // autoresize iframe on load event
+        cursorminheight: 20, // set the minimum cursor height (pixel)
+        preservenativescrolling: true, // you can scroll native scrollable areas with mouse, bubbling mouse wheel event
+        railoffset: false, // you can add offset top/left for rail position
+        bouncescroll: false, // (only hw accell) enable scroll bouncing at the end of content as mobile-like 
+        spacebarenabled: true, // enable page down scrolling when space bar has pressed
+        railpadding: { top: 0, right: 0, left: 0, bottom: 0 }, // set padding for rail bar
+        disableoutline: true, // for chrome browser, disable outline (orange highlight) when selecting a div with nicescroll
+        horizrailenabled: true, // nicescroll can manage horizontal scroll
+        railalign: right, // alignment of vertical rail
+        railvalign: bottom, // alignment of horizontal rail
+        enabletranslate3d: true, // nicescroll can use css translate to scroll content
+        enablemousewheel: true, // nicescroll can manage mouse wheel events
+        enablekeyboard: true, // nicescroll can manage keyboard events
+        smoothscroll: true, // scroll with ease movement
+        sensitiverail: true, // click on rail make a scroll
+        enablemouselockapi: true, // can use mouse caption lock API (same issue on object dragging)
+        cursorfixedheight: false, // set fixed height for cursor in pixel
+        hidecursordelay: 400, // set the delay in microseconds to fading out scrollbars
+        directionlockdeadzone: 6, // dead zone in pixels for direction lock activation
+        nativeparentscrolling: true, // detect bottom of content and let parent to scroll, as native scroll does
+        enablescrollonselection: true, // enable auto-scrolling of content when selection text
+        rtlmode: false, // horizontal div scrolling starts at left side
+        cursordragontouch: false, // drag cursor in touch / touchbehavior mode also
+        oneaxismousemode: "auto", // it permits horizontal scrolling with mousewheel on horizontal only content, if false (vertical-only) mousewheel don't scroll horizontally, if value is auto detects two-axis mouse
+        scriptpath: "" // define custom path for boxmode icons ("" => same script path)
+    });
+```
 
 * LICENSE
 
