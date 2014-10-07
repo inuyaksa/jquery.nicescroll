@@ -2042,7 +2042,7 @@
       var el = ("jquery" in dom) ? dom[0] : dom;
       
       if (name=='mousewheel') {
-        if ("onwheel' in document || document.documentMode >= 9) {            
+        if ('onwheel' in document || document.documentMode >= 9) {            
           self._bind(el,"wheel",fn,bubble||false);
         } else {            
           var wname = (typeof document.onmousewheel != "undefined") ? "mousewheel" : "DOMMouseScroll";  // older IE/Firefox
