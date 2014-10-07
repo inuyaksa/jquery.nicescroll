@@ -281,7 +281,7 @@
     this.cursorheight = 20;
     this.scrollvaluemax = 0;
     
-		this.isrtlmode = false; //(this.opt.rtlmode=="auto") ? (this.win.css("direction")=="rtl") : (this.opt.rtlmode===true);
+		this.isrtlmode = (this.opt.rtlmode=="auto") ? ((this.win[0]==window?this.body:this.win).css("direction")=="rtl") : (this.opt.rtlmode===true);
 //    this.checkrtlmode = false;
     
     this.scrollrunning = false;
@@ -330,7 +330,7 @@
     this.lastdeltay = 0;
     
     this.detected = getBrowserDetection(); 
-    
+
     var cap = $.extend({},this.detected);
  
     this.canhwscroll = (cap.hastransform&&self.opt.hwacceleration);
@@ -513,7 +513,7 @@
         this.notifyScrollEvent = function(el,add) {}; //NOPE
       }
       
-			var cxscrollleft = -1; //(this.isrtlmode) ? 1 : -1;
+			var cxscrollleft = (this.isrtlmode) ? 1 : -1;
 			
       if (cap.hastranslate3d&&self.opt.enabletranslate3d) {
         this.setScrollTop = function(val,silent) {
@@ -547,14 +547,16 @@
       this.getScrollTop = function() {
         return self.docscroll.scrollTop();
       };
-      this.setScrollTop = function(val) {        
+      this.setScrollTop = function(val) {
         return self.docscroll.scrollTop(val);
       };
       this.getScrollLeft = function() {
+        if(self.detected.ismozilla&&self.isrtlmode)
+            return Math.abs(self.docscroll.scrollLeft());
         return self.docscroll.scrollLeft();
       };
       this.setScrollLeft = function(val) {
-        return self.docscroll.scrollLeft(val);
+        return self.docscroll.scrollLeft((self.detected.ismozilla&&self.isrtlmode)?-val:val);
       };
     }
     
@@ -789,7 +791,7 @@
 
           var cursor = $(document.createElement('div'));
           cursor.css({
-            position:"relative",top:0,height:self.opt.cursorwidth,width:"0px",
+            position:"absolute",top:0,height:self.opt.cursorwidth,width:"0px",
             'background-color':self.opt.cursorcolor,
             border:self.opt.cursorborder,
             'background-clip':'padding-box',
@@ -1172,8 +1174,8 @@
                 }
                   
                 if (self.railh&&self.railh.scrollable) {
-                  var nx = self.rail.drag.sl-mx;; //(self.isrtlmode) ? mx-self.rail.drag.sl : self.rail.drag.sl-mx;
-									
+                  var nx = (self.isrtlmode) ? mx-self.rail.drag.sl : self.rail.drag.sl-mx;
+
                   if (self.ishwscroll&&self.opt.bouncescroll) {                  
                     if (nx<0) {
                       nx = Math.round(nx/2);
@@ -1945,12 +1947,12 @@
         self.scrollvaluemaxw = self.railh.width-self.cursorwidth-self.cursorh.wborder;
       }
       
-/*			
+/*
       if (self.checkrtlmode&&self.railh) {
         self.checkrtlmode = false;
         if (self.opt.rtlmode&&self.scroll.x==0) self.setScrollLeft(self.page.maxw);
       }
-*/			
+*/
       
       if (!self.ispage) self.updateScrollBar(self.view);
       
