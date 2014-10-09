@@ -1,5 +1,5 @@
 #jQuery.NiceScroll
-v. 3.5.4 11-13-2013
+v. 3.5.6 10-09-2014
  - [Web Site: nicescroll.areaaperta.com](http://nicescroll.areaaperta.com)
  - [Repo: github.com/inuyaksa/jquery.nicescroll](https://github.com/inuyaksa/jquery.nicescroll)
  - [Twitter: @nicescroll](https://twitter.com/nicescroll)
@@ -156,7 +156,7 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 
 * LICENSE
 
-## Copyright 2011-13 InuYaksa
+## Copyright 2011-14 InuYaksa
 
 ######Licensed under the MIT License, http://www.opensource.org/licenses/mit-license.php
 ######Images used for zoom icons have derived from OLPC interface, http://laptop.org/8.2.0/manual/Browse_ChangingView.html
