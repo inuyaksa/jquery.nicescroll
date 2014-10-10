@@ -1,0 +1,43 @@
+Changelog nicescroll release 3.5.6
+http://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+Notes
+Many thanks to contributors for a lot of fixes.
+
+
+New options
+
+
+Changed features
+
+
+Fixes
+- Missing comma after grabcursorenabled: true #438 - thanks to @rafasashi
+- fix syntax error #433 - thanks to @levinalex
+- updating package.json/bower.json to better fit bower recommandation #341 - thanks to @barraq
+- Added horizontal rail offset option. Functions idential to railoffset. #363 - thanks to @krusematt
+- Update onwheel detection #320 - thanks to @brandonaaron
+- Update tabindex setting to native behavior #328 - thanks to @yukulele
+- Fix rtl mode #233 #399 - thanks to @smbeiragh
+- Allow http / https connection (cursor loading from google site) #410 - thanks to @nasaorc
+- Windows 8.1 IE11 pointerType change #421 - thanks to @meszabalu
+
+
+Doc
+- Improved documentation / README #369 - thanks to @Zauberfisch
+
+
+TODO
+- checking on IE10 & IE11 (need more tests)
+- railpadding
+- railpadding top & bottom settings ignored - thanks to simovinci.bellissimo
+- honorcssoverflow
+- autohidemode:hover
+- check 2D scrolling
+- check text selection on cursor drag (testing)
+- recursive position:fixed check
+- check horiz mouse wheel scrolling speed on chrome
+- mouse pan scroll
+- check snappy
+- drop legacy support for shrink file size
