@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.5.6
+-- version 3.5.8 [BE]
 -- copyright 2014-10-09 InuYaksa*2014
 -- licensed under the MIT
 --
@@ -215,7 +215,7 @@
 
     var self = this;
 
-    this.version = '3.5.6';
+    this.version = '3.5.8 [BE]';
     this.name = 'nicescroll';
     
     this.me = me;
@@ -1683,7 +1683,7 @@
                mutations.forEach(function(mo){
                  if (mo.removedNodes.length>0) {
                    for (var dd in mo.removedNodes) {
-                     if (mo.removedNodes[dd]==self.win[0]) return self.remove();
+                     if (!!self&&(mo.removedNodes[dd]==self.win[0])) return self.remove();
                    }
                  }
                });
