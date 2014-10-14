@@ -119,13 +119,14 @@
     d.isopera12 = (d.isopera&&("getUserMedia" in navigator));
     d.isoperamini = (Object.prototype.toString.call(window.operamini) === "[object OperaMini]");
     
-    d.isie = (("all" in document) && ("attachEvent" in domtest) && !d.isopera);
+    d.isie = (("all" in document) && ("attachEvent" in domtest) && !d.isopera);  //IE10-
     d.isieold = (d.isie && !("msInterpolationMode" in domtest.style));  // IE6 and older
     d.isie7 = d.isie&&!d.isieold&&(!("documentMode" in document)||(document.documentMode==7));
     d.isie8 = d.isie&&("documentMode" in document)&&(document.documentMode==8);
     d.isie9 = d.isie&&("performance" in window)&&(document.documentMode>=9);
-    d.isie10 = d.isie&&("performance" in window)&&(document.documentMode>=10);
-    
+    d.isie10 = d.isie&&("performance" in window)&&(document.documentMode==10);
+    d.isie11 = ("msRequestFullscreen" in domtest)&&(document.documentMode>=11);  // IE11+
+
     d.isie9mobile = /iemobile.9/i.test(navigator.userAgent);  //wp 7.1 mango
     if (d.isie9mobile) d.isie9 = false;
     d.isie7mobile = (!d.isie9mobile&&d.isie7) && /iemobile/i.test(navigator.userAgent);  //wp 7.0
@@ -139,8 +140,9 @@
     d.ischrome26 = (d.ischrome&&("transition" in domtest.style));  // issue with transform detection (maintain prefix)
     
     d.cantouch = ("ontouchstart" in document.documentElement)||("ontouchstart" in window);  // detection for Chrome Touch Emulation
-    d.hasmstouch = (window.navigator.msPointerEnabled||false);  // IE10+ pointer events
-		
+    d.hasmstouch = (window.MSPointerEvent||false);  // IE10 pointer events
+    d.hasw3ctouch = (window.PointerEvent||false); //IE11 pointer events, following W3C Pointer Events spec
+
     d.ismac = /^mac$/i.test(navigator.platform);
     
     d.isios = (d.cantouch && /iphone|ipad|ipod/i.test(navigator.platform));
@@ -1399,18 +1401,23 @@
             
           }
           
-          if (cap.hasmstouch) {
+          if (cap.hasw3ctouch) {  //IE11+
+            self.css(self.rail,{'touch-action':'none'});
+            self.css(self.cursor,{'touch-action':'none'});
+            self.bind(self.win,"pointerdown",self.ontouchstart);
+            self.bind(document,"pointerup",self.ontouchend);
+            self.bind(document,"pointermove",self.ontouchmove);
+          }          
+          else if (cap.hasmstouch) {  //IE10
             self.css(self.rail,{'-ms-touch-action':'none'});
-            self.css(self.cursor,{'-ms-touch-action':'none'});
-            
+            self.css(self.cursor,{'-ms-touch-action':'none'});            
             self.bind(self.win,"MSPointerDown",self.ontouchstart);
             self.bind(document,"MSPointerUp",self.ontouchend);
             self.bind(document,"MSPointerMove",self.ontouchmove);
             self.bind(self.cursor,"MSGestureHold",function(e){e.preventDefault()});
             self.bind(self.cursor,"contextmenu",function(e){e.preventDefault()});
           }
-
-          if (this.istouchcapable) {  //desktop with screen touch enabled
+          else if (this.istouchcapable) {  //desktop with screen touch enabled
             self.bind(self.win,"touchstart",self.ontouchstart);
             self.bind(document,"touchend",self.ontouchend);
             self.bind(document,"touchcancel",self.ontouchend);
@@ -1422,21 +1429,7 @@
 
           if (self.railh) {
             self.bind(self.cursorh,"mousedown",function(e){self.onmousedown(e,true)});
-
-            self.bind(self.cursorh,"mouseup",self.onmouseup);
-
-						
-/*						
-            self.bind(self.cursorh,"mouseup",function(e){
-              if (self.rail.drag&&self.rail.drag.pt==2) return;
-              self.rail.drag = false;
-              self.hasmoving = false;
-              self.hideCursor();
-              if (cap.hasmousecapture) document.releaseCapture();
-              return self.cancelEvent(e);
-            });
-*/
-						
+            self.bind(self.cursorh,"mouseup",self.onmouseup);						
           }
 		
           if (self.opt.cursordragontouch||!cap.cantouch&&!self.opt.touchbehavior) {
