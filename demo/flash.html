@@ -1,0 +1,402 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>jQuery NiceScroll Test 5 - DOJO</title>
+<style type="text/css">
+#boxscroll {
+	padding: 0px;
+	height: 450px;
+	width: 420px;
+	border: 2px solid #0000FF;
+	overflow: auto;
+	margin: 0px;  
+}
+
+#boxscroll table {
+  background-image: url(img/12_free_subtle_textures_free_web_backgrounds.jpg);
+}
+  
+.tabtest {
+}
+.row {  	
+  background-color: #FFFFCC;
+  background-color: rgba(255,255,200,0.6);
+}
+.row2 {
+	background-color: #66CCFF;
+  background-color: rgba(120,255,200,0.6);
+}
+#boxscroll2 {
+	padding: 0px;
+	height: 450px;
+	width: 420px;
+	border: 2px solid #FF0000;
+	overflow: auto;
+	margin: 0px;
+}
+</style>
+
+<script src="js/jquery.min.js"></script>
+<script src="../jquery.nicescroll.js"></script>
+
+
+<script>
+  $(document).ready(function() {
+  
+    $("body").niceScroll();
+  
+    var theme = {
+      touchbehavior:false,
+      cursorcolor:"#0096ce",
+      cursorwidth:"8px",
+//      cursorborder:"",
+      background:"#a0ffa0",
+    }
+  
+    var nice = $("#boxscroll").niceScroll(theme);
+	
+    $("#nicever").html(nice.version);
+  
+    theme.cursorcolor = "#ff0000";
+  
+    $("#boxscroll2 div").html($("#boxscroll").html());	
+    $("#boxscroll2").niceScroll("#boxscroll2 div",theme);
+	
+  });
+  
+</script>
+
+<meta name="viewport" content="user-scalable=no" />
+
+</head>
+
+<body>
+<h2>NICESCROLL - SCROLLING TEST</h2>
+<table width="100%" border="0" cellspacing="0" cellpadding="4">
+  <tr>
+    <td>TEST PAGE <span id="nicever"></span></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>NATIVE (simple div with overflow:auto)</td>
+    <td>HWSCROLL (div+wrapper)</td>
+  </tr>
+  <tr>
+    <td align="left" valign="top"><div id="boxscroll" style="position:relative" dir="rtl">
+      <table width="600px" border="0" cellpadding="8" cellspacing="0" class="tabtest">
+        <tr>
+          <td>1</td>
+          </tr>
+        <tr>
+          <td class="row">2</td>
+          </tr>
+        <tr>
+          <td>3</td>
+          </tr>
+        <tr>
+          <td class="row">4</td>
+          </tr>
+        <tr>
+          <td>5</td>
+          </tr>
+        <tr>
+          <td class="row">6</td>
+          </tr>
+        <tr>
+          <td>7</td>
+          </tr>
+        <tr>
+          <td class="row"><iframe width="560" height="315" src="//www.youtube.com/embed/SQidpWIxmAs" frameborder="0" allowfullscreen></iframe></td>
+          </tr>
+        <tr>
+          <td>9</td>
+          </tr>
+        <tr>
+          <td class="row2">0</td>
+          </tr>
+        <tr>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td class="row">2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="row">4</td>
+        </tr>
+        <tr>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td class="row">6</td>
+        </tr>
+        <tr>
+          <td>7</td>
+        </tr>
+        <tr>
+          <td class="row">8</td>
+        </tr>
+        <tr>
+          <td>9</td>
+        </tr>
+        <tr>
+          <td class="row2">0</td>
+        </tr>
+        <tr>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td class="row">2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="row">4</td>
+        </tr>
+        <tr>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td class="row">6</td>
+        </tr>
+        <tr>
+          <td>7</td>
+        </tr>
+        <tr>
+          <td class="row">8</td>
+        </tr>
+        <tr>
+          <td>9</td>
+        </tr>
+        <tr>
+          <td class="row2">0</td>
+        </tr>
+        <tr>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td class="row">2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="row">4</td>
+        </tr>
+        <tr>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td class="row">6</td>
+        </tr>
+        <tr>
+          <td>7</td>
+        </tr>
+        <tr>
+          <td class="row">8</td>
+        </tr>
+        <tr>
+          <td>9</td>
+        </tr>
+        <tr>
+          <td class="row2">0</td>
+        </tr>
+        <tr>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td class="row">2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="row">4</td>
+        </tr>
+        <tr>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td class="row">6</td>
+        </tr>
+        <tr>
+          <td>7</td>
+        </tr>
+        <tr>
+          <td class="row">8</td>
+        </tr>
+        <tr>
+          <td>9</td>
+        </tr>
+        <tr>
+          <td class="row2">0</td>
+        </tr>
+        <tr>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td class="row">2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="row">4</td>
+        </tr>
+        <tr>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td class="row">6</td>
+        </tr>
+        <tr>
+          <td>7</td>
+        </tr>
+        <tr>
+          <td class="row">8</td>
+        </tr>
+        <tr>
+          <td>9</td>
+        </tr>
+        <tr>
+          <td class="row2">0</td>
+        </tr>
+        <tr>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td class="row">2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="row">4</td>
+        </tr>
+        <tr>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td class="row">6</td>
+        </tr>
+        <tr>
+          <td>7</td>
+        </tr>
+        <tr>
+          <td class="row">8</td>
+        </tr>
+        <tr>
+          <td>9</td>
+        </tr>
+        <tr>
+          <td class="row2">0</td>
+        </tr>
+        <tr>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td class="row">2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="row">4</td>
+        </tr>
+        <tr>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td class="row">6</td>
+        </tr>
+        <tr>
+          <td>7</td>
+        </tr>
+        <tr>
+          <td class="row">8</td>
+        </tr>
+        <tr>
+          <td>9</td>
+        </tr>
+        <tr>
+          <td class="row2">0</td>
+        </tr>
+        <tr>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td class="row">2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="row">4</td>
+        </tr>
+        <tr>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td class="row">6</td>
+        </tr>
+        <tr>
+          <td>7</td>
+        </tr>
+        <tr>
+          <td class="row">8</td>
+        </tr>
+        <tr>
+          <td>9</td>
+        </tr>
+        <tr>
+          <td class="row2">0</td>
+        </tr>
+        <tr>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td class="row">2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td class="row">4</td>
+        </tr>
+        <tr>
+          <td>5</td>
+        </tr>
+        <tr>
+          <td class="row">6</td>
+        </tr>
+        <tr>
+          <td>7</td>
+        </tr>
+        <tr>
+          <td class="row">8</td>
+        </tr>
+        <tr>
+          <td>9</td>
+        </tr>
+        <tr>
+          <td class="row2">0</td>
+        </tr>
+        <tr>
+          <td class="row">&nbsp;</td>
+        </tr>
+      </table>
+    </div></td>
+    <td align="left" valign="top"><div id="boxscroll2"><div class="content"></div></div></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+</body>
+</html>

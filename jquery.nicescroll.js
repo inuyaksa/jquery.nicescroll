@@ -2599,7 +2599,7 @@
         if (dd.getNiceScroll().length > 0) return dd;
         dom = (dom.parentNode) ? dom.parentNode : false;
       }
-      return (dom) ? $(dom) : false;
+      return false;
     };
 
     this.triggerScrollEnd = function() {
