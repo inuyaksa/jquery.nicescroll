@@ -25,7 +25,7 @@ body {
 </style>
 
 <script src="js/jquery.min.js"></script>
-<script src="js/jquery.nicescroll.min.js"></script>
+<script src="../jquery.nicescroll.js"></script>
 
 <script>
   var nice = false;
@@ -62,6 +62,8 @@ body {
 	toCell(3,5,nice.detected.isie7);
 	toCell(3,6,nice.detected.isieold);
 
+  toCell(7,1,nice.detected.isie11);
+  
 	toCell(4,1,nice.detected.isopera);
   toCell(4,2,nice.detected.isopera12);
   toCell(4,3,nice.detected.isoperamini);
@@ -76,6 +78,7 @@ body {
 	
 	toCell(0,8,nice.detected.cantouch);
 	toCell(3,8,nice.detected.hasmstouch);
+  toCell(7,8,nice.detected.hasw3ctouch);
 
 	toCell(1,10,nice.detected.hastransform);
 	toCell(1,11,nice.detected.hastranslate3d);
@@ -122,7 +125,7 @@ body {
     <td bgcolor="#E0E0E9">Opera</td>
     <td bgcolor="#E0E0E9">iOS <span class="num">(7)</span></td>
 		<td bgcolor="#E0E0E9">Chrome</td>
-    <td>&nbsp;</td>
+    <td bgcolor="#E0E0E9">IE11+</td>
   </tr>
   <tr>
     <td bgcolor="#E0E0E9">Families</td>
@@ -132,7 +135,7 @@ body {
     <td bgcolor="#E0E0E9">Opera&nbsp;12</td>
     <td bgcolor="#E0E0E9">iOS4- <span class="num">(6)</span></td>
 		<td bgcolor="#E0E0E9">Chrome 22+</td>
-    <td>&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
   </tr>
   <tr>
     <td bgcolor="#E0E0E9">&nbsp;</td>
@@ -142,7 +145,7 @@ body {
     <td bgcolor="#E0E0E9">Opera&nbsp;Mini</td>
     <td bgcolor="#E0E0E9">&nbsp;</td>
 		<td bgcolor="#E0E0E9">Chrome 26+</td>
-    <td>&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
   </tr>
   <tr>
     <td bgcolor="#E0E0E9">&nbsp;</td>
@@ -152,7 +155,7 @@ body {
     <td bgcolor="#E0E0E9">&nbsp;</td>
     <td bgcolor="#E0E0E9">&nbsp;</td>
 		<td bgcolor="#E0E0E9">&nbsp;</td>
-    <td>&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
   </tr>
   <tr>
     <td bgcolor="#E0E0E9">&nbsp;</td>
@@ -162,7 +165,7 @@ body {
     <td bgcolor="#E0E0E9">&nbsp;</td>
     <td bgcolor="#E0E0E9">&nbsp;</td>
 		<td bgcolor="#E0E0E9">&nbsp;</td>
-    <td>&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
   </tr>
   <tr>
     <td bgcolor="#E0E0E9">&nbsp;</td>
@@ -172,7 +175,7 @@ body {
     <td bgcolor="#E0E0E9">&nbsp;</td>
     <td bgcolor="#E0E0E9">&nbsp;</td>
 		<td bgcolor="#E0E0E9">&nbsp;</td>
-    <td>&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
   </tr>
   <tr>
     <td>&nbsp;</td>
@@ -192,7 +195,7 @@ body {
     <td>&nbsp;</td>
     <td>&nbsp;</td>
 		<td>&nbsp;</td>
-    <td>&nbsp;</td>
+    <td>Pointer (W3C)</td>
   </tr>
   <tr>
     <td>&nbsp;</td>
@@ -212,7 +215,7 @@ body {
     <td bgcolor="#E0E0E9">MutationObserver</td>
     <td bgcolor="#E0E0E9">&nbsp;</td>
 		<td bgcolor="#E0E0E9">&nbsp;</td>
-    <td>&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
   </tr>
   <tr>
     <td bgcolor="#E0E0E9">&nbsp;</td>
@@ -222,7 +225,7 @@ body {
     <td bgcolor="#E0E0E9">&nbsp;</td>
     <td bgcolor="#E0E0E9">&nbsp;</td>
 		<td bgcolor="#E0E0E9">&nbsp;</td>
-    <td>&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
   </tr>
   <tr>
     <td bgcolor="#E0E0E9">&nbsp;</td>
@@ -232,7 +235,7 @@ body {
     <td bgcolor="#E0E0E9">&nbsp;</td>
     <td bgcolor="#E0E0E9">&nbsp;</td>
 		<td bgcolor="#E0E0E9">&nbsp;</td>
-    <td>&nbsp;</td>
+    <td bgcolor="#E0E0E9">&nbsp;</td>
   </tr>
   <tr>
     <td>&nbsp;</td>
