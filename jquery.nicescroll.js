@@ -42,7 +42,7 @@
   var setAnimationFrame = window.requestAnimationFrame || false;
   var clearAnimationFrame = window.cancelAnimationFrame || false;
 
-  if (!setAnimationFrame) {
+  if (!setAnimationFrame) {  // legacy detection
     for (var vx in vendors) {
       var v = vendors[vx];
       if (!setAnimationFrame) setAnimationFrame = window[v + 'RequestAnimationFrame'];
@@ -154,6 +154,7 @@
 
     d.isios = (d.cantouch && /iphone|ipad|ipod/i.test(navigator.platform));
     d.isios4 = ((d.isios) && !("seal" in Object));
+    d.isios7 = ((d.isios)&&("webkitHidden" in document));
 
     d.isandroid = (/android/i.test(navigator.userAgent));
 
@@ -192,7 +193,7 @@
         break;
       }
     }
-    if (d.ischrome26) { // use always prefix
+    if (d.ischrome26) {  // always use prefix
       d.prefixstyle = prefix[1];
     }
 
