@@ -34,14 +34,13 @@
     var path=scripts[scripts.length-1].src.split('?')[0];
     return (path.split('/').length>0) ? path.split('/').slice(0,-1).join('/')+'/' : '';
   }
-//  var scriptpath = getScriptPath();
   
   var vendors = ['ms','moz','webkit','o'];
   
   var setAnimationFrame = window.requestAnimationFrame||false;
   var clearAnimationFrame = window.cancelAnimationFrame||false;
 
-  if (!setAnimationFrame) {
+  if (!setAnimationFrame) {  // legacy detection
     for(var vx in vendors) {
       var v = vendors[vx];
       if (!setAnimationFrame) setAnimationFrame = window[v+'RequestAnimationFrame'];
@@ -124,7 +123,8 @@
     d.isie7 = d.isie&&!d.isieold&&(!("documentMode" in document)||(document.documentMode==7));
     d.isie8 = d.isie&&("documentMode" in document)&&(document.documentMode==8);
     d.isie9 = d.isie&&("performance" in window)&&(document.documentMode>=9);
-    d.isie10 = d.isie&&("performance" in window)&&(document.documentMode>=10);
+    d.isie10 = d.isie&&("performance" in window)&&(document.documentMode>=10);   // IE10 only
+    d.isie11 = ("msRequestFullscreen" in domtest)&&(document.documentMode>=11);  // attachEvent deprecated on IE11
     
     d.isie9mobile = /iemobile.9/i.test(navigator.userAgent);  //wp 7.1 mango
     if (d.isie9mobile) d.isie9 = false;
@@ -139,12 +139,14 @@
     d.ischrome26 = (d.ischrome&&("transition" in domtest.style));  // issue with transform detection (maintain prefix)
     
     d.cantouch = ("ontouchstart" in document.documentElement)||("ontouchstart" in window);  // detection for Chrome Touch Emulation
-    d.hasmstouch = (window.navigator.msPointerEnabled||false);  // IE10+ pointer events
+    d.hasmstouch = (window.MSPointerEvent||false);  // IE10 pointer events
+    d.hasw3ctouch = (window.PointerEvent||false); //IE11 pointer events, following W3C Pointer Events spec
 		
     d.ismac = /^mac$/i.test(navigator.platform);
     
     d.isios = (d.cantouch && /iphone|ipad|ipod/i.test(navigator.platform));
     d.isios4 = ((d.isios)&&!("seal" in Object));
+    d.isios7 = ((d.isios)&&("webkitHidden" in document));
     
     d.isandroid = (/android/i.test(navigator.userAgent));
     
@@ -182,7 +184,7 @@
         break;
       }
     }
-    if (d.ischrome26) {  // use always prefix
+    if (d.ischrome26) {  // always use prefix
       d.prefixstyle = prefix[1];
     }
     
@@ -1283,6 +1285,11 @@
             if (self.rail.drag) {
               if(self.rail.drag.pt!=1)return;
               
+              if (!self.rail.visibility && !self.railh.visibility) {
+                self.rail.drag = false;
+                return;
+              }
+              
               if (cap.ischrome&&e.which==0) return self.onmouseup(e);
               
               self.cursorfreezed = true;
@@ -1399,7 +1406,16 @@
             
           }
           
-          if (cap.hasmstouch) {
+
+          if(cap.hasw3ctouch) {
+            self.css(self.rail,{'touch-action':'none'});
+            self.css(self.cursor,{'touch-action':'none'});
+
+            self.bind(self.win,"pointerdown",self.ontouchstart);
+            self.bind(document,"pointerup",self.ontouchend);
+            self.bind(document,"pointermove",self.ontouchmove);
+          }
+          else if (cap.hasmstouch) {
             self.css(self.rail,{'-ms-touch-action':'none'});
             self.css(self.cursor,{'-ms-touch-action':'none'});
             
@@ -1409,6 +1425,7 @@
             self.bind(self.cursor,"MSGestureHold",function(e){e.preventDefault()});
             self.bind(self.cursor,"contextmenu",function(e){e.preventDefault()});
           }
+
 
           if (this.istouchcapable) {  //desktop with screen touch enabled
             self.bind(self.win,"touchstart",self.ontouchstart);
