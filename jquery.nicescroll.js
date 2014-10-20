@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.5.8 [BE.3]
+-- version 3.5.8 [BE.4]
 -- copyright 2014-10-20 InuYaksa*2014
 -- licensed under the MIT
 --
@@ -226,7 +226,7 @@
 
     var self = this;
 
-    this.version = '3.5.8 [BE.3]';
+    this.version = '3.5.8 [BE.4]';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -806,7 +806,7 @@
 
         var cont = self.docscroll;
         if (self.ispage) cont = (self.haswrapper) ? self.win : self.doc;
-
+        
         if (!cap.isie9mobile) self.css(cont, {
           'overflow-y': 'hidden'
         });
@@ -1622,7 +1622,7 @@
             }
 
             self.onselectionstart = function(e) {            
-              if (!self.haswrapper&&e.which||0==2) {  // fool browser to manage middle button scrolling
+              if (!self.haswrapper&&(e.which&&e.which==2)) {  // fool browser to manage middle button scrolling
                 self.win.css({'overflow':'auto'});
                 setTimeout(function(){
                   self.win.css({'overflow':''});
