@@ -1472,7 +1472,7 @@
           self.onmousedown = function(e, hronly) {
             if (self.rail.drag && self.rail.drag.pt != 1) return;
             if (self.locked) return self.cancelEvent(e);
-            self.cancelScroll();
+            self.cancelScroll();            
             self.rail.drag = {
               x: e.clientX,
               y: e.clientY,
@@ -1621,10 +1621,18 @@
               };
             }
 
-            self.onselectionstart = function(e) {
+            self.onselectionstart = function(e) {            
+              if (!self.haswrapper&&e.which||0==2) {  // fool browser to manage middle button scrolling
+                self.win.css({'overflow':'auto'});
+                setTimeout(function(){
+                  self.win.css({'overflow':''});
+                },10);                
+                return true;
+              }            
               if (self.ispage) return;
-              self.selectiondrag = self.win.offset();
+              self.selectiondrag = self.win.offset();              
             };
+            
             self.onselectionend = function(e) {
               self.selectiondrag = false;
             };
