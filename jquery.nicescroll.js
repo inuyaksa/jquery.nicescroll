@@ -1,6 +1,6 @@
 /* jquery.nicescroll
--- version 3.5.8 [BE.2]
--- copyright 2014-10-09 InuYaksa*2014
+-- version 3.5.8 [BE.3]
+-- copyright 2014-10-20 InuYaksa*2014
 -- licensed under the MIT
 --
 -- http://nicescroll.areaaperta.com/
@@ -226,7 +226,7 @@
 
     var self = this;
 
-    this.version = '3.5.8 [BE.2]';
+    this.version = '3.5.8 [BE.3]';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -2599,7 +2599,7 @@
         if (dd.getNiceScroll().length > 0) return dd;
         dom = (dom.parentNode) ? dom.parentNode : false;
       }
-      return false;
+      return false; //(dom) ? $(dom) : false;
     };
 
     this.triggerScrollEnd = function() {
@@ -2767,7 +2767,7 @@
         });
       };
       this.cancelScroll = function() {}; // direct
-    } else if (self.ishwscroll && cap.hastransition && self.opt.usetransition) {
+    } else if (self.ishwscroll && cap.hastransition && self.opt.usetransition && !!self.opt.smoothscroll) {
       this.prepareTransition = function(dif, istime) {
         var ex = (istime) ? ((dif > 20) ? dif : 0) : self.getTransitionSpeed(dif);
         var trans = (ex) ? cap.prefixstyle + 'transform ' + ex + 'ms ease-out' : '';
