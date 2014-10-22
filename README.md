@@ -1,5 +1,9 @@
 #jQuery.NiceScroll
 v. 3.5.6 10-09-2014
+
+If you are a developer you can try bleeding-edge version:
+https://github.com/inuyaksa/jquery.nicescroll/tree/Bleeding-edge
+
  - [Web Site: nicescroll.areaaperta.com](http://nicescroll.areaaperta.com)
  - [Repo: github.com/inuyaksa/jquery.nicescroll](https://github.com/inuyaksa/jquery.nicescroll)
  - [Twitter: @nicescroll](https://twitter.com/nicescroll)
