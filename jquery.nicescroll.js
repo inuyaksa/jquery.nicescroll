@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.5.8 [BE.4]
+-- version 3.5.8 [BE.5]
 -- copyright 2014-10-20 InuYaksa*2014
 -- licensed under the MIT
 --
@@ -226,7 +226,7 @@
 
     var self = this;
 
-    this.version = '3.5.8 [BE.4]';
+    this.version = '3.5.8 [BE.5]';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -2254,7 +2254,7 @@
         self.railh.scrollable = true;
       }
 
-      self.locked = (self.page.maxh == 0) && (self.page.maxw == 0);
+      self.locked = (self.locked) || ((self.page.maxh == 0) && (self.page.maxw == 0));
       if (self.locked) {
         if (!self.ispage) self.updateScrollBar(self.view);
         return false;
