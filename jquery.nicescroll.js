@@ -1,11 +1,6 @@
 /* jquery.nicescroll
-<<<<<<< HEAD
 -- version 3.5.8 [BE.6]
 -- copyright 2014-11-09 InuYaksa*2014
-=======
--- version 3.5.8 [BE.5]
--- copyright 2014-10-20 InuYaksa*2014
->>>>>>> origin/Bleeding-edge
 -- licensed under the MIT
 --
 -- http://nicescroll.areaaperta.com/
@@ -231,11 +226,7 @@
 
     var self = this;
 
-<<<<<<< HEAD
     this.version = '3.5.8 [BE.6]';
-=======
-    this.version = '3.5.8 [BE.5]';
->>>>>>> origin/Bleeding-edge
     this.name = 'nicescroll';
 
     this.me = me;
@@ -815,7 +806,7 @@
 
         var cont = self.docscroll;
         if (self.ispage) cont = (self.haswrapper) ? self.win : self.doc;
-        
+
         if (!cap.isie9mobile) self.css(cont, {
           'overflow-y': 'hidden'
         });
@@ -1487,7 +1478,7 @@
           self.onmousedown = function(e, hronly) {
             if (self.rail.drag && self.rail.drag.pt != 1) return;
             if (self.locked) return self.cancelEvent(e);
-            self.cancelScroll();            
+            self.cancelScroll();
             self.rail.drag = {
               x: e.clientX,
               y: e.clientY,
@@ -1636,12 +1627,8 @@
               };
             }
 
-<<<<<<< HEAD
             self.onselectionstart = function(e) {
 /*  More testing - severe chrome issues            
-=======
-            self.onselectionstart = function(e) {            
->>>>>>> origin/Bleeding-edge
               if (!self.haswrapper&&(e.which&&e.which==2)) {  // fool browser to manage middle button scrolling
                 self.win.css({'overflow':'auto'});
                 setTimeout(function(){
@@ -1649,12 +1636,9 @@
                 },10);                
                 return true;
               }            
-<<<<<<< HEAD
 */              
-=======
->>>>>>> origin/Bleeding-edge
               if (self.ispage) return;
-              self.selectiondrag = self.win.offset();              
+              self.selectiondrag = self.win.offset();
             };
             
             self.onselectionend = function(e) {
