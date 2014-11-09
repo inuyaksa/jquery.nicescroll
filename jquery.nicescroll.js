@@ -1,6 +1,6 @@
 /* jquery.nicescroll
--- version 3.5.8 [BE.2]
--- copyright 2014-10-09 InuYaksa*2014
+-- version 3.5.8 [BE.6]
+-- copyright 2014-11-09 InuYaksa*2014
 -- licensed under the MIT
 --
 -- http://nicescroll.areaaperta.com/
@@ -31,11 +31,11 @@
 
   // http://stackoverflow.com/questions/2161159/get-script-path
   function getScriptPath() {
-      var scripts = document.getElementsByTagName('script');
-      var path = scripts[scripts.length - 1].src.split('?')[0];
-      return (path.split('/').length > 0) ? path.split('/').slice(0, -1).join('/') + '/' : '';
-    }
-    //  var scriptpath = getScriptPath();
+    var scripts = document.getElementsByTagName('script');
+    var path = scripts[scripts.length - 1].src.split('?')[0];
+    return (path.split('/').length > 0) ? path.split('/').slice(0, -1).join('/') + '/' : '';
+  }
+  //  var scriptpath = getScriptPath();
 
   var vendors = ['ms', 'moz', 'webkit', 'o'];
 
@@ -122,7 +122,7 @@
 
     d.haspointerlock = "pointerLockElement" in document || "mozPointerLockElement" in document || "webkitPointerLockElement" in document;
 
-    d.isopera = ("opera" in window);
+    d.isopera = ("opera" in window); // 12-
     d.isopera12 = (d.isopera && ("getUserMedia" in navigator));
     d.isoperamini = (Object.prototype.toString.call(window.operamini) === "[object OperaMini]");
 
@@ -226,7 +226,7 @@
 
     var self = this;
 
-    this.version = '3.5.8 [BE.2]';
+    this.version = '3.5.8 [BE.6]';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -840,11 +840,14 @@
         });
 
         cursor.hborder = parseFloat(cursor.outerHeight() - cursor.innerHeight());
+        
+        cursor.addClass('nicescroll-cursors');
+        
         self.cursor = cursor;
 
         var rail = $(document.createElement('div'));
         rail.attr('id', self.id);
-        rail.addClass('nicescroll-rails');
+        rail.addClass('nicescroll-rails nicescroll-rails-vr');
 
         var v, a, kp = ["left","right","top","bottom"];  //**
         for (var n in kp) {
@@ -930,11 +933,14 @@
           });
 
           cursor.wborder = parseFloat(cursor.outerWidth() - cursor.innerWidth());
+          
+          cursor.addClass('nicescroll-cursors');
+          
           self.cursorh = cursor;
 
           railh = $(document.createElement('div'));
           railh.attr('id', self.id + '-hr');
-          railh.addClass('nicescroll-rails');
+          railh.addClass('nicescroll-rails nicescroll-rails-hr');
           railh.height = Math.max(parseFloat(self.opt.cursorwidth), cursor.outerHeight());
           railh.css({
             height: railh.height + "px",
@@ -1622,9 +1628,19 @@
             }
 
             self.onselectionstart = function(e) {
+/*  More testing - severe chrome issues            
+              if (!self.haswrapper&&(e.which&&e.which==2)) {  // fool browser to manage middle button scrolling
+                self.win.css({'overflow':'auto'});
+                setTimeout(function(){
+                  self.win.css({'overflow':''});
+                },10);                
+                return true;
+              }            
+*/              
               if (self.ispage) return;
               self.selectiondrag = self.win.offset();
             };
+            
             self.onselectionend = function(e) {
               self.selectiondrag = false;
             };
@@ -1989,7 +2005,7 @@
         self.lazyResize(30);
 
       }
-
+      
       if (this.doc[0].nodeName == 'IFRAME') {
         //        function oniframeload(e) {
         var oniframeload = function() {
@@ -2002,7 +2018,7 @@
             self.iframexd = true;
             doc = false
           }
-
+          
           if (self.iframexd) {
             if ("console" in window) console.log('NiceScroll error: policy restriced iframe');
             return true; //cross-domain - I can't manage this        
@@ -2246,7 +2262,7 @@
         self.railh.scrollable = true;
       }
 
-      self.locked = (self.page.maxh == 0) && (self.page.maxw == 0);
+      self.locked = (self.locked) || ((self.page.maxh == 0) && (self.page.maxw == 0));
       if (self.locked) {
         if (!self.ispage) self.updateScrollBar(self.view);
         return false;
@@ -2599,7 +2615,7 @@
         if (dd.getNiceScroll().length > 0) return dd;
         dom = (dom.parentNode) ? dom.parentNode : false;
       }
-      return false;
+      return false; //(dom) ? $(dom) : false;
     };
 
     this.triggerScrollEnd = function() {
@@ -2767,7 +2783,7 @@
         });
       };
       this.cancelScroll = function() {}; // direct
-    } else if (self.ishwscroll && cap.hastransition && self.opt.usetransition) {
+    } else if (self.ishwscroll && cap.hastransition && self.opt.usetransition && !!self.opt.smoothscroll) {
       this.prepareTransition = function(dif, istime) {
         var ex = (istime) ? ((dif > 20) ? dif : 0) : self.getTransitionSpeed(dif);
         var trans = (ex) ? cap.prefixstyle + 'transform ' + ex + 'ms ease-out' : '';
