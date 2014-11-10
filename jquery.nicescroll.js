@@ -1,6 +1,6 @@
 /* jquery.nicescroll
--- version 3.5.8 [BE.6]
--- copyright 2014-11-09 InuYaksa*2014
+-- version 3.6.0 [RC1]
+-- copyright 2014-11-10 InuYaksa*2014
 -- licensed under the MIT
 --
 -- http://nicescroll.areaaperta.com/
@@ -226,7 +226,7 @@
 
     var self = this;
 
-    this.version = '3.5.8 [BE.6]';
+    this.version = '3.6.0 [RC1]';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -325,7 +325,8 @@
     this.hasmousefocus = false;
 
     this.visibility = true;
-    this.locked = false;
+    this.railslocked = false;  // locked by resize
+    this.locked = false;  // prevent lost of locked status sets by user
     this.hidden = false; // rails always hidden
     this.cursoractive = true; // user can interact with cursors
 
@@ -694,7 +695,7 @@
           if (self.rail.align && off.left) pos.left += off.left;
         }
 
-        if (!self.locked) self.rail.css({
+        if (!self.railslocked) self.rail.css({
           top: pos.top,
           left: pos.left,
           height: ((len) ? len.h : self.win.innerHeight()) - (self.opt.railpadding.top + self.opt.railpadding.bottom)
@@ -707,7 +708,7 @@
           });
         }
 
-        if (self.railh && !self.locked) {
+        if (self.railh && !self.railslocked) {
           var pos = {
             top: wpos.top,
             left: wpos.left
@@ -735,7 +736,7 @@
       var fn, pg, cur, pos;
 
       //      if (self.rail.drag&&self.rail.drag.pt!=1) return;
-      if (self.locked) return;
+      if (self.railslocked) return;
       //      if (self.rail.drag) return;
 
       //      self.cancelScroll();       
@@ -1088,7 +1089,7 @@
         } else if (self.opt.autohidemode == "hidden") {
           self.autohidedom = false;
           self.hide();
-          self.locked = false;
+          self.railslocked = false;
         }
 
         if (cap.isie9mobile) {
@@ -1197,7 +1198,7 @@
 
               self.hasmoving = false;
 
-              if (!self.locked) {
+              if (!self.railslocked) {
 
                 var tg;
                 if (cap.hasmstouch) {
@@ -1477,7 +1478,7 @@
 
           self.onmousedown = function(e, hronly) {
             if (self.rail.drag && self.rail.drag.pt != 1) return;
-            if (self.locked) return self.cancelEvent(e);
+            if (self.railslocked) return self.cancelEvent(e);
             self.cancelScroll();
             self.rail.drag = {
               x: e.clientX,
@@ -1707,7 +1708,7 @@
             });
 
             self.jqbind(self.rail, "mouseenter", function() {
-              if (!self.win.is(":visible")) return false;
+              if (!self.ispage && !self.win.is(":visible")) return false;
               if (self.canshowonmouseevent) self.showCursor();
               self.rail.active = true;
             });
@@ -1733,7 +1734,7 @@
 
             if (self.railh) {
               self.jqbind(self.railh, "mouseenter", function() {
-                if (!self.win.is(":visible")) return false;
+                if (!self.ispage && !self.win.is(":visible")) return false;
                 if (self.canshowonmouseevent) self.showCursor();
                 self.rail.active = true;
               });
@@ -1841,7 +1842,7 @@
 
         //Thanks to http://www.quirksmode.org !!
         self.onkeypress = function(e) {
-          if (self.locked && self.page.maxh == 0) return true;
+          if (self.railslocked && self.page.maxh == 0) return true;
 
           e = (e) ? e : window.e;
           var tg = self.getTarget(e);
@@ -1855,7 +1856,7 @@
           if (self.hasfocus || (self.hasmousefocus && !domfocus) || (self.ispage && !domfocus && !mousefocus)) {
             var key = e.keyCode;
 
-            if (self.locked && key != 27) return self.cancelEvent(e);
+            if (self.railslocked && key != 27) return self.cancelEvent(e);
 
             var ctrl = e.ctrlKey || false;
             var shift = e.shiftKey || false;
@@ -2192,7 +2193,7 @@
       };
 
     this.onResize = function(e, page) {
-
+    
       if (!self || !self.win) return false;
 
       if (!self.haswrapper && !self.ispage) {
@@ -2221,8 +2222,8 @@
 
       self.page.maxh = Math.max(0, self.page.h - self.view.h);
       self.page.maxw = Math.max(0, self.page.w - self.view.w);
-
-      if ((self.page.maxh == premaxh) && (self.page.maxw == premaxw) && (self.view.w == preview.w)) {
+      
+      if ((self.page.maxh == premaxh) && (self.page.maxw == premaxw) && (self.view.w == preview.w) && (self.view.h == preview.h)) {
         // test position        
         if (!self.ispage) {
           var pos = self.win.offset();
@@ -2262,15 +2263,16 @@
         self.railh.scrollable = true;
       }
 
-      self.locked = (self.locked) || ((self.page.maxh == 0) && (self.page.maxw == 0));
-      if (self.locked) {
+      self.railslocked = (self.locked) || ((self.page.maxh == 0) && (self.page.maxw == 0));
+      if (self.railslocked) {
         if (!self.ispage) self.updateScrollBar(self.view);
         return false;
       }
 
       if (!self.hidden && !self.visibility) {
         self.showRail().showRailHr();
-      } else if (!self.hidden && !self.railh.visibility) self.showRailHr();
+      }
+      else if (!self.hidden && !self.railh.visibility) self.showRailHr();
 
       if (self.istextarea && self.win.css('resize') && self.win.css('resize') != 'none') self.view.h -= 20;
 
@@ -2500,13 +2502,13 @@
 
     this.show = function() {
       self.hidden = false;
-      self.locked = false;
+      self.railslocked = false;
       return self.showRail().showRailHr();
     };
 
     this.hide = function() {
       self.hidden = true;
-      self.locked = true;
+      self.railslocked = true;
       return self.hideRail().hideRailHr();
     };
 
@@ -2696,7 +2698,7 @@
 
     this.onmousewheel = function(e) {
       if (self.wheelprevented) return;
-      if (self.locked) {
+      if (self.railslocked) {
         self.debounced("checkunlock", self.resize, 250);
         return true;
       }
@@ -2723,7 +2725,7 @@
       }
       self.checkarea = nw;
       if (self.nativescrollingarea) return true; // this isn't my business
-      //      if (self.locked) return self.cancelEvent(e);
+      //      if (self.railslocked) return self.cancelEvent(e);
       var ret = execScrollWheel(e, false, chk);
       if (ret) self.checkarea = 0;
       return ret;
@@ -2731,7 +2733,7 @@
 
     this.onmousewheelhr = function(e) {
       if (self.wheelprevented) return;
-      if (self.locked || !self.railh.scrollable) return true;
+      if (self.railslocked || !self.railh.scrollable) return true;
       if (self.rail.drag) return self.cancelEvent(e);
 
       var nw = +(new Date());
@@ -2743,7 +2745,7 @@
       }
       self.checkarea = nw;
       if (self.nativescrollingarea) return true; // this isn't my business
-      if (self.locked) return self.cancelEvent(e);
+      if (self.railslocked) return self.cancelEvent(e);
 
       return execScrollWheel(e, true, chk);
     };

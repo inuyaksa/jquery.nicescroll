@@ -1,0 +1,59 @@
+Changelog nicescroll release 3.6.0
+http://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+New options
+- scriptpath, Allows users to define their own "scriptpath" #309
+
+
+Changed features
+- None
+
+
+Fixes
+- Rail positioning bug when hwacceleration is off in Chrome browser #447
+- Scroll is Positioned at Page Bottom in Chrome. Nicescroll v 3.5.6 #443
+- Uncaught TypeError: Cannot read property 'win' of null #439
+- Multi-Touch gestures - OS X #431
+- Nicescroll bar rail jumps after resize #425
+- nicescroll rail positioned at the bottom in chrome when refreshing page that has scroll #424
+- CTRL-F not working do nicescroll #419
+- IE 11 - touch support #418
+- Multiple nicescroll containers can't use same config car? #409
+- "*niceBar.locked = true" --- Unlocked by browser window resizing #408
+- Scrollbar displayed but not scrollable on IE11 with Windows 8 touch device #407
+- this.getViewport doesn't check for relative #403
+- Chrome Search on Windows breaks NiceScroll #400
+- Vertical scrollbar problem in Chrome 35 when the scroll of the body is greater than 0 #394
+- Scroll position on page reload - Latest version (3.5.4) #387
+- Incorrect scrollbar position after reload in Chrome #372
+- Problem on expresion: /BODY|HTML/.test(dom.nodeName) #292
+- Ctrl + mouse wheel - scrolling instead zooming in Firefox and IE #275
+- Remove - Uncaught TypeError: Cannot set property 'onsync' of null #247
+- JS Error in console: Uncaught TypeError: Cannot read property 'defaultView' of null  #245
+
+
+Thanks to contributors!!
+- Touch support for W3C Pointer Events #420
+- railpadding/railoffset fixed #413
+- Fix for neverending drag mode on horizontal scrollbar disappear #371
+- fixed 'use strict' errors #355
+- Readability and maintainability improvement #336
+- Update jquery.nicescroll.js #325
+
+
+TODO
+- Mousewheel button "click scroll" not working #377
+- Not scrolling on lastest Firefox with HTML5 inside iframe #322
+- railpadding
+- railpadding top & bottom settings ignored - thanks to simovinci.bellissimo
+- honorcssoverflow
+- autohidemode:hover
+- check 2D scrolling
+- check text selection on cursor drag (testing)
+- recursive position:fixed check
+- check horiz mouse wheel scrolling speed on chrome
+- mouse pan scroll
+- check snappy
+

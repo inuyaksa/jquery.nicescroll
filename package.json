@@ -1,48 +1,56 @@
 {
-    "name": "jquery.nicescroll",
-    "description": "Nicescroll is a jquery plugin, for nice customizabled scrollbars with a very similar ios/mobile style. It supports DIVs, IFrames and document page (body) scrollbars. Compatible with Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+ (all A-grade browsers). Compatible with iOS devices as iPad, Android, Blackberry, Windows Phone, and many many mobile and touch devices.",
-    "version": "3.5.6",
-    "keywords": [
-        "nicescroll",
-        "jquery",
-        "interface",
-        "window",
-        "dom",
-        "div",
-        "scroll",
-        "ios",
-        "mobile",
-        "desktop",
-        "scrollbar",
-        "touch",
-        "android"
-    ],
-    "homepage": "https://github.com/inuyaksa/jquery.nicescroll",
-    "author": {
-        "name": "InuYaksa",
-        "url": "https://github.com/inuyaksa"
-    },
-    "contributors": [
-        "inuyaksa",
-        "GianlucaGuarini",
-        "nkovacs",
-        "zcourts",
-        "philleepflorence",
-        "gustavnikolaj",
-        "laychopy",
-        "barraq"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/inuyaksa/jquery.nicescroll.git"
-    },
-    "bugs": {
-        "url": "https://github.com/inuyaksa/jquery.nicescroll/issues"
-    },
-    "licenses": [
-        {
-            "type": "MIT",
-            "url": "https://github.com/inuyaksa/jquery.nicescroll/blob/master/MIT.LICENSE"
-        }
-    ]
+  "name": "nicescroll",
+  "version": "3.6.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/inuyaksa/jquery.nicescroll"
+  },
+  "title": "jQuery.NiceScroll",
+  "author": {
+    "name": "InuYaksa",
+    "url": "https://github.com/inuyaksa"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "MIT.LICENSE"
+    }
+  ],
+  "description": "Nicescroll is a jquery plugin, for nice customizabled scrollbars with a very similar ios/mobile style. It supports DIVs, IFrames and document page (body) scrollbars. Compatible with Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+ (all A-grade browsers). Compatible with iOS devices as iPad, Android, Blackberry, Windows Phone, and many many mobile and touch devices.",
+  "keywords": [
+    "nicescroll",
+    "jquery",
+    "interface",
+    "window",
+    "dom",
+    "div",
+    "scroll",
+    "ios",
+    "mobile",
+    "desktop",
+    "scrollbar",
+    "touch",
+    "android"
+  ],
+  "homepage": "https://github.com/inuyaksa/jquery.nicescroll",
+  "contributors": [
+    "inuyaksa",
+    "GianlucaGuarini",
+    "nkovacs",
+    "zcourts",
+    "philleepflorence",
+    "gustavnikolaj",
+    "laychopy",
+    "barraq",
+    "efoxbr"
+  ],
+  "files": [
+    "jquery.nicescroll.js",
+    "jquery.nicescroll.min.js",
+    "zoomico.png"
+  ],
+  "dependencies": {
+    "jquery": ">=1.4.3"
+  },
+  "devDependencies": {}
 }
