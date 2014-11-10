@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.6.0 [RC2] 
+-- version 3.6.0 [RC3] 
 -- copyright 2014-11-10 InuYaksa*2014
 -- licensed under the MIT
 --
@@ -226,7 +226,7 @@
 
     var self = this;
 
-    this.version = '3.6.0 [RC2]';
+    this.version = '3.6.0 [RC3]';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -2669,6 +2669,15 @@
       if (hr && self.opt.oneaxismousemode && (px == 0) && py) { // classic vertical-only mousewheel + browser with x/y support 
         px = py;
         py = 0;
+      
+        if (chkscroll) {
+          var hrend = (px < 0) ? (self.getScrollLeft() >= self.page.maxw) : (self.getScrollLeft() <= 0);
+          if (hrend) {  // preserve vertical scrolling
+            py = px;
+            px = 0;            
+          }
+        }
+        
       }
 
       if (px) {

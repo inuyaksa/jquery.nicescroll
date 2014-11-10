@@ -33,6 +33,7 @@ Fixes
 - Remove - Uncaught TypeError: Cannot set property 'onsync' of null #247
 - JS Error in console: Uncaught TypeError: Cannot read property 'defaultView' of null  #245
 - railposition outside a fixed div in Chrome 38 and IE not correct #450 
+- Preserve Vertical scroll after horizontal scrolling ends #451
 
 
 Thanks to contributors!!
