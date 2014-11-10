@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.6.0 [RC1] 
+-- version 3.6.0 [RC2] 
 -- copyright 2014-11-10 InuYaksa*2014
 -- licensed under the MIT
 --
@@ -226,7 +226,7 @@
 
     var self = this;
 
-    this.version = '3.6.0 [RC1]';
+    this.version = '3.6.0 [RC2]';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -647,11 +647,25 @@
       return px;
     }
 
+    this.getDocumentScrollOffset = function() {
+      return {top:window.pageYOffset||document.documentElement.scrollTop,
+              left:window.pageXOffset||document.documentElement.scrollLeft};
+    }
+    
     this.getOffset = function() {
+      if (self.isfixed) {
+        var ofs = self.win.offset();  // fix Chrome auto issue (if right/bottom only defined)
+        var scrl = self.getDocumentScrollOffset();
+        ofs.top-=scrl.top;
+        ofs.left-=scrl.left;
+        return ofs;  
+      }
+/*      
       if (self.isfixed) return {
         top: parseFloat(self.win.css('top')),
         left: parseFloat(self.win.css('left'))
       };
+*/      
       var ww = self.win.offset();
       if (!self.viewport) return ww;      
       var vp = self.viewport.offset();
@@ -694,7 +708,7 @@
           if (off.top) pos.top += off.top;
           if (self.rail.align && off.left) pos.left += off.left;
         }
-
+        
         if (!self.railslocked) self.rail.css({
           top: pos.top,
           left: pos.left,

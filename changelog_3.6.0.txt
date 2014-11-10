@@ -32,6 +32,7 @@ Fixes
 - Ctrl + mouse wheel - scrolling instead zooming in Firefox and IE #275
 - Remove - Uncaught TypeError: Cannot set property 'onsync' of null #247
 - JS Error in console: Uncaught TypeError: Cannot read property 'defaultView' of null  #245
+- railposition outside a fixed div in Chrome 38 and IE not correct #450 
 
 
 Thanks to contributors!!
