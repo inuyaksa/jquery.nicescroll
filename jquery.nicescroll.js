@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.6.0 [RC3] 
+-- version 3.6.0 [RC4] 
 -- copyright 2014-11-10 InuYaksa*2014
 -- licensed under the MIT
 --
@@ -226,7 +226,7 @@
 
     var self = this;
 
-    this.version = '3.6.0 [RC3]';
+    this.version = '3.6.0 [RC4]';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -947,6 +947,8 @@
             'border-radius': self.opt.cursorborderradius
           });
 
+          if (cap.isieold) cursor.css({'overflow':'hidden'});  //IE6 horiz scrollbar issue
+          
           cursor.wborder = parseFloat(cursor.outerWidth() - cursor.innerWidth());
           
           cursor.addClass('nicescroll-cursors');
