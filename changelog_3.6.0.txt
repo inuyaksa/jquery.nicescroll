@@ -8,7 +8,7 @@ New options
 
 
 Changed features
-- None
+- Primitive bootstrap support - modal windows #449
 
 
 Fixes
@@ -33,7 +33,12 @@ Fixes
 - Remove - Uncaught TypeError: Cannot set property 'onsync' of null #247
 - JS Error in console: Uncaught TypeError: Cannot read property 'defaultView' of null  #245
 - railposition outside a fixed div in Chrome 38 and IE not correct #450 
-- Preserve Vertical scroll after horizontal scrolling ends #451
+- Preserve Vertical scroll behavior after horizontal scrolling ends #451
+- Wrapped divs, fix rail position for content already scrolled
+- Detect content appends to page, refresh rail positions
+
+Coding notes
+- Initial code rewriting to detach legacy browser support for current code
 
 
 Thanks to contributors!!

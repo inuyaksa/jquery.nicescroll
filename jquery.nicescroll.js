@@ -1,6 +1,6 @@
 /* jquery.nicescroll
--- version 3.6.0 [RC4] 
--- copyright 2014-11-10 InuYaksa*2014
+-- version 3.6.0 [RC5] 
+-- copyright 2014-11-13 InuYaksa*2014
 -- licensed under the MIT
 --
 -- http://nicescroll.areaaperta.com/
@@ -22,7 +22,6 @@
   // globals
   var domfocus = false;
   var mousefocus = false;
-  //  var zoomactive = false;
   var tabindexcounter = 0;
   var ascrailcounter = 2000;
   var globalmaxzindex = 0;
@@ -158,6 +157,8 @@
 
     d.isandroid = (/android/i.test(navigator.userAgent));
 
+    d.haseventlistener = ("addEventListener" in domtest);
+    
     d.trstyle = false;
     d.hastransform = false;
     d.hastranslate3d = false;
@@ -226,7 +227,7 @@
 
     var self = this;
 
-    this.version = '3.6.0 [RC4]';
+    this.version = '3.6.0 [RC5]';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -308,6 +309,7 @@
 
     this.observer = false;
     this.observerremover = false; // observer on parent for remove detection
+    this.observerheight = false;  // observer on add/remove elements on page
 
     do {
       this.id = "ascrail" + (ascrailcounter++);
@@ -406,7 +408,6 @@
 
     this.debounced = function(name, fn, tm) {
       var dd = self.delaylist[name];
-      //      var nw = (new Date()).getTime();      
       self.delaylist[name] = fn;
       if (!dd) {
         setTimeout(function() {
@@ -1011,6 +1012,7 @@
               'position': 'relative'
             });
             var bd = (self.win[0].nodeName == 'HTML') ? self.body : self.win;
+            $(bd).scrollTop(0).scrollLeft(0);  // fix rail position if content already scrolled
             if (self.zoom) {
               self.zoom.css({
                 position: "absolute",
@@ -1972,9 +1974,31 @@
         // Trying a cross-browser implementation - good luck!
 
         self.onAttributeChange = function(e) {
-          self.lazyResize(250);
+          self.lazyResize(self.isieold ? 250 : 30);
         };
 
+        if (ClsMutationObserver !== false) {
+          self.observerheight = new ClsMutationObserver(function(mutations) {
+            mutations.forEach(function(mut){
+              if (mut.type=="attributes") {
+                if (mut.attributeName == 'class') {
+                  return ($("body").hasClass("modal-open")) ? self.hide() : self.show();
+                } else {
+                  console.log($("body").attr("style"));
+                }
+              }
+            });  
+            if (document.body.scrollHeight!=self.page.maxh) return self.lazyResize(30);
+          });
+          self.observerheight.observe(document.body, {
+            childList: true,
+            subtree: true,
+            characterData: false,
+            attributes: true,
+            attributeFilter: ['class']
+          });
+        }
+        
         if (!self.ispage && !self.haswrapper) {
           // redesigned MutationObserver for Chrome18+/Firefox14+/iOS6+ with support for: remove div, add/remove content
           if (ClsMutationObserver !== false) {
@@ -1987,7 +2011,6 @@
               attributes: true,
               subtree: false
             });
-
             self.observerremover = new ClsMutationObserver(function(mutations) {
               mutations.forEach(function(mo) {
                 if (mo.removedNodes.length > 0) {
@@ -2003,7 +2026,6 @@
               attributes: false,
               subtree: false
             });
-
           } else {
             self.bind(self.win, (cap.isie && !cap.isie9) ? "propertychange" : "DOMAttrModified", self.onAttributeChange);
             if (cap.isie9) self.win[0].attachEvent("onpropertychange", self.onAttributeChange); //IE9 DOMAttrModified bug
@@ -2339,7 +2361,8 @@
 
     this.lazyResize = function(tm) { // event debounce
       tm = (isNaN(tm)) ? 30 : tm;
-      self.delayed('resize', self.resize, tm);
+      //self.delayed('resize', self.resize, tm);
+      self.debounced('resize', self.resize, tm);
       return self;
     };
 
@@ -2374,22 +2397,7 @@
       }, bubble);
     };
 
-    this._bind = function(el, name, fn, bubble) { // primitive bind
-      self.events.push({
-        e: el,
-        n: name,
-        f: fn,
-        b: bubble,
-        q: false
-      });
-      if (el.addEventListener) {
-        el.addEventListener(name, fn, bubble || false);
-      } else if (el.attachEvent) {
-        el.attachEvent("on" + name, fn);
-      } else {
-        el["on" + name] = fn;
-      }
-    };
+
 
     this.jqbind = function(dom, name, fn) { // use jquery bind for non-native events (mouseenter/mouseleave)
       self.events.push({
@@ -2405,7 +2413,7 @@
       var el = ("jquery" in dom) ? dom[0] : dom;
 
       if (name == 'mousewheel') {
-        if ('onwheel' in document || document.documentMode >= 9) {
+        if (window.addEventListener||'onwheel' in document) { // modern brosers & IE9 detection fix
           self._bind(el, "wheel", fn, bubble || false);
         } else {
           var wname = (typeof document.onmousewheel != "undefined") ? "mousewheel" : "DOMMouseScroll"; // older IE/Firefox
@@ -2446,42 +2454,78 @@
       }
     };
 
-    this._unbind = function(el, name, fn, bub) { // primitive unbind
-      if (el.removeEventListener) {
+    if (cap.haseventlistener) {  // W3C standard model
+      this._bind = function(el, name, fn, bubble) { // primitive bind
+        self.events.push({
+          e: el,
+          n: name,
+          f: fn,
+          b: bubble,
+          q: false
+        });
+        el.addEventListener(name, fn, bubble || false);
+      };    
+      this.cancelEvent = function(e) {
+        if (!e) return false;
+        var e = (e.original) ? e.original : e;
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.preventManipulation) e.preventManipulation(); //IE10
+        return false;
+      };
+      this.stopPropagation = function(e) {
+        if (!e) return false;
+        var e = (e.original) ? e.original : e;
+        e.stopPropagation();
+        return false;
+      };
+      this._unbind = function(el, name, fn, bub) { // primitive unbind
         el.removeEventListener(name, fn, bub);
-      } else if (el.detachEvent) {
-        el.detachEvent('on' + name, fn);
-      } else {
-        el['on' + name] = false;
-      }
-    };
-
+      };
+    } else {  // old IE model
+      this._bind = function(el, name, fn, bubble) { // primitive bind
+        self.events.push({
+          e: el,
+          n: name,
+          f: fn,
+          b: bubble,
+          q: false
+        });
+        if (el.attachEvent) {
+          el.attachEvent("on" + name, fn);
+        } else {
+          el["on" + name] = fn;
+        }
+      };    
+      // Thanks to http://www.switchonthecode.com !!
+      this.cancelEvent = function(e) {
+        var e = window.event || false;
+        if (!e) return false;
+        e.cancelBubble = true;
+        e.cancel = true;
+        e.returnValue = false;
+        return false;
+      };
+      this.stopPropagation = function(e) {
+        var e = window.event || false;
+        if (!e) return false;
+        e.cancelBubble = true;
+        return false;
+      };
+      this._unbind = function(el, name, fn, bub) { // primitive unbind IE old
+        if (el.detachEvent) {
+          el.detachEvent('on' + name, fn);
+        } else {
+          el['on' + name] = false;
+        }
+      };
+    }
+    
     this.unbindAll = function() {
       for (var a = 0; a < self.events.length; a++) {
         var r = self.events[a];
         (r.q) ? r.e.unbind(r.n, r.f): self._unbind(r.e, r.n, r.f, r.b);
       }
-    };
-
-    // Thanks to http://www.switchonthecode.com !!
-    this.cancelEvent = function(e) {
-      var e = (e.original) ? e.original : (e) ? e : window.event || false;
-      if (!e) return false;
-      if (e.preventDefault) e.preventDefault();
-      if (e.stopPropagation) e.stopPropagation();
-      if (e.preventManipulation) e.preventManipulation(); //IE10
-      e.cancelBubble = true;
-      e.cancel = true;
-      e.returnValue = false;
-      return false;
-    };
-
-    this.stopPropagation = function(e) {
-      var e = (e.original) ? e.original : (e) ? e : window.event || false;
-      if (!e) return false;
-      if (e.stopPropagation) return e.stopPropagation();
-      if (e.cancelBubble) e.cancelBubble = true;
-      return false;
     };
 
     this.showRail = function() {
@@ -2542,6 +2586,7 @@
 
       if (self.observer !== false) self.observer.disconnect();
       if (self.observerremover !== false) self.observerremover.disconnect();
+      if (self.observerheight !== false) self.observerheight.disconnect();
 
       self.events = null;
 
@@ -2658,7 +2703,6 @@
 
     function execScrollWheel(e, hr, chkscroll) {
       var px, py;
-      var rt = 1;
 
       if (e.deltaMode == 0) { // PIXEL
         px = -Math.floor(e.deltaX * (self.opt.mousescrollstep / (18 * 3)));
@@ -2940,7 +2984,7 @@
         self.scrollrunning = false;
         if (!cap.transitionend) clearTimeout(cap.transitionend);
         self.scrollendtrapped = false;
-        self._unbind(self.doc, cap.transitionend, self.onScrollTransitionEnd);
+        self._unbind(self.doc[0], cap.transitionend, self.onScrollTransitionEnd);
         self.prepareTransition(0);
         self.setScrollTop(py); // fire event onscroll
         if (self.railh) self.setScrollLeft(px);
@@ -2954,7 +2998,7 @@
         return self;
       };
       this.onScrollTransitionEnd = function() {
-        if (self.scrollendtrapped) self._unbind(self.doc, cap.transitionend, self.onScrollTransitionEnd);
+        if (self.scrollendtrapped) self._unbind(self.doc[0], cap.transitionend, self.onScrollTransitionEnd);
         self.scrollendtrapped = false;
         self.prepareTransition(0);
         if (self.timerscroll && self.timerscroll.tm) clearInterval(self.timerscroll.tm);
