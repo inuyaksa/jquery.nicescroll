@@ -2703,6 +2703,7 @@
 
     function execScrollWheel(e, hr, chkscroll) {
       var px, py;
+      var rt = 1;
 
       if (e.deltaMode == 0) { // PIXEL
         px = -Math.floor(e.deltaX * (self.opt.mousescrollstep / (18 * 3)));
