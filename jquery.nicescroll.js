@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.6.0 [RC6] 
+-- version 3.6.0 [RC7] 
 -- copyright 2014-11-15 InuYaksa*2014
 -- licensed under the MIT
 --
@@ -229,7 +229,7 @@
 
     var self = this;
 
-    this.version = '3.6.0 [RC6]';
+    this.version = '3.6.0 [RC7]';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -1338,13 +1338,15 @@
 
             self.ontouchmove = function(e, byiframe) {
 
-              if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
-
+              if (!self.rail.drag) return false;
+            
               if (e.targetTouches && self.opt.preventmultitouchscrolling) {
                 if (e.targetTouches.length > 1) return false; // multitouch
               }
-
-              if (self.rail.drag && (self.rail.drag.pt == 2)) {
+            
+              if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
+          
+              if (self.rail.drag.pt == 2) {
                 if (cap.cantouch && (typeof e.original == "undefined")) return true; // prevent ios "ghost" events by clickable elements
 
                 self.hasmoving = true;
@@ -1478,6 +1480,9 @@
 
                 if (cap.ischrome && self.istouchcapable) grabbed = false; //chrome touch emulation doesn't like!
                 if (grabbed) return self.cancelEvent(e);
+              }
+              else if (self.rail.drag.pt == 1) { // drag on cursor
+                return self.onmousemove(e);
               }
 
             };
@@ -1696,17 +1701,8 @@
             self.bind(document, "touchmove", self.ontouchmove);
           }
 
-          self.bind(self.cursor, "mousedown", self.onmousedown);
-          self.bind(self.cursor, "mouseup", self.onmouseup);
-
-          if (self.railh) {
-            self.bind(self.cursorh, "mousedown", function(e) {
-              self.onmousedown(e, true)
-            });
-            self.bind(self.cursorh, "mouseup", self.onmouseup);
-          }
-
-          if (self.opt.cursordragontouch || !cap.cantouch && !self.opt.touchbehavior) {
+          
+          if (self.opt.cursordragontouch || (!cap.cantouch && !self.opt.touchbehavior)) {
 
             self.rail.css({
               "cursor": "default"
@@ -1776,6 +1772,16 @@
             self.bind(document, "mousemove", self.onmousemove);
             if (self.onclick) self.bind(document, "click", self.onclick);
 
+            self.bind(self.cursor, "mousedown", self.onmousedown);
+            self.bind(self.cursor, "mouseup", self.onmouseup);
+
+            if (self.railh) {
+              self.bind(self.cursorh, "mousedown", function(e) {
+                self.onmousedown(e, true)
+              });
+              self.bind(self.cursorh, "mouseup", self.onmouseup);
+            }
+            
             if (!self.ispage && self.opt.enablescrollonselection) {
               self.bind(self.win[0], "mousedown", self.onselectionstart);
               self.bind(document, "mouseup", self.onselectionend);
@@ -1803,7 +1809,7 @@
 
             if (self.opt.cursordragontouch) {
               self.bind(self.cursor, "mousedown", self.onmousedown);
-              self.bind(self.cursor, "mousemove", self.onmousemove);
+              //self.bind(self.cursor, "mousemove", self.onmousemove);
               self.cursorh && self.bind(self.cursorh, "mousedown", function(e) {
                 self.onmousedown(e, true)
               });
@@ -2104,7 +2110,7 @@
           if (cap.cantouch || self.opt.touchbehavior) {
             self.bind(doc, "mousedown", self.ontouchstart);
             self.bind(doc, "mousemove", function(e) {
-              self.ontouchmove(e, true)
+              return self.ontouchmove(e, true)
             });
             if (self.opt.grabcursorenabled && cap.cursorgrabvalue) self.css($(doc.body), {
               'cursor': cap.cursorgrabvalue

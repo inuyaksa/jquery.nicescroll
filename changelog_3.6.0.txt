@@ -37,6 +37,8 @@ Fixes
 - Preserve Vertical scroll behavior after horizontal scrolling ends #451
 - Wrapped divs, fix rail position for content already scrolled
 - Detect content appends to page, refresh rail positions
+- Nicescrolls are not located in the new positions #446
+- Chrome, dragging cursor on touchbehavior losts mouse move
 
 Coding notes
 - Initial code rewriting to detach legacy browser support for current code
