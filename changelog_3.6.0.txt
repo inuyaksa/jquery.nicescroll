@@ -40,6 +40,9 @@ Fixes
 - Nicescrolls are not located in the new positions #446
 - Chrome, dragging cursor on touchbehavior losts mouse move
 - cantouch capability is detected as a false positive in WebKitGTK+ #367
+- Scrolling via touch not working on certain non-IOS webkit browsers (namely Cisco's IEC 4600 series) #389 
+- Chrome, cursor drag on "touchbehavior"=TRUE
+- IE10+ drag lock issue
 
 Coding notes
 - Initial code rewriting to detach legacy browser support for current code

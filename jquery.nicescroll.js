@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.6.0 [RC7] 
+-- version 3.6.0 [RC8] 
 -- copyright 2014-11-15 InuYaksa*2014
 -- licensed under the MIT
 --
@@ -229,7 +229,7 @@
 
     var self = this;
 
-    this.version = '3.6.0 [RC7]';
+    this.version = '3.6.0 [RC8]';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -1203,7 +1203,7 @@
 
             self.ontouchstart = function(e) {
               if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
-
+              
               self.hasmoving = false;
 
               if (!self.railslocked) {
@@ -1286,12 +1286,13 @@
                 self.hasmoving = false;
                 self.lastmouseup = false;
                 self.scrollmom.reset(e.clientX, e.clientY);
-                if (!cap.cantouch && !this.istouchcapable && !cap.hasmstouch) {
-
+                
+//                if (!cap.cantouch && !this.istouchcapable && !cap.hasmstouch) {
+                if (!cap.cantouch && !this.istouchcapable && !e.pointerType) {       
+                
                   var ip = (tg) ? /INPUT|SELECT|TEXTAREA/i.test(tg.nodeName) : false;
                   if (!ip) {
                     if (!self.ispage && cap.hasmousecapture) tg.setCapture();
-
                     if (self.opt.touchbehavior) {
                       if (tg.onclick && !(tg._onclick || false)) { // intercept DOM0 onclick event
                         tg._onclick = tg.onclick;
@@ -1302,7 +1303,6 @@
                       }
                       return self.cancelEvent(e);
                     }
-
                     return self.stopPropagation(e);
                   }
 
@@ -1319,9 +1319,10 @@
 
             };
 
-            self.ontouchend = function(e) {
-              if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
-              if (self.rail.drag && (self.rail.drag.pt == 2)) {
+            self.ontouchend = function(e) {              
+              if (!self.rail.drag) return true;              
+              if (self.rail.drag.pt == 2) {
+                if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
                 self.scrollmom.doMomentum();
                 self.rail.drag = false;
                 if (self.hasmoving) {
@@ -1330,6 +1331,9 @@
                   if (cap.hasmousecapture) document.releaseCapture();
                   if (!cap.cantouch) return self.cancelEvent(e);
                 }
+              }
+              else if (self.rail.drag.pt == 1) {
+                return self.onmouseup(e);
               }
 
             };
@@ -1347,7 +1351,7 @@
               if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
           
               if (self.rail.drag.pt == 2) {
-                if (cap.cantouch && (typeof e.original == "undefined")) return true; // prevent ios "ghost" events by clickable elements
+                if (cap.cantouch && (cap.isios) && (typeof e.original == "undefined")) return true; // prevent ios "ghost" events by clickable elements
 
                 self.hasmoving = true;
 
@@ -1515,9 +1519,9 @@
 
           self.onmouseup = function(e) {
             if (self.rail.drag) {
+              if (self.rail.drag.pt != 1) return true;
               if (cap.hasmousecapture) document.releaseCapture();
-              if (self.isiframe && !cap.hasmousecapture) self.doc.css("pointer-events", self.saved.csspointerevents);
-              if (self.rail.drag.pt != 1) return;
+              if (self.isiframe && !cap.hasmousecapture) self.doc.css("pointer-events", self.saved.csspointerevents);              
               self.rail.drag = false;
               //if (!self.rail.active) self.hideCursor();
               if (self.hasmoving) self.triggerScrollEnd(); // TODO - check &&!self.scrollrunning
@@ -1809,11 +1813,13 @@
 
             if (self.opt.cursordragontouch) {
               self.bind(self.cursor, "mousedown", self.onmousedown);
+              self.bind(self.cursor, "mouseup", self.onmouseup);
               //self.bind(self.cursor, "mousemove", self.onmousemove);
               self.cursorh && self.bind(self.cursorh, "mousedown", function(e) {
                 self.onmousedown(e, true)
               });
-              self.cursorh && self.bind(self.cursorh, "mousemove", self.onmousemove);
+              //self.cursorh && self.bind(self.cursorh, "mousemove", self.onmousemove);
+              self.cursorh && self.bind(self.cursorh, "mouseup", self.onmouseup);
             }
 
           }
@@ -2696,7 +2702,7 @@
 
     function execScrollWheel(e, hr, chkscroll) {
       var px, py;
-
+      
       if (e.deltaMode == 0) { // PIXEL
         px = -Math.floor(e.deltaX * (self.opt.mousescrollstep / (18 * 3)));
         py = -Math.floor(e.deltaY * (self.opt.mousescrollstep / (18 * 3)));
