@@ -39,6 +39,7 @@ Fixes
 - Detect content appends to page, refresh rail positions
 - Nicescrolls are not located in the new positions #446
 - Chrome, dragging cursor on touchbehavior losts mouse move
+- cantouch capability is detected as a false positive in WebKitGTK+ #367
 
 Coding notes
 - Initial code rewriting to detach legacy browser support for current code
@@ -51,6 +52,7 @@ Thanks to contributors!!
 - fixed 'use strict' errors #355
 - Readability and maintainability improvement #336
 - Update jquery.nicescroll.js #325
+- cantouch capability is detected as a false positive in WebKitGTK+ #368
 
 
 TODO
