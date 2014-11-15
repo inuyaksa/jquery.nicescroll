@@ -9,6 +9,7 @@ New options
 
 Changed features
 - Primitive bootstrap support - modal windows #449
+- removed delayed method
 
 
 Fixes
