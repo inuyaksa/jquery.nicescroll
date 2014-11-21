@@ -130,7 +130,7 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
         autohidemode: true, // how hide the scrollbar works, possible values: 
           true | // hide when no scrolling
           "cursor" | // only cursor hidden
-          false | (do not hide),
+          false | // do not hide,
           "leave" | // hide only if pointer leaves content
           "hidden" | // hide always
           "scroll", // show only on scroll          
