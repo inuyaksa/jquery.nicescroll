@@ -1,6 +1,6 @@
 {
     "name": "jquery.nicescroll",
-    "version": "3.5.6",
+    "version": "3.6.0",
     "main": [
         "./jquery.nicescroll.js",
         "./zoomico.png"
@@ -11,6 +11,6 @@
         "package.json"
     ],
     "dependencies": {
-        "jquery": ">=1.4.3"
+        "jquery": ">=1.8.3"
     }
 }

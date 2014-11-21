@@ -1,8 +1,5 @@
 #jQuery.NiceScroll
-v. 3.5.6 10-09-2014
-
-If you are a developer you can try bleeding-edge version:
-https://github.com/inuyaksa/jquery.nicescroll/tree/Bleeding-edge
+v. 3.6.0 11-21-2014
 
  - [Web Site: nicescroll.areaaperta.com](http://nicescroll.areaaperta.com)
  - [Repo: github.com/inuyaksa/jquery.nicescroll](https://github.com/inuyaksa/jquery.nicescroll)
@@ -13,11 +10,11 @@ https://github.com/inuyaksa/jquery.nicescroll/tree/Bleeding-edge
 
 > Nicescroll is a jquery plugin, for nice scrollbars with a very similar ios/mobile style.
 
-  - NOW supports HORIZONAL scrollbar too!
+  - HORIZONAL scrollbar support!
   - It supports DIVs, IFrames, textarea, and document page (body) scrollbars.
   - Compatible with all desktop browser: Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
   - Compatible with mobile device: iPad/iPhone/iPod, Android 2.2+, Blackberry phones and Playbook (WebWorks/Table OS), Windows Phone 7.5 Mango.
-  - Compatible with all touch devices: iPad, Window Surface.
+  - Compatible with all touch devices: iPad, Android tablets, Window Surface.
   - Compabible with multi-input device (mouse with touch or pen): Window Surface, Chrome Desktop on touch notebook.
   - Compatible with 2 directions mice: Apple Magic Mouse, Apple Mouser with 2-dir wheel, PC mouse with 2-dir wheel (if browser support it).
 
@@ -29,6 +26,9 @@ It works on desktop (double click on div) either in mobile/touch devices using p
 
 On modern browsers hardware accelerated scrolling has implemented.
 Using animationFrame for a smoothest and cpu-saving scrolling. (when browser supports)
+
+"Use strict" tested script for maximum code quality.
+Bower and AMD ready.
 
 Warning for IE6 users (why do you uses IE6 yet? Please updgrade to a more stable and modern browser), some feature can't work for limitation of the browser.
 Document (body) scrollbars can't appears, old (native browser) one is used. Some issues with IFrame scrolling.
@@ -57,7 +57,7 @@ Document (body) scrollbars can't appears, old (native browser) one is used. Some
 
 ## DEPENDENCIES
 >> It's a plugin for the jquery framework, you need to include jquery in your scripts.
->> From 1.5.x version and on. (you can try with 1.4.2+ also)
+>> From 1.5.x version and on. (I'd better to use 1.8.3+ minimum)
 
 
 * INSTALLATION
@@ -126,7 +126,7 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
         boxzoom: false, // enable zoom for box content
         dblclickzoom: true, // (only when boxzoom=true) zoom activated when double click on box
         gesturezoom: true, // (only when boxzoom=true and with touch devices) zoom activated when pinch out/in on box
-        grabcursorenabled: true, // (only when touchbehavior=true) display "grab" icon
+        grabcursorenabled: true // (only when touchbehavior=true) display "grab" icon
         autohidemode: true, // how hide the scrollbar works, possible values: true, "cursor" (only cursor hidden), false (do not hide),
         background: "", // change css for rail background
         iframeautoresize: true, // autoresize iframe on load event
@@ -155,6 +155,7 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
         cursordragontouch: false, // drag cursor in touch / touchbehavior mode also
         oneaxismousemode: "auto", // it permits horizontal scrolling with mousewheel on horizontal only content, if false (vertical-only) mousewheel don't scroll horizontally, if value is auto detects two-axis mouse
         scriptpath: "" // define custom path for boxmode icons ("" => same script path)
+        preventmultitouchscrolling: true // prevent scrolling on multitouch events
     });
 ```
 
