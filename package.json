@@ -57,5 +57,13 @@
   "dependencies": {
     "jquery": ">=1.8.3"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "npmName": "nicescroll",
+  "npmFileMap": [{
+    "basePath": "/dist/",
+    "files": [
+      "*.js",
+      "zoomico.png"
+    ]
+  }]
 }

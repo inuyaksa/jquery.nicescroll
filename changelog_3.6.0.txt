@@ -10,6 +10,7 @@ New options
 Changed features
 - Primitive bootstrap support - modal windows #449
 - removed delayed method
+- Loading from cdnjs #357
 
 
 Fixes
