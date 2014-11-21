@@ -103,8 +103,8 @@ Initialize nicescroll ALWAYS in (document) ready statement.
     $("#mydiv").getNiceScroll().resize();
     
     // 8. Scrolling to a position:
-    $("#mydiv").getNiceScroll().doScrollLeft(x, duration); // Scroll X Axis
-    $("#mydiv").getNiceScroll().doScrollTop(y, duration); // Scroll Y Axis
+    $("#mydiv").getNiceScroll(0).doScrollLeft(x, duration); // Scroll X Axis
+    $("#mydiv").getNiceScroll(0).doScrollTop(y, duration); // Scroll Y Axis
 ```
 
 ## CONFIGURATION PARAMETERS
@@ -112,13 +112,13 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
 
 ```javascript
     $("#thisdiv").niceScroll({
-        cursorcolor: "#000000", // change cursor color in hex
+        cursorcolor: "#424242", // change cursor color in hex
         cursoropacitymin: 0, // change opacity when cursor is inactive (scrollabar "hidden" state), range from 1 to 0
         cursoropacitymax: 1, // change opacity when cursor is active (scrollabar "visible" state), range from 1 to 0
-        cursorwidth: 5, // cursor width in pixel (you can also write "5px")
+        cursorwidth: "5px", // cursor width in pixel (you can also write "5px")
         cursorborder: "1px solid #fff", // css definition for cursor border
-        cursorborderradius: "4px", // border radius in pixel for cursor
-        zindex: 9999, // change z-index for scrollbar div
+        cursorborderradius: "5px", // border radius in pixel for cursor
+        zindex: "auto" | <number>, // change z-index for scrollbar div
         scrollspeed: 60, // scrolling speed
         mousescrollstep: 40, // scrolling speed with mouse wheel (pixel)
         touchbehavior: false, // enable cursor-drag scrolling like touch devices in desktop computer
@@ -127,10 +127,16 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
         dblclickzoom: true, // (only when boxzoom=true) zoom activated when double click on box
         gesturezoom: true, // (only when boxzoom=true and with touch devices) zoom activated when pinch out/in on box
         grabcursorenabled: true // (only when touchbehavior=true) display "grab" icon
-        autohidemode: true, // how hide the scrollbar works, possible values: true, "cursor" (only cursor hidden), false (do not hide),
+        autohidemode: true, // how hide the scrollbar works, possible values: 
+          true | // hide when no scrolling
+          "cursor" | // only cursor hidden
+          false | (do not hide),
+          "leave" | // hide only if pointer leaves content
+          "hidden" | // hide always
+          "scroll", // show only on scroll          
         background: "", // change css for rail background
         iframeautoresize: true, // autoresize iframe on load event
-        cursorminheight: 20, // set the minimum cursor height (pixel)
+        cursorminheight: 32, // set the minimum cursor height (pixel)
         preservenativescrolling: true, // you can scroll native scrollable areas with mouse, bubbling mouse wheel event
         railoffset: false, // you can add offset top/left for rail position
         bouncescroll: false, // (only hw accell) enable scroll bouncing at the end of content as mobile-like 
@@ -151,7 +157,8 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
         directionlockdeadzone: 6, // dead zone in pixels for direction lock activation
         nativeparentscrolling: true, // detect bottom of content and let parent to scroll, as native scroll does
         enablescrollonselection: true, // enable auto-scrolling of content when selection text
-        rtlmode: false, // horizontal div scrolling starts at left side
+        cursordragspeed: 0.3, // speed of selection when dragged with cursor
+        rtlmode: "auto", // horizontal div scrolling starts at left side
         cursordragontouch: false, // drag cursor in touch / touchbehavior mode also
         oneaxismousemode: "auto", // it permits horizontal scrolling with mousewheel on horizontal only content, if false (vertical-only) mousewheel don't scroll horizontally, if value is auto detects two-axis mouse
         scriptpath: "" // define custom path for boxmode icons ("" => same script path)
