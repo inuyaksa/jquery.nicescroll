@@ -384,7 +384,7 @@
       var dd = self.delaylist[name];
       self.delaylist[name] = fn;
       if (!dd) {
-        setTimeout(function() {
+        self.debouncedelayed =  setTimeout(function() {
           var fn = self.delaylist[name];
           self.delaylist[name] = false;
           fn.call(self);
@@ -2488,6 +2488,7 @@
     this.remove = function() {
       self.stop();
       if (self.cursortimeout) clearTimeout(self.cursortimeout);
+      if (self.debouncedelayed) clearTimeout(self.debouncedelayed);
       self.doZoomOut();
       self.unbindAll();
 
