@@ -301,7 +301,23 @@
     this.cursorheight = 20;
     this.scrollvaluemax = 0;
 
-    this.isrtlmode = (this.opt.rtlmode == "auto") ? ((this.win[0] == window ? this.body : this.win).css("direction") == "rtl") : (this.opt.rtlmode === true);
+    // http://dev.w3.org/csswg/css-writing-modes-3/#logical-to-physical
+    // http://dev.w3.org/csswg/css-writing-modes-3/#svg-writing-mode
+    if (this.opt.rtlmode == "auto") {
+      var target = this.win[0] == window ? this.body : this.win;
+      var writingMode = target.css("writing-mode") || target.css("-webkit-writing-mode") || target.css("-ms-writing-mode") || target.css("-moz-writing-mode");
+
+      if (writingMode == "horizontal-tb" || writingMode == "lr-tb" || writingMode == "") {
+        this.isrtlmode = (target.css("direction") == "rtl");
+        this.isvertical = false;
+      } else {
+        this.isrtlmode = (writingMode == "vertical-rl" || writingMode == "tb" || writingMode == "tb-rl" || writingMode == "rl-tb");
+        this.isvertical = (writingMode == "vertical-rl" || writingMode == "tb" || writingMode == "tb-rl");
+      }
+    } else {
+      this.isrtlmode = (this.opt.rtlmode === true);
+      this.isvertical = false;
+    }
     //    this.checkrtlmode = false;
     
     this.scrollrunning = false;
@@ -358,8 +374,17 @@
     this.canhwscroll = (cap.hastransform && self.opt.hwacceleration);
     this.ishwscroll = (this.canhwscroll && self.haswrapper);
 
-    this.hasreversehr = (this.isrtlmode&&!cap.iswebkit);  //RTL mode with reverse horizontal axis
-    
+    if (this.isrtlmode) { 
+      //RTL mode with reverse horizontal axis
+      if (this.isvertical) {
+        this.hasreversehr = !(cap.iswebkit || cap.isie || cap.isie11);
+      } else {
+        this.hasreversehr = !(cap.iswebkit || (cap.isie && !cap.isie10 && !cap.isie11));
+      }
+    } else {
+      this.hasreversehr = false;
+    }
+
     this.istouchcapable = false; // desktop devices with touch screen support
 
     //## Check WebKit-based desktop with touch support
@@ -558,12 +583,27 @@
         return self.docscroll.scrollTop(val);
       };
       this.getScrollLeft = function() {
-        if (self.detected.ismozilla && self.isrtlmode)
-          return Math.abs(self.docscroll.scrollLeft());
-        return self.docscroll.scrollLeft();
+        var val;
+        if (self.hasreversehr) {
+          if (self.detected.ismozilla) {
+            val = self.page.maxw - Math.abs(self.docscroll.scrollLeft());
+          } else {
+            val = self.page.maxw - self.docscroll.scrollLeft();
+          }
+        } else {
+          val = self.docscroll.scrollLeft();
+        }
+        return val;
       };
       this.setScrollLeft = function(val) {
-        return self.docscroll.scrollLeft((self.detected.ismozilla && self.isrtlmode) ? -val : val);
+        if (self.hasreversehr) {
+          if (self.detected.ismozilla) {
+            val = -(self.page.maxw - val);
+          } else {
+            val = self.page.maxw - val;
+          }
+        }
+        return self.docscroll.scrollLeft(val);
       };
     }
 
@@ -2078,7 +2118,7 @@
         top: self.scroll.y
       });
       if (self.cursorh) {        
-        var lx = (self.hasreversehr) ? self.scrollvaluemaxw-self.scroll.x : self.scroll.x;
+        var lx = self.scroll.x;
         (!self.rail.align && self.rail.visibility) ? self.cursorh.css({
           width: self.cursorwidth,
           left: lx + self.rail.width
@@ -2630,6 +2670,9 @@
         }
         
       }
+
+      // invert horizontal direction for rtl mode
+      if (self.isrtlmode) px = -px;
 
       if (px) {
         if (self.scrollmom) {
