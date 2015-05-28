@@ -1948,7 +1948,10 @@
         //
 
         if (!self.ispage && self.opt.boxzoom) self.bind(window, "resize", self.resizeZoom);
-        if (self.istextarea) self.bind(self.win, "mouseup", self.lazyResize);
+				if (self.istextarea) {
+					self.bind(self.win, "keydown", self.lazyResize);
+					self.bind(self.win, "mouseup", self.lazyResize);
+				}
 
         //        self.checkrtlmode = true;
         self.lazyResize(30);
