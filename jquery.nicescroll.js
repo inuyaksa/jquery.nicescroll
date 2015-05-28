@@ -302,6 +302,7 @@
     this.scrollvaluemax = 0;
 
     // http://dev.w3.org/csswg/css-writing-modes-3/#logical-to-physical
+    // http://dev.w3.org/csswg/css-writing-modes-3/#svg-writing-mode
     if (this.opt.rtlmode == "auto") {
       var target = this.win[0] == window ? this.body : this.win;
       var writingMode = target.css("writing-mode") || target.css("-webkit-writing-mode") || target.css("-ms-writing-mode") || target.css("-moz-writing-mode");
