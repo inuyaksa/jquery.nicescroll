@@ -301,7 +301,19 @@
     this.cursorheight = 20;
     this.scrollvaluemax = 0;
 
-    this.isrtlmode = (this.opt.rtlmode == "auto") ? ((this.win[0] == window ? this.body : this.win).css("direction") == "rtl") : (this.opt.rtlmode === true);
+    // http://dev.w3.org/csswg/css-writing-modes-3/#logical-to-physical
+    if (this.opt.rtlmode == "auto") {
+      var target = this.win[0] == window ? this.body : this.win;
+      var writingMode = target.css("writing-mode") || target.css("-webkit-writing-mode") || target.css("-ms-writing-mode") || target.css("-moz-writing-mode");
+
+      if (writingMode == "horizontal-tb" || writingMode == "lr-tb") {
+        this.isrtlmode = (target.css("direction") == "rtl");
+      } else {
+        this.isrtlmode = (writingMode == "vertical-rl" || writingMode == "tb-rl");
+      }
+    } else {
+      this.isrtlmode = (this.opt.rtlmode === true);
+    }
     //    this.checkrtlmode = false;
     
     this.scrollrunning = false;
@@ -2630,6 +2642,9 @@
         }
         
       }
+
+      // invert horizontal direction for rtl mode
+      if (self.isrtlmode) px = -px;
 
       if (px) {
         if (self.scrollmom) {
