@@ -166,6 +166,11 @@ When you call "niceScroll" you can pass some parameters to custom visual aspects
     });
 ```
 
+Related projects
+----------------
+
+* [Nicescroll for Angular](https://github.com/tushariscoolster/angular-nicescroll)
+
 * LICENSE
 
 ## Copyright 2011-14 InuYaksa
