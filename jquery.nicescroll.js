@@ -385,6 +385,9 @@
       self.delaylist[name] = fn;
       if (!dd) {
         setTimeout(function() {
+          if(!self) {
+            return;
+          }
           var fn = self.delaylist[name];
           self.delaylist[name] = false;
           fn.call(self);
