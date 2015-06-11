@@ -75,6 +75,7 @@
     preservenativescrolling: true,
     railoffset: false,
     railhoffset: false,
+    railequalscursorwidth: false,
     bouncescroll: true,
     spacebarenabled: true,
     railpadding: {
@@ -863,14 +864,25 @@
         }
 
         rail.append(cursor);
-
-        rail.width = Math.max(parseFloat(self.opt.cursorwidth), cursor.outerWidth());
-        rail.css({
-          width: rail.width + "px",
-          'zIndex': self.zindex,
-          "background": self.opt.background,
-          cursor: "default"
+        
+        if (self.opt.railequalscursorwidth) {
+          rail.css({
+             width: self.opt.cursorwidth,
+             'zIndex': self.zindex,
+             "background": self.opt.background,
+             cursor: "default"
         });
+        }
+        else {
+          rail.width = Math.max(parseFloat(self.opt.cursorwidth), cursor.outerWidth());
+          rail.css({
+             width: rail.width + "px",
+             'zIndex': self.zindex,
+             "background": self.opt.background,
+             cursor: "default"
+        });
+        }
+
 
         rail.visibility = true;
         rail.scrollable = true;
