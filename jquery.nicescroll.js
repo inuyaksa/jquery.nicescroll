@@ -865,7 +865,7 @@
 
         rail.append(cursor);
         
-        if (self.opt.railequalscursorwidth) {
+        if (self.opt.railequalscursorwidth == "true") {
           rail.css({
              width: self.opt.cursorwidth,
              'zIndex': self.zindex,
