@@ -75,7 +75,7 @@
     preservenativescrolling: true,
     railoffset: false,
     railhoffset: false,
-    railequalscursorwidth: false,
+    railequalscursorwidth: "false",
     bouncescroll: true,
     spacebarenabled: true,
     railpadding: {
