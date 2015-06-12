@@ -1,6 +1,5 @@
 {
     "name": "jquery.nicescroll",
-    "version": "3.6.0",
     "main": [
         "./jquery.nicescroll.js",
         "./zoomico.png"
