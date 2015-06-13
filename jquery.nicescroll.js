@@ -76,6 +76,7 @@
     railoffset: false,
     railhoffset: false,
     railequalscursorwidth: "false",
+    railwidth: 10,
     bouncescroll: true,
     spacebarenabled: true,
     railpadding: {
@@ -874,7 +875,7 @@
         });
         }
         else {
-          rail.width = Math.max(parseFloat(self.opt.cursorwidth), cursor.outerWidth());
+          rail.width = self.opt.railwidth;
           rail.css({
              width: rail.width + "px",
              'zIndex': self.zindex,
