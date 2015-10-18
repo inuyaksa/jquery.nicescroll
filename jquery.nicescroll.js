@@ -12,6 +12,9 @@
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as anonymous module.
     define(['jquery'], factory);
+  } else if (typeof exports === 'object') {
+    // Node/CommonJS style for Browserify
+    module.exports = factory(require('jquery'));
   } else {
     // Browser globals.
     factory(jQuery);
@@ -31,7 +34,7 @@
   // http://stackoverflow.com/questions/2161159/get-script-path
   function getScriptPath() {
     var scripts = document.getElementsByTagName('script');
-    var path = scripts[scripts.length - 1].src.split('?')[0];
+    var path = scripts.length ? scripts[scripts.length - 1].src.split('?')[0] : '';
     return (path.split('/').length > 0) ? path.split('/').slice(0, -1).join('/') + '/' : '';
   }
 
