@@ -13,7 +13,7 @@
     // AMD. Register as anonymous module.
     define(['jquery'], factory);
   } else if (typeof exports === 'object') {
-    // Node/CommonJS style for Browserify
+    // Node/CommonJS.
     module.exports = factory(require('jquery'));
   } else {
     // Browser globals.
