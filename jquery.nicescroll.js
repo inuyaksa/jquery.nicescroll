@@ -1484,11 +1484,9 @@
 
               return self.cancelEvent(e);
             }
-            /*              
             else {
-              self.checkarea = true;
+              self.checkarea = 0;
             }
-*/
           };
 
           if (cap.cantouch || self.opt.touchbehavior) {
