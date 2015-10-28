@@ -5,7 +5,7 @@
     "type": "git",
     "url": "https://github.com/inuyaksa/jquery.nicescroll"
   },
-  "main": "./jquery.nicescroll.min.js",
+  "main": "./dist/jquery.nicescroll.min.js",
   "title": "jQuery.NiceScroll",
   "author": {
     "name": "InuYaksa",
