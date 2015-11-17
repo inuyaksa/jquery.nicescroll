@@ -657,7 +657,7 @@
         var off = self.opt.railoffset;
         if (off) {
           if (off.top) pos.top += off.top;
-          if (self.rail.align && off.left) pos.left += off.left;
+          if (off.left) pos.left += off.left;
         }
         
         if (!self.railslocked) self.rail.css({
