@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.6.5
+-- version 3.6.6
 -- copyright 2015-11-17 InuYaksa*2015
 -- licensed under the MIT
 --
@@ -136,6 +136,7 @@
     d.isie9 = d.isie && ("performance" in window) && (document.documentMode >= 9);
     d.isie10 = d.isie && ("performance" in window) && (document.documentMode == 10);
     d.isie11 = ("msRequestFullscreen" in _el) && (document.documentMode >= 11); // IE11+
+		d.isieedge = (navigator.userAgent.match(/Edge\/12\./));
 
     d.isie9mobile = /iemobile.9/i.test(_agent); //wp 7.1 mango
     if (d.isie9mobile) d.isie9 = false;
@@ -151,7 +152,7 @@
 
     d.cantouch = ("ontouchstart" in document.documentElement) || ("ontouchstart" in window); // detection for Chrome Touch Emulation
     d.hasmstouch = (window.MSPointerEvent || false); // IE10 pointer events
-    d.hasw3ctouch = (window.PointerEvent || false); //IE11 pointer events, following W3C Pointer Events spec
+    d.hasw3ctouch = (window.PointerEvent || false) && ((navigator.MaxTouchPoints > 0)||(navigator.msMaxTouchPoints > 0)); //IE11 pointer events, following W3C Pointer Events spec
 
     d.ismac = /^mac$/i.test(_platform);
 
@@ -231,7 +232,7 @@
 
     var self = this;
 
-    this.version = '3.6.5';
+    this.version = '3.6.6';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -388,6 +389,7 @@
       self.delaylist[name] = fn;
       if (!dd) {
         self.debouncedelayed =  setTimeout(function() {
+					if (!self) return;
           var fn = self.delaylist[name];
           self.delaylist[name] = false;
           fn.call(self);
@@ -2194,7 +2196,7 @@
         self.scrollratio.y = 0;
         self.cursorheight = 0;
         self.setScrollTop(0);
-        self.rail.scrollable = false;
+        if (self.rail) self.rail.scrollable = false;
       } else {
         self.page.maxh -= (self.opt.railpadding.top + self.opt.railpadding.bottom);  //**
         self.rail.scrollable = true;
@@ -2212,9 +2214,7 @@
         }
       } else {
           self.page.maxw -= (self.opt.railpadding.left + self.opt.railpadding.right);  //**
-          if (self.railh) {
-              self.railh.scrollable = true;
-          }
+          if (self.railh) self.railh.scrollable = (self.opt.horizrailenabled);
       }
 
       self.railslocked = (self.locked) || ((self.page.maxh == 0) && (self.page.maxw == 0));
@@ -2226,7 +2226,7 @@
       if (!self.hidden && !self.visibility) {
         self.showRail().showRailHr();
       }
-      else if (!self.hidden && !self.railh.visibility) self.showRailHr();
+      else if (self.railh && (!self.hidden && !self.railh.visibility)) self.showRailHr();
 
       if (self.istextarea && self.win.css('resize') && self.win.css('resize') != 'none') self.view.h -= 20;
 
@@ -2326,7 +2326,7 @@
       var el = ("jquery" in dom) ? dom[0] : dom;
 
       if (name == 'mousewheel') {
-        if (window.addEventListener||'onwheel' in document) { // modern brosers & IE9 detection fix
+        if ("onwheel" in self.win) { // modern brosers & IE9 detection fix
           self._bind(el, "wheel", fn, bubble || false);
         } else {
           var wname = (typeof document.onmousewheel != "undefined") ? "mousewheel" : "DOMMouseScroll"; // older IE/Firefox
