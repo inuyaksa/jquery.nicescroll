@@ -555,7 +555,7 @@
         return self.docscroll.scrollTop();
       };
       this.setScrollTop = function(val) {
-        return self.docscroll.scrollTop(val);
+        return setTimeout(function() {self.docscroll.scrollTop(val)}, 1);
       };
       this.getScrollLeft = function() {
         if (self.detected.ismozilla && self.isrtlmode)
@@ -563,7 +563,7 @@
         return self.docscroll.scrollLeft();
       };
       this.setScrollLeft = function(val) {
-        return self.docscroll.scrollLeft((self.detected.ismozilla && self.isrtlmode) ? -val : val);
+        return setTimeout(function() {self.docscroll.scrollLeft((self.detected.ismozilla && self.isrtlmode) ? -val : val)}, 1);
       };
     }
 
