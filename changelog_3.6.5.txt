@@ -1,0 +1,39 @@
+Changelog nicescroll release 3.6.5
+http://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+New options
+none
+
+
+Changed features
+none
+
+Fixes
+- allow horizrailenabled false and timeout issue #479 
+- allow left rail offset for left aligned scroll bars #483 
+- Fixed issue of shifting cursor in textarea #507
+- Angular added #510 
+- Remove moot `version` property from bower.json #517
+- Background Parallax Fix #518
+- Browserify and Node/CommonJS support. #534
+- Reset checkarea for mouse wheel event when the mouse moved #537
+- Fixing nicescroll visibility inside Modal #544
+ 
+
+Thanks to great contributors!!
+
+babadofar
+hrfuller
+arzafran
+tushariscoolster
+kkirsche
+duckzland
+bnadeau
+abhi05b
+
+
+
+TODO
+- deprecate legacy browsers

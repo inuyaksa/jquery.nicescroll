@@ -1,5 +1,5 @@
 #jQuery.NiceScroll
-v. 3.6.0 11-21-2014
+v. 3.6.5 11-17-2015
 
  - [Web Site: nicescroll.areaaperta.com](http://nicescroll.areaaperta.com)
  - [Repo: github.com/inuyaksa/jquery.nicescroll](https://github.com/inuyaksa/jquery.nicescroll)
@@ -173,7 +173,7 @@ Related projects
 
 * LICENSE
 
-## Copyright 2011-14 InuYaksa
+## Copyright 2011-15 InuYaksa
 
 ######Licensed under the MIT License, http://www.opensource.org/licenses/mit-license.php
 ######Images used for zoom icons have derived from OLPC interface, http://laptop.org/8.2.0/manual/Browse_ChangingView.html
