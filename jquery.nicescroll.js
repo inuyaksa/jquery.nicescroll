@@ -384,7 +384,7 @@
       var dd = self.delaylist[name];
       self.delaylist[name] = fn;
       if (!dd) {
-        setTimeout(function() {
+        self.debouncedelayed =  setTimeout(function() {
           var fn = self.delaylist[name];
           self.delaylist[name] = false;
           fn.call(self);
@@ -2203,10 +2203,14 @@
         self.scrollratio.x = 0;
         self.cursorwidth = 0;
         self.setScrollLeft(0);
-        self.railh.scrollable = false;
+        if (self.railh) {
+          self.railh.scrollable = false;
+        }
       } else {
-        self.page.maxw -= (self.opt.railpadding.left + self.opt.railpadding.right);  //**
-        self.railh.scrollable = true;
+          self.page.maxw -= (self.opt.railpadding.left + self.opt.railpadding.right);  //**
+          if (self.railh) {
+              self.railh.scrollable = true;
+          }
       }
 
       self.railslocked = (self.locked) || ((self.page.maxh == 0) && (self.page.maxw == 0));
@@ -2484,6 +2488,7 @@
     this.remove = function() {
       self.stop();
       if (self.cursortimeout) clearTimeout(self.cursortimeout);
+      if (self.debouncedelayed) clearTimeout(self.debouncedelayed);
       self.doZoomOut();
       self.unbindAll();
 
