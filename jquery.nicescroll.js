@@ -136,7 +136,7 @@
     d.isie9 = d.isie && ("performance" in window) && (document.documentMode >= 9);
     d.isie10 = d.isie && ("performance" in window) && (document.documentMode == 10);
     d.isie11 = ("msRequestFullscreen" in _el) && (document.documentMode >= 11); // IE11+
-		d.isieedge = (navigator.userAgent.match(/Edge\/12\./));
+	d.isieedge = (navigator.userAgent.match(/Edge\/12\./));
 
     d.isie9mobile = /iemobile.9/i.test(_agent); //wp 7.1 mango
     if (d.isie9mobile) d.isie9 = false;
@@ -385,6 +385,7 @@
 */    
 
     this.debounced = function(name, fn, tm) {
+		if (!self) return;
       var dd = self.delaylist[name];
       self.delaylist[name] = fn;
       if (!dd) {
@@ -404,6 +405,7 @@
       function requestSync() {
         if (_onsync) return;
         setAnimationFrame(function() {
+			if (!self) return;
           _onsync = false;
           for (var nn in self.synclist) {
             var fn = self.synclist[nn];
