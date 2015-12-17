@@ -136,7 +136,7 @@
     d.isie9 = d.isie && ("performance" in window) && (document.documentMode >= 9);
     d.isie10 = d.isie && ("performance" in window) && (document.documentMode == 10);
     d.isie11 = ("msRequestFullscreen" in _el) && (document.documentMode >= 11); // IE11+
-		d.isieedge = (navigator.userAgent.match(/Edge\/12\./));
+	d.isieedge = (navigator.userAgent.match(/Edge\/12\./));
 
     d.isie9mobile = /iemobile.9/i.test(_agent); //wp 7.1 mango
     if (d.isie9mobile) d.isie9 = false;
@@ -385,6 +385,7 @@
 */    
 
     this.debounced = function(name, fn, tm) {
+		if (!self) return;
       var dd = self.delaylist[name];
       self.delaylist[name] = fn;
       if (!dd) {
@@ -404,6 +405,7 @@
       function requestSync() {
         if (_onsync) return;
         setAnimationFrame(function() {
+			if (!self) return;
           _onsync = false;
           for (var nn in self.synclist) {
             var fn = self.synclist[nn];
@@ -560,7 +562,7 @@
         return self.docscroll.scrollTop();
       };
       this.setScrollTop = function(val) {
-        return setTimeout(function() {self.docscroll.scrollTop(val)}, 1);
+        return setTimeout(function() {if (!self) return; self.docscroll.scrollTop(val)}, 1);
       };
       this.getScrollLeft = function() {
         if (self.detected.ismozilla && self.isrtlmode)
@@ -568,7 +570,7 @@
         return self.docscroll.scrollLeft();
       };
       this.setScrollLeft = function(val) {
-        return setTimeout(function() {self.docscroll.scrollLeft((self.detected.ismozilla && self.isrtlmode) ? -val : val)}, 1);
+        return setTimeout(function() {if (!self) return; self.docscroll.scrollLeft((self.detected.ismozilla && self.isrtlmode) ? -val : val)}, 1);
       };
     }
 
@@ -1898,7 +1900,7 @@
           self.observerbody = new ClsMutationObserver(function(mutations) {
             mutations.forEach(function(mut){
               if (mut.type=="attributes") {
-                return ($("body").hasClass("modal-open") && !$.contains($('.modal-dialog')[0],self.doc[0])) ? self.hide() : self.show();  // Support for Bootstrap modal; Added check if the nice scroll element is inside a modal
+                return ($("body").hasClass("modal-open") && $("body").hasClass("modal-dialog") && !$.contains($('.modal-dialog')[0],self.doc[0])) ? self.hide() : self.show();  // Support for Bootstrap modal; Added check if the nice scroll element is inside a modal
               }
             });  
             if (document.body.scrollHeight!=self.page.maxh) return self.lazyResize(30);
