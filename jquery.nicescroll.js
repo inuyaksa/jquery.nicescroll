@@ -404,6 +404,7 @@
       function requestSync() {
         if (_onsync) return;
         setAnimationFrame(function() {
+          if (!self) return;
           _onsync = false;
           for (var nn in self.synclist) {
             var fn = self.synclist[nn];
