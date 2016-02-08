@@ -1,6 +1,6 @@
 /* jquery.nicescroll
--- version 3.6.6
--- copyright 2015-11-17 InuYaksa*2015
+-- version 3.6.7
+-- copyright 2016-02-08 InuYaksa*2016
 -- licensed under the MIT
 --
 -- http://nicescroll.areaaperta.com/
@@ -46,8 +46,11 @@
   if (!setAnimationFrame) {  // legacy detection
     for (var vx in vendors) {
       var v = vendors[vx];
-      if (!setAnimationFrame) setAnimationFrame = window[v + 'RequestAnimationFrame'];
-      if (!clearAnimationFrame) clearAnimationFrame = window[v + 'CancelAnimationFrame'] || window[v + 'CancelRequestAnimationFrame'];
+      setAnimationFrame = window[v + 'RequestAnimationFrame'];
+      if (setAnimationFrame) {
+        clearAnimationFrame = window[v + 'CancelAnimationFrame'] || window[v + 'CancelRequestAnimationFrame'];
+        break;
+      }
     }
   }
 
@@ -58,7 +61,7 @@
     cursoropacitymin: 0,
     cursoropacitymax: 1,
     cursorcolor: "#424242",
-    cursorwidth: "5px",
+    cursorwidth: "6px",
     cursorborder: "1px solid #fff",
     cursorborderradius: "5px",
     scrollspeed: 60,
@@ -133,10 +136,10 @@
     d.isieold = (d.isie && !("msInterpolationMode" in _style)); // IE6 and older
     d.isie7 = d.isie && !d.isieold && (!("documentMode" in document) || (document.documentMode == 7));
     d.isie8 = d.isie && ("documentMode" in document) && (document.documentMode == 8);
-    d.isie9 = d.isie && ("performance" in window) && (document.documentMode >= 9);
+    d.isie9 = d.isie && ("performance" in window) && (document.documentMode == 9);
     d.isie10 = d.isie && ("performance" in window) && (document.documentMode == 10);
     d.isie11 = ("msRequestFullscreen" in _el) && (document.documentMode >= 11); // IE11+
-		d.isieedge = (navigator.userAgent.match(/Edge\/12\./));
+    d.isieedge = (navigator.userAgent.match(/Edge\/12\./));  // IE Edge 12
 
     d.isie9mobile = /iemobile.9/i.test(_agent); //wp 7.1 mango
     if (d.isie9mobile) d.isie9 = false;
@@ -147,18 +150,20 @@
     d.iswebkit = ("WebkitAppearance" in _style);
 
     d.ischrome = ("chrome" in window);
-    d.ischrome22 = (d.ischrome && d.haspointerlock);
-    d.ischrome26 = (d.ischrome && ("transition" in _style)); // issue with transform detection (maintain prefix)
-
-    d.cantouch = ("ontouchstart" in document.documentElement) || ("ontouchstart" in window); // detection for Chrome Touch Emulation
-    d.hasmstouch = (window.MSPointerEvent || false); // IE10 pointer events
+    d.ischrome38 = (d.ischrome && ("touchAction" in _style)); // behavior changed in touch emulation    
+    d.ischrome22 = (!d.ischrome38)&&(d.ischrome && d.haspointerlock);
+    d.ischrome26 = (!d.ischrome38)&&(d.ischrome && ("transition" in _style)); // issue with transform detection (maintain prefix)
+    
+    d.cantouch = ("ontouchstart" in document.documentElement) || ("ontouchstart" in window); // with detection for Chrome Touch Emulation    
     d.hasw3ctouch = (window.PointerEvent || false) && ((navigator.MaxTouchPoints > 0)||(navigator.msMaxTouchPoints > 0)); //IE11 pointer events, following W3C Pointer Events spec
+    d.hasmstouch = (!d.hasw3ctouch)&&(window.MSPointerEvent || false); // IE10 pointer events
 
     d.ismac = /^mac$/i.test(_platform);
-
+    
     d.isios = (d.cantouch && /iphone|ipad|ipod/i.test(_platform));
     d.isios4 = ((d.isios) && !("seal" in Object));
     d.isios7 = ((d.isios)&&("webkitHidden" in document));  //iOS 7+
+    d.isios8 = ((d.isios)&&("hidden" in document));  //iOS 8+
 
     d.isandroid = (/android/i.test(_agent));
 
@@ -206,14 +211,14 @@
     d.hastransition = (d.transitionstyle);
 
     function detectCursorGrab() {
-      var lst = ['-webkit-grab', '-moz-grab', 'grab'];
-      if ((d.ischrome && !d.ischrome22) || d.isie) lst = []; // force setting for IE returns false positive and chrome cursor bug
+      var lst = ['grab','-webkit-grab', '-moz-grab'];
+      if ((d.ischrome && !d.ischrome38) || d.isie) lst = []; // force setting for IE returns false positive and chrome cursor bug
       for (var a = 0; a < lst.length; a++) {
         var p = lst[a];
         _style.cursor = p;
         if (_style.cursor == p) return p;
       }
-      return 'url(//mail.google.com/mail/images/2/openhand.cur),n-resize'; // thank you google for custom cursor!
+      return 'url(//patriciaportfolio.googlecode.com/files/openhand.cur),n-resize'; // thank you google for custom cursor!
     }
     d.cursorgrabvalue = detectCursorGrab();
 
@@ -232,7 +237,7 @@
 
     var self = this;
 
-    this.version = '3.6.6';
+    this.version = '3.6.7';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -305,7 +310,23 @@
     this.cursorheight = 20;
     this.scrollvaluemax = 0;
 
-    this.isrtlmode = (this.opt.rtlmode == "auto") ? ((this.win[0] == window ? this.body : this.win).css("direction") == "rtl") : (this.opt.rtlmode === true);
+    // http://dev.w3.org/csswg/css-writing-modes-3/#logical-to-physical
+    // http://dev.w3.org/csswg/css-writing-modes-3/#svg-writing-mode
+    if (this.opt.rtlmode == "auto") {
+      var target = this.win[0] == window ? this.body : this.win;
+      var writingMode = target.css("writing-mode") || target.css("-webkit-writing-mode") || target.css("-ms-writing-mode") || target.css("-moz-writing-mode");
+
+      if (writingMode == "horizontal-tb" || writingMode == "lr-tb" || writingMode == "") {
+        this.isrtlmode = (target.css("direction") == "rtl");
+        this.isvertical = false;
+      } else {
+        this.isrtlmode = (writingMode == "vertical-rl" || writingMode == "tb" || writingMode == "tb-rl" || writingMode == "rl-tb");
+        this.isvertical = (writingMode == "vertical-rl" || writingMode == "tb" || writingMode == "tb-rl");
+      }
+    } else {
+      this.isrtlmode = (this.opt.rtlmode === true);
+      this.isvertical = false;
+    }
     //    this.checkrtlmode = false;
     
     this.scrollrunning = false;
@@ -362,15 +383,27 @@
     this.canhwscroll = (cap.hastransform && self.opt.hwacceleration);
     this.ishwscroll = (this.canhwscroll && self.haswrapper);
 
-    this.hasreversehr = (this.isrtlmode&&!cap.iswebkit);  //RTL mode with reverse horizontal axis
-    
+    if (this.isrtlmode) { 
+      //RTL mode with reverse horizontal axis
+      if (this.isvertical) {
+        this.hasreversehr = !(cap.iswebkit || cap.isie || cap.isie11);
+      } else {
+        this.hasreversehr = !(cap.iswebkit || (cap.isie && !cap.isie10 && !cap.isie11));
+      }
+    } else {
+      this.hasreversehr = false;
+    }
+
     this.istouchcapable = false; // desktop devices with touch screen support
 
     //## Check WebKit-based desktop with touch support
     //## + Firefox 18 nightly build (desktop) false positive (or desktop with touch support)
-    if (cap.cantouch && !cap.isios && !cap.isandroid && (cap.iswebkit || cap.ismozilla)) {
+    
+    if (!cap.cantouch && (cap.hasw3ctouch||cap.hasmstouch)) {  // desktop device with multiple input
       this.istouchcapable = true;
-      cap.cantouch = false; // parse normal desktop events
+    } else if (cap.cantouch && !cap.isios && !cap.isandroid && (cap.iswebkit || cap.ismozilla)) {
+      this.istouchcapable = true;
+//      cap.cantouch = false; // parse normal desktop events
     }
 
     //## disable MouseLock API on user request
@@ -384,6 +417,7 @@
     };
 */    
 
+/*
     this.debounced = function(name, fn, tm) {
       var dd = self.delaylist[name];
       self.delaylist[name] = fn;
@@ -396,6 +430,22 @@
         }, tm);
       }
     };
+*/
+
+		this.debounced = function(name, fn, tm) {
+      if (!self) return;
+			var dd = self.delaylist[name]||false;
+			if (!dd) {
+				fn.call(self);				
+				self.delaylist[name] = {
+					h:setAnimationFrame(function(){
+						self.delaylist[name].fn.call(self);
+					  self.delaylist[name] = false;	
+					},tm)
+				};				
+			}			
+			self.delaylist[name].fn = fn;				
+		};
 
     var _onsync = false;
 
@@ -404,6 +454,7 @@
       function requestSync() {
         if (_onsync) return;
         setAnimationFrame(function() {
+          if (!self) return;
           _onsync = false;
           for (var nn in self.synclist) {
             var fn = self.synclist[nn];
@@ -560,15 +611,33 @@
         return self.docscroll.scrollTop();
       };
       this.setScrollTop = function(val) {
-        return setTimeout(function() {self.docscroll.scrollTop(val)}, 1);
+        return setTimeout(function() {(self)&&self.docscroll.scrollTop(val)}, 1);
       };
       this.getScrollLeft = function() {
-        if (self.detected.ismozilla && self.isrtlmode)
-          return Math.abs(self.docscroll.scrollLeft());
-        return self.docscroll.scrollLeft();
+        var val;
+        if (self.hasreversehr) {
+          if (self.detected.ismozilla) {
+            val = self.page.maxw - Math.abs(self.docscroll.scrollLeft());
+          } else {
+            val = self.page.maxw - self.docscroll.scrollLeft();
+          }
+        } else {
+          val = self.docscroll.scrollLeft();
+        }
+        return val;
       };
       this.setScrollLeft = function(val) {
-        return setTimeout(function() {self.docscroll.scrollLeft((self.detected.ismozilla && self.isrtlmode) ? -val : val)}, 1);
+        return setTimeout(function() {
+          if (!self) return;
+					if (self.hasreversehr) {
+						if (self.detected.ismozilla) {
+							val = -(self.page.maxw - val);
+						} else {
+							val = self.page.maxw - val;
+						}
+					}
+					return self.docscroll.scrollLeft(val);
+				}, 1);					
       };
     }
 
@@ -697,7 +766,6 @@
           });
         }
 
-
       }
     };
 
@@ -728,7 +796,7 @@
       setAnimationFrame = function(fn) {
         return setTimeout(fn, 15 - Math.floor((+new Date()) / 1000) % 16);
       }; // 1000/60)};
-      clearAnimationFrame = clearInterval;
+      clearAnimationFrame = clearTimeout;
     } else if (!self.hascancelanimationframe) clearAnimationFrame = function() {
       self.cancelAnimationFrame = true;
     };
@@ -1126,12 +1194,16 @@
             self.scrollmom = new ScrollMomentumClass2D(self);
 
             self.ontouchstart = function(e) {
+              console.log(e.type,e.pointerType);
+              
               if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
               
               self.hasmoving = false;
 
               if (!self.railslocked) {
 
+							  console.log('touchstart ',e.type);
+							
                 var tg;
                 if (cap.hasmstouch) {
                   tg = (e.target) ? e.target : false;
@@ -1246,6 +1318,9 @@
               if (!self.rail.drag) return true;              
               if (self.rail.drag.pt == 2) {
                 if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
+								
+								console.log('touchend:',e.target.nodeName);
+								
                 self.scrollmom.doMomentum();
                 self.rail.drag = false;
                 if (self.hasmoving) {
@@ -1443,6 +1518,9 @@
           self.onmouseup = function(e) {
             if (self.rail.drag) {
               if (self.rail.drag.pt != 1) return true;
+							
+//							console.log('mouseup');
+							
               if (cap.hasmousecapture) document.releaseCapture();
               if (self.isiframe && !cap.hasmousecapture) self.doc.css("pointer-events", self.saved.csspointerevents);              
               self.rail.drag = false;
@@ -1506,7 +1584,7 @@
 
             self.bind(self.win, "mousedown", self.ontouchstart); // control content dragging
 
-            self.onclick = (cap.isios) ? false : function(e) {
+            self.onclick = (cap.isios) ? false : function(e) {  // it needs to check IE11 ???
               if (self.lastmouseup) {
                 self.lastmouseup = false;
                 return self.cancelEvent(e);
@@ -1735,14 +1813,18 @@
               });
               //self.cursorh && self.bind(self.cursorh, "mousemove", self.onmousemove);
               self.cursorh && self.bind(self.cursorh, "mouseup", self.onmouseup);
+            } else {
+              self.bind(self.rail, "mousedown", function(e){e.preventDefault();});  // prevent text selection             
+							self.railh&&self.bind(self.railh, "mousedown", function(e){e.preventDefault();});
             }
 
           }
+            
 
           if (self.opt.enablemousewheel) {
-            if (!self.isiframe) self.bind((cap.isie && self.ispage) ? document : self.win /*self.docscroll*/ , "mousewheel", self.onmousewheel);
-            self.bind(self.rail, "mousewheel", self.onmousewheel);
-            if (self.railh) self.bind(self.railh, "mousewheel", self.onmousewheelhr);
+            if (!self.isiframe) self.mousewheel((cap.isie && self.ispage) ? document : self.win , self.onmousewheel);
+            self.mousewheel(self.rail, self.onmousewheel);
+            if (self.railh) self.mousewheel(self.railh, self.onmousewheelhr);
           }
 
           if (!self.ispage && !cap.cantouch && !(/HTML|^BODY/.test(self.win[0].nodeName))) {
@@ -1898,7 +1980,7 @@
           self.observerbody = new ClsMutationObserver(function(mutations) {
             mutations.forEach(function(mut){
               if (mut.type=="attributes") {
-                return ($("body").hasClass("modal-open") && !$.contains($('.modal-dialog')[0],self.doc[0])) ? self.hide() : self.show();  // Support for Bootstrap modal; Added check if the nice scroll element is inside a modal
+                return ($("body").hasClass("modal-open") && $("body").hasClass("modal-dialog") && !$.contains($('.modal-dialog')[0],self.doc[0])) ? self.hide() : self.show();  // Support for Bootstrap modal; Added check if the nice scroll element is inside a modal
               }
             });  
             if (document.body.scrollHeight!=self.page.maxh) return self.lazyResize(30);
@@ -2023,7 +2105,7 @@
           }
 
           if (self.opt.enablemousewheel) {
-            self.bind(doc, "mousewheel", self.onmousewheel);
+            self.mousewheel(doc, self.onmousewheel);
           }
 
           if (self.opt.enablekeyboard) self.bind(doc, (cap.isopera) ? "keypress" : "keydown", self.onkeypress);
@@ -2273,9 +2355,21 @@
 
     this.resize = self.onResize;
 
+		this.hlazyresize = 0;
+		
     this.lazyResize = function(tm) { // event debounce
+/*		
       tm = (isNaN(tm)) ? 30 : tm;
       self.debounced('resize', self.resize, tm);
+*/
+
+//			if (!self.haswrapper&&self.opt.autohidemode!==false) self.hide();	
+			if (!self.haswrapper) self.hide();	
+			if (self.hlazyresize) clearTimeout(self.hlazyresize);
+			self.hlazyresize = setTimeout(function(){
+				self.show().resize();
+			},240);
+			
       return self;
     };
 
@@ -2300,8 +2394,9 @@
         };
 
         if (name == "mousewheel") {
-          event.deltaY = -1 / 40 * e.wheelDelta;
           e.wheelDeltaX && (event.deltaX = -1 / 40 * e.wheelDeltaX);
+					e.wheelDeltaY && (event.deltaY = -1 / 40 * e.wheelDeltaY);
+					!event.deltaY && !event.deltaX && (event.deltaY = -1 / 40 * e.wheelDelta);
         } else {
           event.deltaY = e.detail;
         }
@@ -2321,53 +2416,25 @@
       });
       $(dom).bind(name, fn);
     };
-
-    this.bind = function(dom, name, fn, bubble) { // touch-oriented & fixing jquery bind
+    
+    this.mousewheel = function(dom, fn, bubble) { // bind mousewheel
       var el = ("jquery" in dom) ? dom[0] : dom;
-
-      if (name == 'mousewheel') {
-        if ("onwheel" in self.win) { // modern brosers & IE9 detection fix
-          self._bind(el, "wheel", fn, bubble || false);
-        } else {
-          var wname = (typeof document.onmousewheel != "undefined") ? "mousewheel" : "DOMMouseScroll"; // older IE/Firefox
-          _modernWheelEvent(el, wname, fn, bubble || false);
-          if (wname == "DOMMouseScroll") _modernWheelEvent(el, "MozMousePixelScroll", fn, bubble || false); // Firefox legacy
-        }
-      } else if (el.addEventListener) {
-        if (cap.cantouch && /mouseup|mousedown|mousemove/.test(name)) { // touch device support
-          var tt = (name == 'mousedown') ? 'touchstart' : (name == 'mouseup') ? 'touchend' : 'touchmove';
-          self._bind(el, tt, function(e) {
-            if (e.touches) {
-              if (e.touches.length < 2) {
-                var ev = (e.touches.length) ? e.touches[0] : e;
-                ev.original = e;
-                fn.call(this, ev);
-              }
-            } else if (e.changedTouches) {
-              var ev = e.changedTouches[0];
-              ev.original = e;
-              fn.call(this, ev);
-            } //blackberry
-          }, bubble || false);
-        }
-        self._bind(el, name, fn, bubble || false);
-        if (cap.cantouch && name == "mouseup") self._bind(el, "touchcancel", fn, bubble || false);
+      if ("onwheel" in document.createElement("div")) { // Modern browsers support "wheel"
+        self._bind(el, "wheel", fn, bubble || false);
       } else {
-        self._bind(el, name, function(e) {
-          e = e || window.event || false;
-          if (e) {
-            if (e.srcElement) e.target = e.srcElement;
-          }
-          if (!("pageY" in e)) {
-            e.pageX = e.clientX + document.documentElement.scrollLeft;
-            e.pageY = e.clientY + document.documentElement.scrollTop;
-          }
-          return ((fn.call(el, e) === false) || bubble === false) ? self.cancelEvent(e) : true;
-        });
+        var wname = (typeof document.onmousewheel != "undefined") ? "mousewheel" : "DOMMouseScroll"; // older Webkit+IE support or older Firefox          
+        _modernWheelEvent(el, wname, fn, bubble || false);
+        if (wname == "DOMMouseScroll") _modernWheelEvent(el, "MozMousePixelScroll", fn, bubble || false); // Firefox legacy
       }
     };
-
-    if (cap.haseventlistener) {  // W3C standard model
+    
+    if (cap.haseventlistener) {  // W3C standard event model
+    
+      this.bind = function(dom, name, fn, bubble) {  // W3C
+        var el = ("jquery" in dom) ? dom[0] : dom;
+        self._bind(el, name, fn, bubble || false);
+      }
+    
       this._bind = function(el, name, fn, bubble) { // primitive bind
         self.events.push({
           e: el,
@@ -2381,7 +2448,7 @@
       this.cancelEvent = function(e) {
         if (!e) return false;
         var e = (e.original) ? e.original : e;
-        e.preventDefault();
+        if (e.cancelable) e.preventDefault();
         e.stopPropagation();
         if (e.preventManipulation) e.preventManipulation(); //IE10
         return false;
@@ -2396,6 +2463,22 @@
         el.removeEventListener(name, fn, bub);
       };
     } else {  // old IE model
+
+      this.bind = function(dom, name, fn, bubble) {  // legacy IE
+        var el = ("jquery" in dom) ? dom[0] : dom;
+        self._bind(el, name, function(e) {
+          e = e || window.event || false;
+          if (e) {
+            if (e.srcElement) e.target = e.srcElement;
+          }
+          if (!("pageY" in e)) {
+            e.pageX = e.clientX + document.documentElement.scrollLeft;
+            e.pageY = e.clientY + document.documentElement.scrollTop;
+          }
+          return ((fn.call(el, e) === false) || bubble === false) ? self.cancelEvent(e) : true;
+        });
+      }
+    
       this._bind = function(el, name, fn, bubble) { // primitive bind
         self.events.push({
           e: el,
@@ -2492,7 +2575,8 @@
     this.remove = function() {
       self.stop();
       if (self.cursortimeout) clearTimeout(self.cursortimeout);
-      if (self.debouncedelayed) clearTimeout(self.debouncedelayed);
+//      if (self.debouncedelayed) clearTimeout(self.debouncedelayed);
+			for(var n in self.delaylist) if (self.delaylist[n]) clearAnimationFrame(self.delaylist[n].h);
       self.doZoomOut();
       self.unbindAll();
 
@@ -2640,6 +2724,9 @@
         
       }
 
+      // invert horizontal direction for rtl mode
+      if (self.isrtlmode) px = -px;
+
       if (px) {
         if (self.scrollmom) {
           self.scrollmom.stop()
@@ -2665,7 +2752,8 @@
           self.scrollmom.stop()
         }
         self.lastdeltay += py;
-        self.debounced("mousewheely", function() {
+//        self.debounced("mousewheely", function() {
+	      self.synched("mousewheely", function() {
           var dt = self.lastdeltay;
           self.lastdeltay = 0;
           if (!self.rail.drag) {
@@ -2769,6 +2857,7 @@
         var ex = (istime) ? ((dif > 20) ? dif : 0) : self.getTransitionSpeed(dif);
         var trans = (ex) ? cap.prefixstyle + 'transform ' + ex + 'ms ease-out' : '';
         if (!self.lasttransitionstyle || self.lasttransitionstyle != trans) {
+//					console.log(trans);
           self.lasttransitionstyle = trans;
           self.doc.css(cap.transitionstyle, trans);
         }
@@ -3430,14 +3519,14 @@
 
             if (self.speedx) {
               var scx = self.nc.getScrollLeft();
-              if (scx != self.chkx) self.stop();
+//              if (scx != self.chkx) self.stop();
               self.chkx = nx;
               self.nc.setScrollLeft(nx);
             }
 
             if (self.speedy) {
               var scy = self.nc.getScrollTop();
-              if (scy != self.chky) self.stop();
+//              if (scy != self.chky) self.stop();
               self.chky = ny;
               self.nc.setScrollTop(ny);
             }
@@ -3641,3 +3730,4 @@
   }
 
 }));
+
