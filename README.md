@@ -1,4 +1,6 @@
 #jQuery.NiceScroll
+
+[![Join the chat at https://gitter.im/inuyaksa/jquery.nicescroll](https://badges.gitter.im/inuyaksa/jquery.nicescroll.svg)](https://gitter.im/inuyaksa/jquery.nicescroll?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 v. 3.6.6 11-17-2015
 
  - [Web Site: nicescroll.areaaperta.com](http://nicescroll.areaaperta.com)
