@@ -1,9 +1,10 @@
 {
   "name": "nicescroll",
   "version": "3.6.7",
+  "bugs": "http://github.com/inuyaksa/jquery.nicescroll/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/inuyaksa/jquery.nicescroll"
+    "url": "git@github.com:inuyaksa/jquery.nicescroll.git"
   },
   "title": "jQuery.NiceScroll",
   "author": {
