@@ -29,6 +29,8 @@
   "keywords": [
     "nicescroll",
     "jquery",
+    "jquery-plugin",
+    "ecosystem:jquery",
     "interface",
     "window",
     "dom",
