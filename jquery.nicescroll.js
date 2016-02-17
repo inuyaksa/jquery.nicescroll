@@ -1195,16 +1195,11 @@
             self.scrollmom = new ScrollMomentumClass2D(self);
 
             self.ontouchstart = function(e) {
-              console.log(e.type,e.pointerType);
-              
               if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
               
               self.hasmoving = false;
 
               if (!self.railslocked) {
-
-							  console.log('touchstart ',e.type);
-							
                 var tg;
                 if (cap.hasmstouch) {
                   tg = (e.target) ? e.target : false;
@@ -1319,8 +1314,6 @@
               if (!self.rail.drag) return true;              
               if (self.rail.drag.pt == 2) {
                 if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
-								
-								console.log('touchend:',e.target.nodeName);
 								
                 self.scrollmom.doMomentum();
                 self.rail.drag = false;
@@ -1519,8 +1512,6 @@
           self.onmouseup = function(e) {
             if (self.rail.drag) {
               if (self.rail.drag.pt != 1) return true;
-							
-//							console.log('mouseup');
 							
               if (cap.hasmousecapture) document.releaseCapture();
               if (self.isiframe && !cap.hasmousecapture) self.doc.css("pointer-events", self.saved.csspointerevents);              
@@ -2858,7 +2849,6 @@
         var ex = (istime) ? ((dif > 20) ? dif : 0) : self.getTransitionSpeed(dif);
         var trans = (ex) ? cap.prefixstyle + 'transform ' + ex + 'ms ease-out' : '';
         if (!self.lasttransitionstyle || self.lasttransitionstyle != trans) {
-//					console.log(trans);
           self.lasttransitionstyle = trans;
           self.doc.css(cap.transitionstyle, trans);
         }
