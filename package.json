@@ -11,12 +11,7 @@
     "name": "InuYaksa",
     "url": "https://github.com/inuyaksa"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "MIT.LICENSE"
-    }
-  ],	
+  "licenses": "MIT",
 	"autoupdate": {
     "source": "git",
     "target": "git://github.com/inuyaksa/jquery.nicescroll.git",
