@@ -2359,7 +2359,7 @@
 			if (!self.haswrapper) self.hide();	
 			if (self.hlazyresize) clearTimeout(self.hlazyresize);
 			self.hlazyresize = setTimeout(function(){
-				self.show().resize();
+				self && self.show().resize();
 			},240);
 			
       return self;
