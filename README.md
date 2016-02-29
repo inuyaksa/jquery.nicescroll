@@ -1,5 +1,5 @@
 #jQuery.NiceScroll
-v. 3.6.7 02-08-2016
+v. 3.6.8 02-29-2016
 
  - [Web Site: nicescroll.areaaperta.com](http://nicescroll.areaaperta.com)
  - [Repo: github.com/inuyaksa/jquery.nicescroll](https://github.com/inuyaksa/jquery.nicescroll)
@@ -165,6 +165,7 @@ $("#thisdiv").niceScroll({
     oneaxismousemode: "auto", // it permits horizontal scrolling with mousewheel on horizontal only content, if false (vertical-only) mousewheel don't scroll horizontally, if value is auto detects two-axis mouse
     scriptpath: "" // define custom path for boxmode icons ("" => same script path)
     preventmultitouchscrolling: true // prevent scrolling on multitouch events
+    disablemutationobserver: false // force MutationObserver disabled
 });
 ```
 
