@@ -1300,11 +1300,10 @@
                   }
 
                   if (/SUBMIT|CANCEL|BUTTON/i.test($(tg).attr('type'))) {
-                    pc = {
+                    self.preventclick = {
                       "tg": tg,
                       "click": false
                     };
-                    self.preventclick = pc;
                   }
 
                 }
