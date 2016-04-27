@@ -2647,7 +2647,7 @@
     this.isScrollable = function(e) {
       var dom = (e.target) ? e.target : e;
       if (dom.nodeName == 'OPTION') return true;
-      while (dom && (dom.nodeType == 1) && !(/^BODY|HTML/.test(dom.nodeName))) {
+      while (dom && (dom.nodeType == 1) && (dom !== this.me[0]) && !(/^BODY|HTML/.test(dom.nodeName))) {
         var dd = $(dom);
         var ov = dd.css('overflowY') || dd.css('overflowX') || dd.css('overflow') || '';
         if (/scroll|auto/.test(ov)) return (dom.clientHeight != dom.scrollHeight);
