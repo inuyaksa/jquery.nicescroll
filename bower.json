@@ -1,8 +1,7 @@
 {
     "name": "jquery.nicescroll",
     "main": [
-        "./jquery.nicescroll.js",
-        "./zoomico.png"
+        "./jquery.nicescroll.js"
     ],
     "ignore": [
         "**/.*",
