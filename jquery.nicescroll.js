@@ -439,13 +439,15 @@
       if (!self) return;
 			var dd = self.delaylist[name]||false;
 			if (!dd) {
-				fn.call(self);				
+        //fixed loop call fn:checkSelectionScroll
+				//fn.call(self);				
 				self.delaylist[name] = {
 					h: setAnimationFrame(function(){
 						self.delaylist[name].fn.call(self);
 					  self.delaylist[name] = false;	
 					}, tm)
-				};				
+				};
+        fn.call(self);
 			}			
 			self.delaylist[name].fn = fn;				
 		};
