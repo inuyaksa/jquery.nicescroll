@@ -1485,6 +1485,73 @@
 
             };
 
+            self.ontouchstartCursor = function (e, hronly) {
+              if (self.rail.drag && self.rail.drag.pt != 3) return;
+              if (self.locked) return self.cancelEvent(e);
+              self.cancelScroll();
+              self.rail.drag = {
+                x: e.touches[0].clientX,
+                y: e.touches[0].clientY,
+                sx: self.scroll.x,
+                sy: self.scroll.y,
+                pt: 3,
+                hr: (!!hronly)
+              };
+              var tg = self.getTarget(e);
+              if (!self.ispage && cap.hasmousecapture) tg.setCapture();
+              if (self.isiframe && !cap.hasmousecapture) {
+                self.saved["csspointerevents"] = self.doc.css("pointer-events");
+                self.css(self.doc, {"pointer-events": "none"});
+              }
+              return self.cancelEvent(e);
+            };
+
+            self.ontouchendCursor = function (e) {
+              if (self.rail.drag) {
+                if (cap.hasmousecapture) document.releaseCapture();
+                if (self.isiframe && !cap.hasmousecapture) self.doc.css("pointer-events", self.saved["csspointerevents"]);
+                if (self.rail.drag.pt != 3)return;
+                self.rail.drag = false;
+                //if (!self.rail.active) self.hideCursor();
+                return self.cancelEvent(e);
+              }
+            };
+
+            self.ontouchmoveCursor = function (e) {
+              if (self.rail.drag) {
+                if (self.rail.drag.pt != 3)return;
+
+                self.cursorfreezed = true;
+
+                if (self.rail.drag.hr) {
+                  self.scroll.x = self.rail.drag.sx + (e.touches[0].clientX - self.rail.drag.x);
+                  if (self.scroll.x < 0) self.scroll.x = 0;
+                  var mw = self.scrollvaluemaxw;
+                  if (self.scroll.x > mw) self.scroll.x = mw;
+                } else {
+                  self.scroll.y = self.rail.drag.sy + (e.touches[0].clientY - self.rail.drag.y);
+                  if (self.scroll.y < 0) self.scroll.y = 0;
+                  var my = self.scrollvaluemax;
+                  if (self.scroll.y > my) self.scroll.y = my;
+                }
+
+                self.synched('touchmove', function () {
+                  if (self.rail.drag && (self.rail.drag.pt == 3)) {
+                    self.showCursor();
+                    if (self.rail.drag.hr) self.doScrollLeft(Math.round(self.scroll.x * self.scrollratio.x), self.opt.cursordragspeed);
+                    else self.doScrollTop(Math.round(self.scroll.y * self.scrollratio.y), self.opt.cursordragspeed);
+                  }
+                });
+
+                return self.cancelEvent(e);
+              }
+              /*
+               else {
+               self.checkarea = true;
+               }
+               */
+            };
+
           }
 
           self.onmousedown = function(e, hronly) {
@@ -1755,6 +1822,17 @@
 
             }
 
+          }
+
+          if(self.opt.cursordragontouch && (this.istouchcapable || cap.cantouch)) {
+            self.bind(self.cursor, "touchstart", self.ontouchstartCursor);
+            self.bind(self.cursor, "touchmove", self.ontouchmoveCursor);
+            self.bind(self.cursor, "touchend", self.ontouchendCursor);
+            self.cursorh && self.bind(self.cursorh, "touchstart", function(e) {
+                self.ontouchstartCursor(e, true);
+            });
+            self.cursorh && self.bind(self.cursorh, "touchmove", self.ontouchmoveCursor);
+            self.cursorh && self.bind(self.cursorh, "touchend", self.ontouchendCursor);
           }
 
           if (!cap.cantouch && !self.opt.touchbehavior) {
