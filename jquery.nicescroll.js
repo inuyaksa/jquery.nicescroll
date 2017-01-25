@@ -1977,8 +1977,9 @@
               if (mut.type=="attributes") {
                 return ($("body").hasClass("modal-open") && $("body").hasClass("modal-dialog") && !$.contains($('.modal-dialog')[0],self.doc[0])) ? self.hide() : self.show();  // Support for Bootstrap modal; Added check if the nice scroll element is inside a modal
               }
-            });  
-            if (document.body.scrollHeight!=self.page.maxh) return self.lazyResize(30);
+            });
+            // if (document.body.scrollHeight!=self.page.maxh) return self.lazyResize(30);
+            if (self.me.clientWidth!=self.page.width || self.me.clientHeight!=self.page.height) return self.lazyResize(30);
           });
           self.observerbody.observe(document.body, {
             childList: true,
