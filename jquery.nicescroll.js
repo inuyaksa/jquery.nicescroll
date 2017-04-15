@@ -3333,6 +3333,7 @@
           self.noticeCursor();
         });
       }
+      self.triggerScrollEnd();
     };
     self.bind(self.docscroll, "scroll", self.onscroll);
 
