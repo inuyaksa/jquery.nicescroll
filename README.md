@@ -1,5 +1,5 @@
 #jQuery.NiceScroll
-v. 3.6.8 02-29-2016
+v. 3.7.0 2017-05-21
 
  - [Web Site: nicescroll.areaaperta.com](http://nicescroll.areaaperta.com)
  - [Repo: github.com/inuyaksa/jquery.nicescroll](https://github.com/inuyaksa/jquery.nicescroll)
@@ -14,13 +14,13 @@ v. 3.6.8 02-29-2016
 
   - HORIZONAL scrollbar support!
   - It supports DIVs, IFrames, textarea, and document page (body) scrollbars.
-  - Compatible with all desktop browser: Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
-  - Compatible with mobile device: iPad/iPhone/iPod, Android 2.2+, Blackberry phones and Playbook (WebWorks/Table OS), Windows Phone 7.5 Mango.
+  - Compatible with all recent desktop browser and older: Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
+  - Compatible with mobile device: iPad/iPhone/iPod, Android 2.2+, Blackberry phones and Playbook (WebWorks/Table OS), Windows Phone 10 and older.
   - Compatible with all touch devices: iPad, Android tablets, Window Surface.
   - Compabible with multi-input device (mouse with touch or pen): Window Surface, Chrome Desktop on touch notebook.
   - Compatible with 2 directions mice: Apple Magic Mouse, Apple Mouser with 2-dir wheel, PC mouse with 2-dir wheel (if browser support it).
 
-So you have scrollable divs with momentum for iPad 4+ and you have consistent scrollable areas for all desktop and mobile platforms.
+So you have customizable and scrollable divs with momentum for iPad and you have consistent scrollable areas for all desktop and mobile platforms.
 
 Sexy zoom feature, you can "zoom-in" the content of any nicescroll'ed div.
 Nice to use and nice to see, all the content of the div in fullscreen mode.
@@ -123,7 +123,8 @@ $("#thisdiv").niceScroll({
     zindex: "auto" | <number>, // change z-index for scrollbar div
     scrollspeed: 60, // scrolling speed
     mousescrollstep: 40, // scrolling speed with mouse wheel (pixel)
-    touchbehavior: false, // enable cursor-drag scrolling like touch devices in desktop computer
+    touchbehavior: false, // DEPRECATED!! use "touchemulate"
+    touchemulate: false, // enable cursor-drag scrolling like touch devices in desktop computer
     hwacceleration: true, // use hardware accelerated scroll when supported
     boxzoom: false, // enable zoom for box content
     dblclickzoom: true, // (only when boxzoom=true) zoom activated when double click on box
@@ -176,7 +177,7 @@ Related projects
 
 * LICENSE
 
-## Copyright 2011-16 InuYaksa
+## Copyright 2011-17 InuYaksa
 
 ######Licensed under the MIT License, http://www.opensource.org/licenses/mit-license.php
 ######Images used for zoom icons have derived from OLPC interface, http://laptop.org/8.2.0/manual/Browse_ChangingView.html

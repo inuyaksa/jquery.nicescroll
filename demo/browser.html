@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -24,7 +24,7 @@ body {
 }
 </style>
 
-<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="js/jquery.nicescroll.min.js"></script>
 
 <script>
@@ -34,7 +34,7 @@ body {
     nice = $("html").niceScroll();
   });
   
-  var obj = window;
+  var obj = window;//$(window);
   
   console.log(obj.length);
   console.log("selector" in obj);
@@ -63,6 +63,7 @@ body {
 	toCell(3,6,nice.detected.isieold);
 
   toCell(7,1,nice.detected.isie11);
+  toCell(7,2,nice.detected.ismsedge);
   
 	toCell(4,1,nice.detected.isopera);
   toCell(4,2,nice.detected.isopera12);
@@ -70,6 +71,8 @@ body {
 	
 	toCell(5,1,nice.detected.isios);
 	toCell(5,2,nice.detected.isios4);
+  toCell(5,3,nice.detected.isios8);
+  toCell(5,4,nice.detected.isios10);
 
   toCell(6,1,nice.detected.ischrome);
 	toCell(6,2,nice.detected.ischrome22);
@@ -135,7 +138,7 @@ body {
     <td bgcolor="#E0E0E9">Opera&nbsp;12</td>
     <td bgcolor="#E0E0E9">iOS4- <span class="num">(6)</span></td>
 		<td bgcolor="#E0E0E9">Chrome 22+</td>
-    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">MSEdge</td>
   </tr>
   <tr>
     <td bgcolor="#E0E0E9">&nbsp;</td>
@@ -143,7 +146,7 @@ body {
     <td bgcolor="#E0E0E9">&nbsp;</td>
     <td bgcolor="#E0E0E9">IE9+</td>
     <td bgcolor="#E0E0E9">Opera&nbsp;Mini</td>
-    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">iOS8</td>
 		<td bgcolor="#E0E0E9">Chrome 26+</td>
     <td bgcolor="#E0E0E9">&nbsp;</td>
   </tr>
@@ -153,7 +156,7 @@ body {
     <td bgcolor="#E0E0E9">&nbsp;</td>
     <td bgcolor="#E0E0E9">IE8</td>
     <td bgcolor="#E0E0E9">&nbsp;</td>
-    <td bgcolor="#E0E0E9">&nbsp;</td>
+    <td bgcolor="#E0E0E9">iOS10</td>
 		<td bgcolor="#E0E0E9">&nbsp;</td>
     <td bgcolor="#E0E0E9">&nbsp;</td>
   </tr>

@@ -1,0 +1,40 @@
+Changelog nicescroll release 3.7.0
+http://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+Fixes
+- typos on touchaction for IE10+ #658
+- MS Edge (14+) detection fixed #655
+- webkitCancelRequestAnimationFrame deprecated #650
+- enableobserver option added #643
+- Bug in bower.json #617
+- Versions from "3.6.7" to "latest" brokes scroll on touch devices #634
+- Horizontal scroll doesn't work on mobile devices tested with chrome & firefox on Android #646
+- How to Scroll in Mobile Device #626
+- 3.6.7 not working on ios or android #574
+- On iPhone safari does not work #649
+- Touch scrolling leads to a click event on Windows touch (Edge and Firefox browser) #614
+- Nicescroll not working in IOS 9+ #611
+- fixed ghost horizontal scrollbar
+
+
+New options
+- enableobserver (default:true), attach Mutation Observers (or alternative observers) to monitoring any attribute change at nicescroll DOM, on performance issue you can disable
+
+
+Changes 
+- deprecated touchbehavior, new touchemulate option, name changing I hope solve many misunderstanding about this option meaning
+
+
+TODO
+- railpadding
+- railpadding top & bottom settings ignored - thanks to simovinci.bellissimo
+- honorcssoverflow
+- autohidemode:hover
+- check 2D scrolling
+- check text selection on cursor drag (testing)
+- recursive position:fixed check
+- check horiz mouse wheel scrolling speed on chrome
+- mouse pan scroll
+
