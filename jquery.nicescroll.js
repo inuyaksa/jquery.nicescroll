@@ -165,8 +165,6 @@
     d.hasw3ctouch = (window.PointerEvent || false) && ((navigator.MaxTouchPoints > 0)||(navigator.msMaxTouchPoints > 0)); //IE11 pointer events, following W3C Pointer Events spec
     d.hasmstouch = (!d.hasw3ctouch)&&(window.MSPointerEvent || false); // IE10 pointer events
 
-    d.ismac = /^mac$/i.test(_platform);
-    
     d.isios = (d.cantouch && /iphone|ipad|ipod/i.test(_platform));
     d.isios4 = ((d.isios) && !("seal" in Object));
     d.isios7 = ((d.isios)&&("webkitHidden" in document));  //iOS 7+
