@@ -124,7 +124,7 @@ $("#thisdiv").niceScroll({
     scrollspeed: 60, // scrolling speed
     mousescrollstep: 40, // scrolling speed with mouse wheel (pixel)
     touchbehavior: false, // DEPRECATED!! use "touchemulate"
-    touchemulate: false, // enable cursor-drag scrolling like touch devices in desktop computer
+    emulatetouch: false, // enable cursor-drag scrolling like touch devices in desktop computer
     hwacceleration: true, // use hardware accelerated scroll when supported
     boxzoom: false, // enable zoom for box content
     dblclickzoom: true, // (only when boxzoom=true) zoom activated when double click on box
