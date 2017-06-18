@@ -31,7 +31,7 @@
 
   var $ = jQuery; // sandbox
 
-  var document = document;
+  //var document = document;
   var $window = $(window);
 
   // http://stackoverflow.com/questions/2161159/get-script-path
