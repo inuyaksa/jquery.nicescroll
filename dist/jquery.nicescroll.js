@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.7.2
+-- version 3.7.3
 -- copyright 2017-06-18 InuYaksa*2017
 -- licensed under the MIT
 --
@@ -31,12 +31,12 @@
 
   var $ = jQuery; // sandbox
 
-  //var document = document;
+  var _doc = document;
   var $window = $(window);
 
   // http://stackoverflow.com/questions/2161159/get-script-path
   function getScriptPath() {
-    var scripts = document.currentScript || (function () { var s = document.getElementsByTagName('script'); return (s.length) ? s[s.length - 1] : false; })();
+    var scripts = _doc.currentScript || (function () { var s = _doc.getElementsByTagName('script'); return (s.length) ? s[s.length - 1] : false; })();
     var path = scripts ? scripts.src.split('?')[0] : '';
     return (path.split('/').length > 0) ? path.split('/').slice(0, -1).join('/') + '/' : '';
   }
@@ -134,25 +134,25 @@
 
     if (browserdetected) return browserdetected;
 
-    var _el = document.createElement('DIV'),
+    var _el = _doc.createElement('DIV'),
       _style = _el.style,
       _agent = navigator.userAgent,
       _platform = navigator.platform,
       d = {};
 
-    d.haspointerlock = "pointerLockElement" in document || "webkitPointerLockElement" in document || "mozPointerLockElement" in document;
+    d.haspointerlock = "pointerLockElement" in _doc || "webkitPointerLockElement" in _doc || "mozPointerLockElement" in _doc;
 
     d.isopera = ("opera" in window); // 12-
     d.isopera12 = (d.isopera && ("getUserMedia" in navigator));
     d.isoperamini = (Object.prototype.toString.call(window.operamini) === "[object OperaMini]");
 
-    d.isie = (("all" in document) && ("attachEvent" in _el) && !d.isopera); //IE10-
+    d.isie = (("all" in _doc) && ("attachEvent" in _el) && !d.isopera); //IE10-
     d.isieold = (d.isie && !("msInterpolationMode" in _style)); // IE6 and older
-    d.isie7 = d.isie && !d.isieold && (!("documentMode" in document) || (document.documentMode === 7));
-    d.isie8 = d.isie && ("documentMode" in document) && (document.documentMode === 8);
-    d.isie9 = d.isie && ("performance" in window) && (document.documentMode === 9);
-    d.isie10 = d.isie && ("performance" in window) && (document.documentMode === 10);
-    d.isie11 = ("msRequestFullscreen" in _el) && (document.documentMode >= 11); // IE11+
+    d.isie7 = d.isie && !d.isieold && (!("documentMode" in _doc) || (_doc.documentMode === 7));
+    d.isie8 = d.isie && ("documentMode" in _doc) && (_doc.documentMode === 8);
+    d.isie9 = d.isie && ("performance" in window) && (_doc.documentMode === 9);
+    d.isie10 = d.isie && ("performance" in window) && (_doc.documentMode === 10);
+    d.isie11 = ("msRequestFullscreen" in _el) && (_doc.documentMode >= 11); // IE11+
 
     d.ismsedge = ("msCredentials" in window);  // MS Edge 14+
 
@@ -165,7 +165,7 @@
     d.ischrome22 = (!d.ischrome38) && (d.ischrome && d.haspointerlock);
     d.ischrome26 = (!d.ischrome38) && (d.ischrome && ("transition" in _style)); // issue with transform detection (maintain prefix)
 
-    d.cantouch = ("ontouchstart" in document.documentElement) || ("ontouchstart" in window); // with detection for Chrome Touch Emulation    
+    d.cantouch = ("ontouchstart" in _doc.documentElement) || ("ontouchstart" in window); // with detection for Chrome Touch Emulation    
     d.hasw3ctouch = (window.PointerEvent || false) && ((navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)); //IE11 pointer events, following W3C Pointer Events spec
     d.hasmstouch = (!d.hasw3ctouch) && (window.MSPointerEvent || false); // IE10 pointer events
 
@@ -173,8 +173,8 @@
 
     d.isios = d.cantouch && /iphone|ipad|ipod/i.test(_platform);
     d.isios4 = d.isios && !("seal" in Object);
-    d.isios7 = d.isios && ("webkitHidden" in document);  //iOS 7+
-    d.isios8 = d.isios && ("hidden" in document);  //iOS 8+
+    d.isios7 = d.isios && ("webkitHidden" in _doc);  //iOS 7+
+    d.isios8 = d.isios && ("hidden" in _doc);  //iOS 8+
     d.isios10 = d.isios && window.Proxy;  //iOS 10+
 
     d.isandroid = (/android/i.test(_agent));
@@ -259,7 +259,7 @@
 
     var self = this;
 
-    this.version = '3.7.2';
+    this.version = '3.7.3';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -366,7 +366,7 @@
     if (self.opt.scrollbarid === false) {
       do {
         this.id = "ascrail" + (ascrailcounter++);
-      } while (document.getElementById(this.id));
+      } while (_doc.getElementById(this.id));
     } else {
       this.id = self.opt.scrollbarid;
     }
@@ -580,7 +580,7 @@
       };
 
       this.notifyScrollEvent = function (el) {
-        var e = document.createEvent("UIEvents");
+        var e = _doc.createEvent("UIEvents");
         e.initUIEvent("scroll", false, true, window, 1);
         e.niceevent = true;
         el.dispatchEvent(e);
@@ -698,8 +698,8 @@
 
     this.getDocumentScrollOffset = function () {
       return {
-        top: window.pageYOffset || document.documentElement.scrollTop,
-        left: window.pageXOffset || document.documentElement.scrollLeft
+        top: window.pageYOffset || _doc.documentElement.scrollTop,
+        left: window.pageXOffset || _doc.documentElement.scrollLeft
       };
     };
 
@@ -787,8 +787,8 @@
       self.cancelEvent(e);
 
       if (!("pageY" in e)) {
-        e.pageX = e.clientX + document.documentElement.scrollLeft;
-        e.pageY = e.clientY + document.documentElement.scrollTop;
+        e.pageX = e.clientX + _doc.documentElement.scrollLeft;
+        e.pageY = e.clientY + _doc.documentElement.scrollTop;
       }
 
       if (dbl) {
@@ -813,7 +813,7 @@
       self.saved.css = [];
 
       if (cap.isoperamini) return true; // SORRY, DO NOT WORK!
-      if (cap.isandroid && !("hidden" in document)) return true; // Android 3- SORRY, DO NOT WORK!
+      if (cap.isandroid && !("hidden" in _doc)) return true; // Android 3- SORRY, DO NOT WORK!
 
       self.opt.emulatetouch = self.opt.emulatetouch || self.opt.touchbehavior;  // mantain compatibility with "touchbehavior"      
 
@@ -850,7 +850,7 @@
           "-webkit-overflow-scrolling": "touch"
         }); //force hw acceleration
 
-        var cursor = $(document.createElement('div'));
+        var cursor = $(_doc.createElement('div'));
         cursor.css({
           position: "relative",
           top: 0,
@@ -869,7 +869,7 @@
 
         self.cursor = cursor;
 
-        var rail = $(document.createElement('div'));
+        var rail = $(_doc.createElement('div'));
         rail.attr('id', self.id);
         rail.addClass('nicescroll-rails nicescroll-rails-vr');
 
@@ -901,7 +901,7 @@
 
         var zoom = false;
         if (self.opt.boxzoom && !self.ispage && !cap.isieold) {
-          zoom = document.createElement('div');
+          zoom = _doc.createElement('div');
 
           self.bind(zoom, "click", self.doZoom);
           self.bind(zoom, "mouseenter", function () {
@@ -942,7 +942,7 @@
             overflowX: 'hidden'
           });
 
-          var cursor = $(document.createElement('div'));
+          var cursor = $(_doc.createElement('div'));
           cursor.css({
             position: "absolute",
             top: 0,
@@ -964,7 +964,7 @@
 
           self.cursorh = cursor;
 
-          railh = $(document.createElement('div'));
+          railh = $(_doc.createElement('div'));
           railh.attr('id', self.id + '-hr');
           railh.addClass('nicescroll-rails nicescroll-rails-hr');
           railh.height = Math.max(parseFloat(self.opt.cursorwidth), cursor.outerHeight());
@@ -1189,8 +1189,8 @@
                 };
 
                 var page = {
-                  w: Math.max(document.body.scrollWidth, document.documentElement.scrollWidth),
-                  h: Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)
+                  w: Math.max(_doc.body.scrollWidth, _doc.documentElement.scrollWidth),
+                  h: Math.max(_doc.body.scrollHeight, _doc.documentElement.scrollHeight)
                 };
 
                 var maxh = Math.max(0, page.h - view.h);
@@ -1266,7 +1266,7 @@
                 self.scrollmom.doMomentum();
                 self.lastmouseup = true;
                 self.hideCursor();
-                if (cap.hasmousecapture) document.releaseCapture();
+                if (cap.hasmousecapture) _doc.releaseCapture();
                 if (!cap.cantouch) return self.cancelEvent(e);
               }
 
@@ -1298,7 +1298,7 @@
 
               if (self.rail.drag.y === e.clientY && self.rail.drag.x === e.clientX) return false;  // prevent first useless move event 
 
-              if (!self.hasmoving) self.triggerScrollStart(e.clientX,e.clientY,0,0,0);
+              if (!self.hasmoving) self.onscrollstart && self.triggerScrollStart(e.clientX,e.clientY,0,0,0);
               self.hasmoving = true;
 
               if (self.preventclick && !self.preventclick.click) {
@@ -1401,7 +1401,7 @@
                   } else {
                     self.showCursor(ny);
                   }
-                  if (cap.isie10) document.selection.clear();
+                  if (cap.isie10) _doc.selection.clear();
                 }
               });
 
@@ -1437,7 +1437,7 @@
 
           self.ontouchendCursor = function (e) {
             if (self.rail.drag) {
-              if (cap.hasmousecapture) document.releaseCapture();
+              if (cap.hasmousecapture) _doc.releaseCapture();
               if (self.isiframe && !cap.hasmousecapture) self.doc.css("pointer-events", self.saved["csspointerevents"]);
               if (self.rail.drag.pt != 3) return;
               self.rail.drag = false;
@@ -1506,7 +1506,7 @@
           if (self.rail.drag) {
             if (self.rail.drag.pt != 1) return true;
 
-            if (cap.hasmousecapture) document.releaseCapture();
+            if (cap.hasmousecapture) _doc.releaseCapture();
             if (self.isiframe && !cap.hasmousecapture) self.doc.css("pointer-events", self.saved.csspointerevents);
             self.rail.drag = false;
             if (self.hasmoving) self.triggerScrollEnd(); // TODO - check &&!self.scrollrunning
@@ -1608,13 +1608,13 @@
             }, 50);
           };
 
-          if ("getSelection" in document) { // A grade - Major browsers
+          if ("getSelection" in _doc) { // A grade - Major browsers
             self.hasTextSelected = function () {
-              return (document.getSelection().rangeCount > 0);
+              return (_doc.getSelection().rangeCount > 0);
             };
-          } else if ("selection" in document) { //IE9-
+          } else if ("selection" in _doc) { //IE9-
             self.hasTextSelected = function () {
-              return (document.selection.type != "None");
+              return (_doc.selection.type != "None");
             };
           } else {
             self.hasTextSelected = function () { // no support
@@ -1656,8 +1656,8 @@
             'touch-action': 'none'
           });
           self.bind(self.win, "pointerdown", self.ontouchstart);
-          self.bind(document, "pointerup", self.ontouchend);
-          self.bind(document, "pointermove", self.ontouchmove);
+          self.bind(_doc, "pointerup", self.ontouchend);
+          self.bind(_doc, "pointermove", self.ontouchmove);
         } else if (cap.hasmstouch) { //IE10
           self.css((self.ispage) ? $("html") : self.win, { '-ms-touch-action': 'none' });
           self.css(self.rail, {
@@ -1667,8 +1667,8 @@
             '-ms-touch-action': 'none'
           });
           self.bind(self.win, "MSPointerDown", self.ontouchstart);
-          self.bind(document, "MSPointerUp", self.ontouchend);
-          self.bind(document, "MSPointerMove", self.ontouchmove);
+          self.bind(_doc, "MSPointerUp", self.ontouchend);
+          self.bind(_doc, "MSPointerMove", self.ontouchmove);
           self.bind(self.cursor, "MSGestureHold", function (e) {
             e.preventDefault();
           });
@@ -1677,15 +1677,15 @@
           });
         } else if (cap.cantouch) { // smartphones/touch devices
           self.bind(self.win, "touchstart", self.ontouchstart, false, true);
-          self.bind(document, "touchend", self.ontouchend, false, true);
-          self.bind(document, "touchcancel", self.ontouchend, false, true);
-          self.bind(document, "touchmove", self.ontouchmove, false, true);
+          self.bind(_doc, "touchend", self.ontouchend, false, true);
+          self.bind(_doc, "touchcancel", self.ontouchend, false, true);
+          self.bind(_doc, "touchmove", self.ontouchmove, false, true);
         }
 
         if (self.opt.emulatetouch) {
           self.bind(self.win, "mousedown", self.ontouchstart, false, true);
-          self.bind(document, "mouseup", self.ontouchend, false, true);
-          self.bind(document, "mousemove", self.ontouchmove, false, true);
+          self.bind(_doc, "mouseup", self.ontouchend, false, true);
+          self.bind(_doc, "mousemove", self.ontouchmove, false, true);
         }
 
         if (self.opt.cursordragontouch || (!cap.cantouch && !self.opt.emulatetouch)) {
@@ -1765,9 +1765,9 @@
 
         if (!cap.cantouch && !self.opt.emulatetouch) {
 
-          self.bind((cap.hasmousecapture) ? self.win : document, "mouseup", self.onmouseup);
-          self.bind(document, "mousemove", self.onmousemove);
-          if (self.onclick) self.bind(document, "click", self.onclick);
+          self.bind((cap.hasmousecapture) ? self.win : _doc, "mouseup", self.onmouseup);
+          self.bind(_doc, "mousemove", self.onmousemove);
+          if (self.onclick) self.bind(_doc, "click", self.onclick);
 
           self.bind(self.cursor, "mousedown", self.onmousedown);
           self.bind(self.cursor, "mouseup", self.onmouseup);
@@ -1781,10 +1781,10 @@
 
           if (!self.ispage && self.opt.enablescrollonselection) {
             self.bind(self.win[0], "mousedown", self.onselectionstart);
-            self.bind(document, "mouseup", self.onselectionend);
+            self.bind(_doc, "mouseup", self.onselectionend);
             self.bind(self.cursor, "mouseup", self.onselectionend);
             if (self.cursorh) self.bind(self.cursorh, "mouseup", self.onselectionend);
-            self.bind(document, "mousemove", self.onselectiondrag);
+            self.bind(_doc, "mousemove", self.onselectiondrag);
           }
 
           if (self.zoom) {
@@ -1800,8 +1800,8 @@
 
         } else {
 
-          self.bind((cap.hasmousecapture) ? self.win : document, "mouseup", self.ontouchend);
-          if (self.onclick) self.bind(document, "click", self.onclick);
+          self.bind((cap.hasmousecapture) ? self.win : _doc, "mouseup", self.ontouchend);
+          if (self.onclick) self.bind(_doc, "click", self.onclick);
 
           if (self.opt.cursordragontouch) {
             self.bind(self.cursor, "mousedown", self.onmousedown);
@@ -1819,7 +1819,7 @@
 
 
         if (self.opt.enablemousewheel) {
-          if (!self.isiframe) self.mousewheel((cap.isie && self.ispage) ? document : self.win, self.onmousewheel);
+          if (!self.isiframe) self.mousewheel((cap.isie && self.ispage) ? _doc : self.win, self.onmousewheel);
           self.mousewheel(self.rail, self.onmousewheel);
           if (self.railh) self.mousewheel(self.railh, self.onmousewheelhr);
         }
@@ -1941,13 +1941,13 @@
           }
         };
 
-        if (self.opt.enablekeyboard) self.bind(document, (cap.isopera && !cap.isopera12) ? "keypress" : "keydown", self.onkeypress);
+        if (self.opt.enablekeyboard) self.bind(_doc, (cap.isopera && !cap.isopera12) ? "keypress" : "keydown", self.onkeypress);
 
-        self.bind(document, "keydown", function (e) {
+        self.bind(_doc, "keydown", function (e) {
           var ctrl = e.ctrlKey || false;
           if (ctrl) self.wheelprevented = true;
         });
-        self.bind(document, "keyup", function (e) {
+        self.bind(_doc, "keyup", function (e) {
           var ctrl = e.ctrlKey || false;
           if (!ctrl) self.wheelprevented = false;
         });
@@ -1987,7 +1987,7 @@
               });
               if (self.me.clientWidth != self.page.width || self.me.clientHeight != self.page.height) return self.lazyResize(30);
             });
-            self.observerbody.observe(document.body, {
+            self.observerbody.observe(_doc.body, {
               childList: true,
               subtree: true,
               characterData: false,
@@ -2052,7 +2052,7 @@
           self.iframexd = false;
           var doc;
           try {
-            doc = 'contentDocument' in this ? this.contentDocument : this.contentWindow.document;
+            doc = 'contentDocument' in this ? this.contentDocument : this.contentWindow._doc;
             var a = doc.domain;
           } catch (e) {
             self.iframexd = true;
@@ -2214,8 +2214,8 @@
       (self.ispage) ?
         function () {
           return {
-            w: Math.max(document.body.scrollWidth, document.documentElement.scrollWidth),
-            h: Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)
+            w: Math.max(_doc.body.scrollWidth, _doc.documentElement.scrollWidth),
+            h: Math.max(_doc.body.scrollHeight, _doc.documentElement.scrollHeight)
           };
         } : (self.haswrapper) ?
           function () {
@@ -2419,10 +2419,10 @@
 
     this.mousewheel = function (dom, fn, bubble) { // bind mousewheel
       var el = ("jquery" in dom) ? dom[0] : dom;
-      if ("onwheel" in document.createElement("div")) { // Modern browsers support "wheel"
+      if ("onwheel" in _doc.createElement("div")) { // Modern browsers support "wheel"
         self._bind(el, "wheel", fn, bubble || false);
       } else {
-        var wname = (document.onmousewheel !== undefined) ? "mousewheel" : "DOMMouseScroll"; // older Webkit+IE support or older Firefox          
+        var wname = (_doc.onmousewheel !== undefined) ? "mousewheel" : "DOMMouseScroll"; // older Webkit+IE support or older Firefox          
         _modernWheelEvent(el, wname, fn, bubble || false);
         if (wname == "DOMMouseScroll") _modernWheelEvent(el, "MozMousePixelScroll", fn, bubble || false); // Firefox legacy
       }
@@ -2462,10 +2462,10 @@
         this.cancelBubble = true;
       };
 
-      window.constructor.prototype.addEventListener = document.constructor.prototype.addEventListener = Element.prototype.addEventListener = function (type, listener, useCapture) {
+      window.constructor.prototype.addEventListener = _doc.constructor.prototype.addEventListener = Element.prototype.addEventListener = function (type, listener, useCapture) {
         this.attachEvent("on" + type, listener);
       }
-      window.constructor.prototype.removeEventListener = document.constructor.prototype.removeEventListener = Element.prototype.removeEventListener = function (type, listener, useCapture) {
+      window.constructor.prototype.removeEventListener = _doc.constructor.prototype.removeEventListener = Element.prototype.removeEventListener = function (type, listener, useCapture) {
         this.detachEvent("on" + type, listener);
       }
 

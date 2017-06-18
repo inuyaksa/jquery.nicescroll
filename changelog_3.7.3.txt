@@ -1,0 +1,12 @@
+Changelog nicescroll release 3.7.3
+https://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+
+Fixes
+- onscrollstart error on emulatetouch
+
+
+Changes 
+- a little size optimization for uglufy version

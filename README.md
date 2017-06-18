@@ -1,5 +1,5 @@
 # jQuery.NiceScroll
-v. 3.7.2 2017-06-18
+v. 3.7.3 2017-06-18
 
  - [Web Site: nicescroll.areaaperta.com](https://nicescroll.areaaperta.com)
  - [Repo: github.com/inuyaksa/jquery.nicescroll](https://github.com/inuyaksa/jquery.nicescroll)
