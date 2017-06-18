@@ -25,7 +25,7 @@ body {
 </style>
 
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="js/jquery.nicescroll.min.js"></script>
+<script src="js/jquery.nicescroll.js"></script>
 
 <script>
   var nice = false;
@@ -98,7 +98,7 @@ body {
 	toCell(1,14,!nice.detected.cantouch);  
 	toCell(2,14,!nice.detected.cantouch);  
 	toCell(3,14,nice.detected.cantouch||nice.istouchcapable||nice.hasmstouch||nice.detected.hasw3ctouch);
-  toCell(4,14,nice.detected.isie9mobile);  
+  //toCell(4,14,nice.detected.isie9mobile);  
 	
   });
   
@@ -255,7 +255,7 @@ body {
     <td>Keyboard</td>
     <td>Mouse</td>
     <td>Touch/Pen</td>
-    <td>WP7.1(8)</td>
+    <td>&nbsp;</td>
     <td>&nbsp;</td>
 		<td>&nbsp;</td>
     <td>&nbsp;</td>
@@ -270,7 +270,7 @@ body {
 (5) more smooth native scroll and cpu saving<br />
 (6) some problem with zoom feature for browser limitation<br />
 (7) use native scrollbar for page<br />
-(8) simulated touch support for WP7.1 Mango</p>
+</p>
 <p>&nbsp; </p>
 
 <script type="text/javascript">

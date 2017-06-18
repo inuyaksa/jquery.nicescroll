@@ -1,7 +1,7 @@
 # jQuery.NiceScroll
-v. 3.7.0 2017-05-21
+v. 3.7.2 2017-06-18
 
- - [Web Site: nicescroll.areaaperta.com](http://nicescroll.areaaperta.com)
+ - [Web Site: nicescroll.areaaperta.com](https://nicescroll.areaaperta.com)
  - [Repo: github.com/inuyaksa/jquery.nicescroll](https://github.com/inuyaksa/jquery.nicescroll)
  - [Twitter: @nicescroll](https://twitter.com/nicescroll)
 
@@ -14,8 +14,8 @@ v. 3.7.0 2017-05-21
 
   - HORIZONAL scrollbar support!
   - It supports DIVs, IFrames, textarea, and document page (body) scrollbars.
-  - Compatible with all recent desktop browser and older: Firefox 4+, Chrome 5+, Safari 4+ (win/mac), Opera 10+, IE 6+. (all A-grade browsers)
-  - Compatible with mobile device: iPad/iPhone/iPod, Android 2.2+, Blackberry phones and Playbook (WebWorks/Table OS), Windows Phone 10 and older.
+  - Compatible with all recent desktop browser and older: Chrome, Firefox, Edge, IE8+, Safari (win/mac), Opera. (all A-grade browsers)
+  - Compatible with mobile device: iPad/iPhone/iPod, Android 4+, Blackberry phones and Playbook (WebWorks/Table OS), Windows Phone 8 and 10.
   - Compatible with all touch devices: iPad, Android tablets, Window Surface.
   - Compabible with multi-input device (mouse with touch or pen): Window Surface, Chrome Desktop on touch notebook.
   - Compatible with 2 directions mice: Apple Magic Mouse, Apple Mouser with 2-dir wheel, PC mouse with 2-dir wheel (if browser support it).
@@ -32,15 +32,14 @@ Using animationFrame for a smoothest and cpu-saving scrolling. (when browser sup
 "Use strict" tested script for maximum code quality.
 Bower and AMD ready.
 
-Warning for IE6 users (why do you uses IE6 yet? Please updgrade to a more stable and modern browser), some feature can't work for limitation of the browser.
-Document (body) scrollbars can't appears, old (native browser) one is used. Some issues with IFrame scrolling.
+Warning for IE6/7 users (why do you uses yet? Please updgrade to a more stable and modern browser), support for your browser has deprecated.
 
 
 ## FEATURES
 
 - simple installation and activation, it works with NO modification of your code. (some exceptions can happen, so you can write to me)
 - very stylish scrollbars, with no occupation on your window (original browser scrollbars need some of page space and reduces window/div usable width)
-- you can style main document scrollbar (body) too!! (not all script implements this feature)
+- you can style main document scrollbar (body) too!! (not all device/browser support this feature)
 - on all browsers you can scroll: dragging the cursor, mouse wheel (speed customizable), keyboard navigation (cursor keys, pagup/down keys, home/end keys)
 - scroll is smooth (as modern tablet browsing), speed is customizable
 - zoom feature
@@ -49,9 +48,9 @@ Document (body) scrollbars can't appears, old (native browser) one is used. Some
 - dragging scroll mode with scrolling momentum (as touch device)
 - tested for all major browsers desktop and mobile versions
 - support for touch devices
-- support for multi-input devices (IE10 with MSPointer)
-- compatible with many other browsers, including IE6, Safari on Mac and WP7 Mango!
-- very customizable aspect of bar
+- support for multi-input devices (MSPointer/Pointer support)
+- compatible with many other browsers and webkit derivated!
+- scrollbar has a lot a customizable features
 - native scroll events are working yet
 - fully integrated with jQuery
 - compatibile with jQuery UI, jQuery Touch, jQuery Mobile
@@ -59,7 +58,7 @@ Document (body) scrollbars can't appears, old (native browser) one is used. Some
 
 ## DEPENDENCIES
 >> It's a plugin for the jquery framework, you need to include jquery in your scripts.
->> From 1.5.x version and on. (I'd better to use 1.8.3+ minimum)
+>> it works with jQuery 1.x / 2.x / 3.x branch (slim version don't works)
 
 
 * INSTALLATION
@@ -67,7 +66,7 @@ Put loading script tag after jquery script tag and loading the zoom image in the
 
 <script src="jquery.nicescroll.js"></script>
 
-Copy image "zoomico.png" in the same folder of jquery.nicescroll.js.
+When you use zoom feature, copy image "zoomico.png" in the same folder of jquery.nicescroll.js.
 
 
 * HOW TO USE
@@ -120,7 +119,7 @@ $("#thisdiv").niceScroll({
     cursorwidth: "5px", // cursor width in pixel (you can also write "5px")
     cursorborder: "1px solid #fff", // css definition for cursor border
     cursorborderradius: "5px", // border radius in pixel for cursor
-    zindex: "auto" | <number>, // change z-index for scrollbar div
+    zindex: "auto" | [number], // change z-index for scrollbar div
     scrollspeed: 60, // scrolling speed
     mousescrollstep: 40, // scrolling speed with mouse wheel (pixel)
     touchbehavior: false, // DEPRECATED!! use "touchemulate"
@@ -166,7 +165,9 @@ $("#thisdiv").niceScroll({
     oneaxismousemode: "auto", // it permits horizontal scrolling with mousewheel on horizontal only content, if false (vertical-only) mousewheel don't scroll horizontally, if value is auto detects two-axis mouse
     scriptpath: "" // define custom path for boxmode icons ("" => same script path)
     preventmultitouchscrolling: true // prevent scrolling on multitouch events
-    disablemutationobserver: false // force MutationObserver disabled
+    disablemutationobserver: false // force MutationObserver disabled,
+    enableobserver: true // enable DOM changing observer, it tries to resize/hide/show when parent or content div had changed
+    scrollbarid: false // set a custom ID for nicescroll bars 
 });
 ```
 

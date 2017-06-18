@@ -1,0 +1,28 @@
+Changelog nicescroll release 3.7.2
+https://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+
+Fixes
+- support for Apple magic mouse swipe back/forward aka Enable only if needed #378
+- wrapper don't works on relative selector aka same classes not working #635
+- horizontal scrollbar visibible but no need it on responsive layout
+- tabindex start counter fix
+- setAnimationFrame for IE8
+- touch interaction with multiple scrollareas with IE/Edge on Surface
+- mousewheel not working in safari & click event trigger twice in mobile #669
+- false retriggering of scrollend event
+- Not scrolling on lastest Firefox with HTML5 inside iframe #322
+
+New options
+- scrollbarid, you can set id assigned to scrollbar (default: false = auto-assigned)
+
+Changes 
+- some code optimizations inspired from #604 by dmadan86 (thank you so much!)
+- better content area size detection
+- remove support for Windows Phone 7 and 7.1 (mango)
+- minimal support change to IE8
+
+New script iframe helper
+Needed to fix, in some situation, browsers bad implementation of iframe events. (#322)
