@@ -3,6 +3,15 @@ v. 3.7.4 [[ DEVELOPER RELEASE ]]
 
 == this is a testing releasing, not suitable for production == 
 
+
+
+>Notes for testers:
+ - scrolling routines rewritten, extremely smooth and responsive scrolling ever, please test on your testing environments
+ - Surface touchpad experiment, please let me know if works
+
+
+
+
  - [Web Site: nicescroll.areaaperta.com](https://nicescroll.areaaperta.com)
  - [Repo: github.com/inuyaksa/jquery.nicescroll](https://github.com/inuyaksa/jquery.nicescroll)
  - [Twitter: @nicescroll](https://twitter.com/nicescroll)
