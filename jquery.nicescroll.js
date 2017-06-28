@@ -1839,7 +1839,7 @@
 
           //            self.jqbind(self.win, "focus", function (e) {
           self.bind(self.win, "focus", function (e) {  // better using native events
-            domfocus = (self.getTarget(e)).id || true;
+            domfocus = (self.getTarget(e)).id || self.getTarget(e) || false;
             self.hasfocus = true;
             if (self.canshowonmouseevent) self.noticeCursor();
           });
@@ -1851,7 +1851,7 @@
 
           //            self.jqbind(self.win, "mouseenter", function (e) {
           self.bind(self.win, "mouseenter", function (e) {   // *
-            mousefocus = (self.getTarget(e)).id || true;
+            mousefocus = (self.getTarget(e)).id || self.getTarget(e) || false;
             self.hasmousefocus = true;
             if (self.canshowonmouseevent) self.noticeCursor();
           });
@@ -2987,11 +2987,13 @@
       this.cursorupdate = {
         running: false,
         start: function () {
-          if (this.running) return;
-          this.running = true;
+          var m = this;
+
+          if (m.running) return;
+          m.running = true;
 
           var loop = function () {
-            setAnimationFrame(loop);
+            if (m.running) setAnimationFrame(loop);
             self.showCursor(self.getScrollTop(), self.getScrollLeft());
           };
 
@@ -3127,6 +3129,7 @@
         return self;
       };
       this.onScrollTransitionEnd = function () {
+
         if (!self.scrollendtrapped) return;
         //if (self.scrollendtrapped) self._unbind(self.doc[0], cap.transitionend, self.onScrollTransitionEnd);
 
