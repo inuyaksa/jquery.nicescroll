@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.7.4-c [DEV REL]
+-- version 3.7.4-d [DEV REL]
 -- copyright 2017-06-18 InuYaksa*2017
 -- licensed under the MIT
 --
@@ -76,7 +76,7 @@
     cursorborder: "1px solid #fff",
     cursorborderradius: "5px",
     scrollspeed: 40,
-    mousescrollstep: 8 * 3,
+    mousescrollstep: 9 * 3,
     touchbehavior: false,   // deprecated
     emulatetouch: false,    // replacing touchbehavior
     hwacceleration: true,
@@ -260,7 +260,7 @@
 
     var self = this;
 
-    this.version = '3.7.4-c';
+    this.version = '3.7.4-d';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -364,12 +364,12 @@
     this.observerremover = false;  // observer on parent for remove detection
     this.observerbody = false;  // observer on body for position change
 
-    if (self.opt.scrollbarid === false) {
+    if (self.opt.scrollbarid !== false) {
+      this.id = self.opt.scrollbarid;
+    } else {
       do {
         this.id = "ascrail" + (ascrailcounter++);
       } while (_doc.getElementById(this.id));
-    } else {
-      this.id = self.opt.scrollbarid;
     }
 
     this.rail = false;
@@ -506,21 +506,22 @@
     };
     BezierClass.prototype = {
       B2: function (t) {
-        return 3 * t * t * (1 - t);
+        //return 3 * t * t * (1 - t);
+        return 3 * (1 - t) * (1 - t) * t;
       },
       B3: function (t) {
-        return 3 * t * (1 - t) * (1 - t);
+        return 3 * (1 - t) * t * t;
       },
       B4: function (t) {
-        return (1 - t) * (1 - t) * (1 - t);
+        return t * t * t;
       },
       getPos: function () {
         return (now() - this.ts) / this.spd;
       },
       getNow: function () {
-        var pc = 1 - ((now() - this.ts) / this.spd);
+        var pc = (now() - this.ts) / this.spd;
         var bz = this.B2(pc) + this.B3(pc) + this.B4(pc);
-        return (pc < 0) ? this.ed : this.st + (this.df * bz) | 0;
+        return (pc >= 1) ? this.ed : this.st + (this.df * bz) | 0;
       },
       update: function (ed, spd) {
         this.st = this.getNow();
@@ -541,8 +542,8 @@
       return false;
     }
 
-    if (this.ishwscroll) {
-      // hw accelerated scroll
+    if (this.ishwscroll) {    // hw accelerated scroll
+      
       this.doc.translate = {
         x: 0,
         y: 0,
@@ -607,15 +608,15 @@
           if (!silent) self.notifyScrollEvent(self.win[0]);
         };
       }
-    } else {
-      // native scroll
+    } else {    // native scroll
+      
       this.getScrollTop = function () {
         return self.docscroll.scrollTop();
       };
       this.setScrollTop = function (val) {
-        //return setTimeout(function () { self && self.docscroll.scrollTop(val); }, 1);
         self.docscroll.scrollTop(val);
       };
+
       this.getScrollLeft = function () {
         var val;
         if (!self.hasreversehr) {
@@ -2789,7 +2790,7 @@
         })();
 
         if (chk) {
-          if (!self.scrollrunning && self.opt.nativeparentscrolling && chkscroll && !self.ispage && !self.zoomactive) return true;
+          if (self.opt.nativeparentscrolling && chkscroll && !self.ispage && !self.zoomactive) return true;
           var ny = self.view.h >> 1;
           if (self.newscrolly < -ny) { self.newscrolly = -ny; py = -1; }
           else if (self.newscrolly > self.page.maxh + ny) { self.newscrolly = self.page.maxh + ny; py = 1; }
@@ -2824,15 +2825,19 @@
 
     }
 
+    var hasparentscrollingphase = false;
+
     function execScrollWheel(e, hr, chkscroll) {
       var px, py;
+
+      if (!chkscroll && hasparentscrollingphase) return true;
 
       if (e.deltaMode === 0) { // PIXEL
         px = -(e.deltaX * (self.opt.mousescrollstep / (18 * 3))) | 0;
         py = -(e.deltaY * (self.opt.mousescrollstep / (18 * 3))) | 0;
       } else if (e.deltaMode === 1) { // LINE
-        px = -(e.deltaX * self.opt.mousescrollstep) | 0;
-        py = -(e.deltaY * self.opt.mousescrollstep) | 0;
+        px = -(e.deltaX * self.opt.mousescrollstep * 50 / 80) | 0;
+        py = -(e.deltaY * self.opt.mousescrollstep * 50 / 80) | 0;
       }
 
       if (hr && self.opt.oneaxismousemode && (px === 0) && py) { // classic vertical-only mousewheel + browser with x/y support 
@@ -2852,10 +2857,16 @@
       // invert horizontal direction for rtl mode
       if (self.isrtlmode) px = -px;
 
-      doScrollRelative(px, py, chkscroll, true);
+      var chk = doScrollRelative(px, py, chkscroll, true);
 
-      e.stopImmediatePropagation();
-      return e.preventDefault();
+      if (chk) {
+        if (chkscroll) hasparentscrollingphase = true;
+      } else  {
+        hasparentscrollingphase = false;
+        e.stopImmediatePropagation();
+        return e.preventDefault();
+      }
+
     }
 
     this.onmousewheel = function (e) {
@@ -3201,15 +3212,13 @@
         var ms = self.getTransitionSpeed(dd);
 
         self.bzscroll = {};
-        if (clipped) {
-          self.bzscroll.x = new BezierClass(px, self.newscrollx, ms, 0, 0, 1, 1);
-          self.bzscroll.y = new BezierClass(py, self.newscrolly, ms, 0, 0, 1, 1);
-        } else {
-          self.bzscroll.x = new BezierClass(px, self.newscrollx, ms, 0, 0, 0.58, 1);  //0, 1, 0, 1
-          self.bzscroll.y = new BezierClass(py, self.newscrolly, ms, 0, 0, 0.58, 1);
-        }
+
+        var p3 = (clipped) ? 1 : 0.58;
+        self.bzscroll.x = new BezierClass(px, self.newscrollx, ms, 0, 0, p3, 1);
+        self.bzscroll.y = new BezierClass(py, self.newscrolly, ms, 0, 0, p3, 1);
 
         var loop = function () {
+          
           if (!self.scrollrunning) return;
           var x = self.bzscroll.y.getPos();
 
