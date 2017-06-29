@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.7.4-d [DEV REL]
+-- version 3.7.4-e [DEV REL]
 -- copyright 2017-06-18 InuYaksa*2017
 -- licensed under the MIT
 --
@@ -231,8 +231,6 @@
 
     })();
 
-
-
     function detectCursorGrab() {
       var lst = ['grab', '-webkit-grab', '-moz-grab'];
       if ((d.ischrome && !d.ischrome38) || d.isie) lst = []; // force setting for IE returns false positive and chrome cursor bug
@@ -260,7 +258,7 @@
 
     var self = this;
 
-    this.version = '3.7.4-d';
+    this.version = '3.7.4-e';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -543,7 +541,7 @@
     }
 
     if (this.ishwscroll) {    // hw accelerated scroll
-      
+
       this.doc.translate = {
         x: 0,
         y: 0,
@@ -609,7 +607,7 @@
         };
       }
     } else {    // native scroll
-      
+
       this.getScrollTop = function () {
         return self.docscroll.scrollTop();
       };
@@ -1190,7 +1188,7 @@
                 if (!self.rail.scrollable && self.railh.scrollable) self.rail.drag.ck = (maxh > 0) ? "v" : false;
                 else if (self.rail.scrollable && !self.railh.scrollable) self.rail.drag.ck = (maxw > 0) ? "h" : false;
                 else self.rail.drag.ck = false;
-                if (!self.rail.drag.ck) self.rail.drag.dl = "f";
+                //if (!self.rail.drag.ck) self.rail.drag.dl = "f";
               }
 
               if (self.opt.emulatetouch && self.isiframe && cap.isie) {
@@ -1289,10 +1287,12 @@
                 e.clientY = e.changedTouches[0].clientY;
               }
 
-              if (self.rail.drag.y === e.clientY && self.rail.drag.x === e.clientX) return false;  // prevent first useless move event 
+              if (!self.hasmoving) {
+                if (self.rail.drag.y === e.clientY && self.rail.drag.x === e.clientX) return false;  // prevent first useless move event 
 
-              if (!self.hasmoving) self.triggerScrollStart(e.clientX, e.clientY, 0, 0, 0);
-              self.hasmoving = true;
+                self.triggerScrollStart(e.clientX, e.clientY, 0, 0, 0);
+                self.hasmoving = true;
+              }
 
               if (self.preventclick && !self.preventclick.click) {
                 self.preventclick.click = self.preventclick.tg.onclick || false;
@@ -1364,7 +1364,13 @@
                 var ay = Math.abs(my);
                 var ax = Math.abs(mx);
                 var dz = self.opt.directionlockdeadzone;
-                if (self.rail.drag.ck == "v") {
+
+                if (!self.rail.drag.ck) {
+                  if (ay > dz && ax > dz) self.rail.drag.dl = "f";
+                  else if (ay > dz) self.rail.drag.dl = (ax) ? "f" : "v";
+                  else if (ax > dz) self.rail.drag.dl = (ay) ? "f" : "h";
+                } 
+                else if (self.rail.drag.ck == "v") {
                   if (ay > dz && (ax <= (ay * 0.3))) {
                     self.rail.drag = false;
                     return true;
@@ -1372,15 +1378,17 @@
                     self.rail.drag.dl = "f";
                     $body.scrollTop($body.scrollTop()); // stop iOS native scrolling (when active javascript has blocked)
                   }
-                } else if (self.rail.drag.ck == "h") {
+                } 
+                else if (self.rail.drag.ck == "h") {
                   if (ax > dz && (ay <= (ax * 0.3))) {
                     self.rail.drag = false;
                     return true;
-                  } else if (ay > dz) {
+                  } else {
                     self.rail.drag.dl = "f";
-                    $body.scrollLeft($body.scrollLeft()); // stop iOS native scrolling (when active javascript has blocked)
+                    $body.scrollTop($body.scrollTop()); // stop iOS native scrolling (when active javascript has blocked)
                   }
                 }
+                return false;
               }
 
               self.synched("touchmove", function () {
@@ -2374,12 +2382,15 @@
 
     this.lazyResize = function (tm) { // event debounce
 
-      if (!self.haswrapper && !self.ispage) self.hide();
-
       if (self.hlazyresize) clearTimeout(self.hlazyresize);
+
+      var hiderails = (!self.ispage && !self.haswrapper);
+
+      if (hiderails) self.hideRails();
+      
       self.hlazyresize = setTimeout(function () {
         if (self) {
-          if (!self.haswrapper && !self.ispage) self.show();
+          if (hiderails) self.showRails();
           self.resize();
         }
       }, 240);
@@ -2458,6 +2469,7 @@
         if (e.preventManipulation) e.preventManipulation(); //IE10
         return false;
       };
+
       this.stopPropagation = function (e) {
         if (!e) return false;
         e = (e.original) ? e.original : e;
@@ -2493,6 +2505,7 @@
         e.returnValue = false;
         return false;
       };
+
       this.stopPropagation = function (e) {
         e = e || _win.event;
         if (e) e.cancelBubble = true;
@@ -2501,7 +2514,7 @@
 
     }
 
-    this.bind = function (dom, name, fn, bubble, active) {  // W3C
+    this.bind = function (dom, name, fn, bubble, active) {
       var el = ("jquery" in dom) ? dom[0] : dom;
       self._bind(el, name, fn, bubble || false, active || false);
     };
@@ -2530,6 +2543,10 @@
       }
     };
 
+    this.showRails = function () {
+      return self.showRail().showRailHr();
+    };
+
     this.showRail = function () {
       if ((self.page.maxh !== 0) && (self.ispage || self.win.css('display') != 'none')) {
         self.visibility = true;
@@ -2540,13 +2557,18 @@
     };
 
     this.showRailHr = function () {
-      if (!self.railh) return self;
-      if ((self.page.maxw !== 0) && (self.ispage || self.win.css('display') != 'none')) {
-        self.railh.visibility = true;
-        self.railh.css('display', 'block');
+      if (self.railh) {
+        if ((self.page.maxw !== 0) && (self.ispage || self.win.css('display') != 'none')) {
+          self.railh.visibility = true;
+          self.railh.css('display', 'block');
+        }
       }
       return self;
     };
+
+    this.hideRails = function () {
+      return self.hideRail().hideRailHr();
+    }
 
     this.hideRail = function () {
       self.visibility = false;
@@ -2556,22 +2578,23 @@
     };
 
     this.hideRailHr = function () {
-      if (!self.railh) return self;
-      self.railh.visibility = false;
-      self.railh.css('display', 'none');
+      if (self.railh) {
+        self.railh.visibility = false;
+        self.railh.css('display', 'none');
+      }
       return self;
     };
 
     this.show = function () {
       self.hidden = false;
       self.railslocked = false;
-      return self.showRail().showRailHr();
+      return self.showRails();
     };
 
     this.hide = function () {
       self.hidden = true;
       self.railslocked = true;
-      return self.hideRail().hideRailHr();
+      return self.hideRails();
     };
 
     this.toggle = function () {
@@ -2861,7 +2884,7 @@
 
       if (chk) {
         if (chkscroll) hasparentscrollingphase = true;
-      } else  {
+      } else {
         hasparentscrollingphase = false;
         e.stopImmediatePropagation();
         return e.preventDefault();
@@ -2959,7 +2982,7 @@
 
       var lasttransitionstyle = '';
 
-      this.resetTransition = function() {
+      this.resetTransition = function () {
         lasttransitionstyle = '';
         self.doc.css(cap.prefixstyle + 'transition-duration', '0ms');
       };
@@ -3221,7 +3244,7 @@
         self.bzscroll.y = new BezierClass(py, self.newscrolly, ms, 0, 0, p3, 1);
 
         var loop = function () {
-          
+
           if (!self.scrollrunning) return;
           var x = self.bzscroll.y.getPos();
 
