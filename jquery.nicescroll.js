@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.7.4-e [DEV REL]
+-- version 3.7.4-f [DEV REL]
 -- copyright 2017-06-18 InuYaksa*2017
 -- licensed under the MIT
 --
@@ -7,6 +7,8 @@
 -- https://github.com/inuyaksa/jquery.nicescroll
 --
 */
+
+/* jshint expr: true */
 
 (function (factory) {
   if (typeof define === 'function' && define.amd) {
@@ -30,10 +32,12 @@
     ascrailcounter = 2000,
     globalmaxzindex = 0;
 
-  var $ = jQuery,       // sandboxes
+  var $ = jQuery,       // sandbox
     _doc = document,
     _win = window,
     $window = $(_win);
+
+  var delegatevents = [];
 
   // http://stackoverflow.com/questions/2161159/get-script-path
   function getScriptPath() {
@@ -258,36 +262,36 @@
 
     var self = this;
 
-    this.version = '3.7.4-e';
+    this.version = '3.7.4-f';
     this.name = 'nicescroll';
 
     this.me = me;
 
     var $body = $("body");
 
-    this.opt = {
+    var opt = this.opt = {
       doc: $body,
       win: false
     };
 
-    $.extend(this.opt, _globaloptions);  // clone opts
+    $.extend(opt, _globaloptions);  // clone opts
 
     // Options for internal use
-    this.opt.snapbackspeed = 80;
+    opt.snapbackspeed = 80;
 
     if (myopt || false) {
-      for (var a in self.opt) {
-        if (myopt[a] !== undefined) self.opt[a] = myopt[a];
+      for (var a in opt) {
+        if (myopt[a] !== undefined) opt[a] = myopt[a];
       }
     }
 
-    if (self.opt.disablemutationobserver) ClsMutationObserver = false;
+    if (opt.disablemutationobserver) ClsMutationObserver = false;
 
-    this.doc = self.opt.doc;
+    this.doc = opt.doc;
     this.iddoc = (this.doc && this.doc[0]) ? this.doc[0].id || '' : '';
-    this.ispage = /^BODY|HTML/.test((self.opt.win) ? self.opt.win[0].nodeName : this.doc[0].nodeName);
-    this.haswrapper = (self.opt.win !== false);
-    this.win = self.opt.win || (this.ispage ? $window : this.doc);
+    this.ispage = /^BODY|HTML/.test((opt.win) ? opt.win[0].nodeName : this.doc[0].nodeName);
+    this.haswrapper = (opt.win !== false);
+    this.win = opt.win || (this.ispage ? $window : this.doc);
     this.docscroll = (this.ispage && !this.haswrapper) ? $window : this.win;
     this.body = $body;
     this.viewport = false;
@@ -301,7 +305,7 @@
 
     this.forcescreen = false; //force to use screen position on events
 
-    this.canshowonmouseevent = (self.opt.autohidemode != "scroll");
+    this.canshowonmouseevent = (opt.autohidemode != "scroll");
 
     // Events jump table    
     this.onmousedown = false;
@@ -337,7 +341,7 @@
 
     // http://dev.w3.org/csswg/css-writing-modes-3/#logical-to-physical
     // http://dev.w3.org/csswg/css-writing-modes-3/#svg-writing-mode
-    if (this.opt.rtlmode == "auto") {
+    if (opt.rtlmode == "auto") {
       var target = this.win[0] == _win ? this.body : this.win;
       var writingMode = target.css("writing-mode") || target.css("-webkit-writing-mode") || target.css("-ms-writing-mode") || target.css("-moz-writing-mode");
 
@@ -349,7 +353,7 @@
         this.isvertical = (writingMode == "vertical-rl" || writingMode == "tb" || writingMode == "tb-rl");
       }
     } else {
-      this.isrtlmode = (this.opt.rtlmode === true);
+      this.isrtlmode = (opt.rtlmode === true);
       this.isvertical = false;
     }
     //    this.checkrtlmode = false;
@@ -362,8 +366,8 @@
     this.observerremover = false;  // observer on parent for remove detection
     this.observerbody = false;  // observer on body for position change
 
-    if (self.opt.scrollbarid !== false) {
-      this.id = self.opt.scrollbarid;
+    if (opt.scrollbarid !== false) {
+      this.id = opt.scrollbarid;
     } else {
       do {
         this.id = "ascrail" + (ascrailcounter++);
@@ -389,8 +393,8 @@
 
     this.wheelprevented = false; //prevent mousewheel event
 
-    this.overflowx = self.opt.overflowx;
-    this.overflowy = self.opt.overflowy;
+    this.overflowx = opt.overflowx;
+    this.overflowy = opt.overflowy;
 
     this.nativescrollingarea = false;
     this.checkarea = 0;
@@ -409,7 +413,7 @@
 
     var cap = $.extend({}, this.detected);
 
-    this.canhwscroll = (cap.hastransform && self.opt.hwacceleration);
+    this.canhwscroll = (cap.hastransform && opt.hwacceleration);
     this.ishwscroll = (this.canhwscroll && self.haswrapper);
 
     if (!this.isrtlmode) {
@@ -433,7 +437,7 @@
     }
 
     //## disable MouseLock API on user request
-    if (!self.opt.enablemouselockapi) {
+    if (!opt.enablemouselockapi) {
       cap.hasmousecapture = false;
       cap.haspointerlock = false;
     }
@@ -579,7 +583,7 @@
 
       var cxscrollleft = (this.isrtlmode) ? 1 : -1;
 
-      if (cap.hastranslate3d && self.opt.enabletranslate3d) {
+      if (cap.hastranslate3d && opt.enabletranslate3d) {
         this.setScrollTop = function (val, silent) {
           self.doc.translate.y = val;
           self.doc.translate.ty = (val * -1) + "px";
@@ -716,21 +720,21 @@
       var pos, off;
       if (self.ishwscroll) {
         self.rail.css({  //**
-          height: self.win.innerHeight() - (self.opt.railpadding.top + self.opt.railpadding.bottom)
+          height: self.win.innerHeight() - (opt.railpadding.top + opt.railpadding.bottom)
         });
         if (self.railh) self.railh.css({  //**
-          width: self.win.innerWidth() - (self.opt.railpadding.left + self.opt.railpadding.right)
+          width: self.win.innerWidth() - (opt.railpadding.left + opt.railpadding.right)
         });
       } else {
         var wpos = self.getOffset();
         pos = {
           top: wpos.top,
-          left: wpos.left - (self.opt.railpadding.left + self.opt.railpadding.right)
+          left: wpos.left - (opt.railpadding.left + opt.railpadding.right)
         };
         pos.top += getWidthToPixel(self.win, 'border-top-width', true);
         pos.left += (self.rail.align) ? self.win.outerWidth() - getWidthToPixel(self.win, 'border-right-width') - self.rail.width : getWidthToPixel(self.win, 'border-left-width');
 
-        off = self.opt.railoffset;
+        off = opt.railoffset;
         if (off) {
           if (off.top) pos.top += off.top;
           if (off.left) pos.left += off.left;
@@ -739,7 +743,7 @@
         if (!self.railslocked) self.rail.css({
           top: pos.top,
           left: pos.left,
-          height: ((len) ? len.h : self.win.innerHeight()) - (self.opt.railpadding.top + self.opt.railpadding.bottom)
+          height: ((len) ? len.h : self.win.innerHeight()) - (opt.railpadding.top + opt.railpadding.bottom)
         });
 
         if (self.zoom) {
@@ -754,7 +758,7 @@
             top: wpos.top,
             left: wpos.left
           };
-          off = self.opt.railhoffset;
+          off = opt.railhoffset;
           if (off) {
             if (off.top) pos.top += off.top;
             if (off.left) pos.left += off.left;
@@ -762,7 +766,7 @@
           var y = (self.railh.align) ? pos.top + getWidthToPixel(self.win, 'border-top-width', true) + self.win.innerHeight() - self.railh.height : pos.top + getWidthToPixel(self.win, 'border-top-width', true);
           var x = pos.left + getWidthToPixel(self.win, 'border-left-width');
           self.railh.css({
-            top: y - (self.opt.railpadding.top + self.opt.railpadding.bottom),
+            top: y - (opt.railpadding.top + opt.railpadding.bottom),
             left: x,
             width: self.railh.width
           });
@@ -810,7 +814,7 @@
       if (cap.isoperamini) return true; // SORRY, DO NOT WORK!
       if (cap.isandroid && !("hidden" in _doc)) return true; // Android 3- SORRY, DO NOT WORK!
 
-      self.opt.emulatetouch = self.opt.emulatetouch || self.opt.touchbehavior;  // mantain compatibility with "touchbehavior"      
+      opt.emulatetouch = opt.emulatetouch || opt.touchbehavior;  // mantain compatibility with "touchbehavior"      
 
       self.hasborderbox = _win.getComputedStyle && (_win.getComputedStyle(_doc.body)['box-sizing'] === "border-box");
 
@@ -823,21 +827,21 @@
       }
 
       self.zindex = "auto";
-      if (!self.ispage && self.opt.zindex == "auto") {
+      if (!self.ispage && opt.zindex == "auto") {
         self.zindex = getZIndex() || "auto";
       } else {
-        self.zindex = self.opt.zindex;
+        self.zindex = opt.zindex;
       }
 
       if (!self.ispage && self.zindex != "auto" && self.zindex > globalmaxzindex) {
         globalmaxzindex = self.zindex;
       }
 
-      if (self.isie && self.zindex === 0 && self.opt.zindex == "auto") { // fix IE auto == 0
+      if (self.isie && self.zindex === 0 && opt.zindex == "auto") { // fix IE auto == 0
         self.zindex = "auto";
       }
 
-      if (!self.ispage || (!cap.cantouch && !cap.isieold)) {
+      if (!self.ispage || !cap.isieold) {
 
         var cont = self.docscroll;
         if (self.ispage) cont = (self.haswrapper) ? self.win : self.doc;
@@ -857,14 +861,14 @@
           position: "relative",
           top: 0,
           "float": "right",
-          width: self.opt.cursorwidth,
+          width: opt.cursorwidth,
           height: 0,
-          'background-color': self.opt.cursorcolor,
-          border: self.opt.cursorborder,
+          'background-color': opt.cursorcolor,
+          border: opt.cursorborder,
           'background-clip': 'padding-box',
-          '-webkit-border-radius': self.opt.cursorborderradius,
-          '-moz-border-radius': self.opt.cursorborderradius,
-          'border-radius': self.opt.cursorborderradius
+          '-webkit-border-radius': opt.cursorborderradius,
+          '-moz-border-radius': opt.cursorborderradius,
+          'border-radius': opt.cursorborderradius
         });
 
         cursor.addClass('nicescroll-cursors');
@@ -878,52 +882,52 @@
         var v, a, kp = ["left", "right", "top", "bottom"];  //**
         for (var n in kp) {
           a = kp[n];
-          v = self.opt.railpadding[a] || 0;
+          v = opt.railpadding[a] || 0;
           v && rail.css("padding-" + a, v + "px");
         }
 
         rail.append(cursor);
 
-        rail.width = Math.max(parseFloat(self.opt.cursorwidth), cursor.outerWidth());
+        rail.width = Math.max(parseFloat(opt.cursorwidth), cursor.outerWidth());
         rail.css({
           width: rail.width + "px",
           zIndex: self.zindex,
-          background: self.opt.background,
+          background: opt.background,
           cursor: "default"
         });
 
         rail.visibility = true;
         rail.scrollable = true;
 
-        rail.align = (self.opt.railalign == "left") ? 0 : 1;
+        rail.align = (opt.railalign == "left") ? 0 : 1;
 
         self.rail = rail;
 
         self.rail.drag = false;
 
         var zoom = false;
-        if (self.opt.boxzoom && !self.ispage && !cap.isieold) {
+        if (opt.boxzoom && !self.ispage && !cap.isieold) {
           zoom = _doc.createElement('div');
 
           self.bind(zoom, "click", self.doZoom);
           self.bind(zoom, "mouseenter", function () {
-            self.zoom.css('opacity', self.opt.cursoropacitymax);
+            self.zoom.css('opacity', opt.cursoropacitymax);
           });
           self.bind(zoom, "mouseleave", function () {
-            self.zoom.css('opacity', self.opt.cursoropacitymin);
+            self.zoom.css('opacity', opt.cursoropacitymin);
           });
 
           self.zoom = $(zoom);
           self.zoom.css({
             cursor: "pointer",
             zIndex: self.zindex,
-            backgroundImage: 'url(' + self.opt.scriptpath + 'zoomico.png)',
+            backgroundImage: 'url(' + opt.scriptpath + 'zoomico.png)',
             height: 18,
             width: 18,
             backgroundPosition: '0 0'
           });
-          if (self.opt.dblclickzoom) self.bind(self.win, "dblclick", self.doZoom);
-          if (cap.cantouch && self.opt.gesturezoom) {
+          if (opt.dblclickzoom) self.bind(self.win, "dblclick", self.doZoom);
+          if (cap.cantouch && opt.gesturezoom) {
             self.ongesturezoom = function (e) {
               if (e.scale > 1.5) self.doZoomIn(e);
               if (e.scale < 0.8) self.doZoomOut(e);
@@ -938,7 +942,7 @@
         self.railh = false;
         var railh;
 
-        if (self.opt.horizrailenabled) {
+        if (opt.horizrailenabled) {
 
           self.css(cont, {
             overflowX: 'hidden'
@@ -948,14 +952,14 @@
           cursor.css({
             position: "absolute",
             top: 0,
-            height: self.opt.cursorwidth,
+            height: opt.cursorwidth,
             width: 0,
-            backgroundColor: self.opt.cursorcolor,
-            border: self.opt.cursorborder,
+            backgroundColor: opt.cursorcolor,
+            border: opt.cursorborder,
             backgroundClip: 'padding-box',
-            '-webkit-border-radius': self.opt.cursorborderradius,
-            '-moz-border-radius': self.opt.cursorborderradius,
-            'border-radius': self.opt.cursorborderradius
+            '-webkit-border-radius': opt.cursorborderradius,
+            '-moz-border-radius': opt.cursorborderradius,
+            'border-radius': opt.cursorborderradius
           });
 
           if (cap.isieold) cursor.css('overflow', 'hidden');  //IE6 horiz scrollbar issue
@@ -969,11 +973,11 @@
           railh = $(_doc.createElement('div'));
           railh.attr('id', self.id + '-hr');
           railh.addClass('nicescroll-rails nicescroll-rails-hr');
-          railh.height = Math.max(parseFloat(self.opt.cursorwidth), cursor.outerHeight());
+          railh.height = Math.max(parseFloat(opt.cursorwidth), cursor.outerHeight());
           railh.css({
             height: railh.height + "px",
             'zIndex': self.zindex,
-            "background": self.opt.background
+            "background": opt.background
           });
 
           railh.append(cursor);
@@ -981,7 +985,7 @@
           railh.visibility = true;
           railh.scrollable = true;
 
-          railh.align = (self.opt.railvalign == "top") ? 0 : 1;
+          railh.align = (opt.railvalign == "top") ? 0 : 1;
 
           self.railh = railh;
 
@@ -992,6 +996,7 @@
         //        
 
         if (self.ispage) {
+
           rail.css({
             position: "fixed",
             top: 0,
@@ -1075,37 +1080,37 @@
             '-webkit-touch-callout': 'none'
           }); // prevent grey layer on click
 
-          if (cap.isie && self.opt.disableoutline) self.win.attr("hideFocus", "true"); // IE, prevent dotted rectangle on focused div
-          if (cap.iswebkit && self.opt.disableoutline) self.win.css('outline', 'none');  // Webkit outline
+          if (cap.isie && opt.disableoutline) self.win.attr("hideFocus", "true"); // IE, prevent dotted rectangle on focused div
+          if (cap.iswebkit && opt.disableoutline) self.win.css('outline', 'none');  // Webkit outline
 
         }
 
-        if (self.opt.autohidemode === false) {
+        if (opt.autohidemode === false) {
           self.autohidedom = false;
           self.rail.css({
-            opacity: self.opt.cursoropacitymax
+            opacity: opt.cursoropacitymax
           });
           if (self.railh) self.railh.css({
-            opacity: self.opt.cursoropacitymax
+            opacity: opt.cursoropacitymax
           });
-        } else if ((self.opt.autohidemode === true) || (self.opt.autohidemode === "leave")) {
+        } else if ((opt.autohidemode === true) || (opt.autohidemode === "leave")) {
           self.autohidedom = $().add(self.rail);
           if (cap.isie8) self.autohidedom = self.autohidedom.add(self.cursor);
           if (self.railh) self.autohidedom = self.autohidedom.add(self.railh);
           if (self.railh && cap.isie8) self.autohidedom = self.autohidedom.add(self.cursorh);
-        } else if (self.opt.autohidemode == "scroll") {
+        } else if (opt.autohidemode == "scroll") {
           self.autohidedom = $().add(self.rail);
           if (self.railh) self.autohidedom = self.autohidedom.add(self.railh);
-        } else if (self.opt.autohidemode == "cursor") {
+        } else if (opt.autohidemode == "cursor") {
           self.autohidedom = $().add(self.cursor);
           if (self.railh) self.autohidedom = self.autohidedom.add(self.cursorh);
-        } else if (self.opt.autohidemode == "hidden") {
+        } else if (opt.autohidemode == "hidden") {
           self.autohidedom = false;
           self.hide();
           self.railslocked = false;
         }
 
-        if (cap.cantouch || self.istouchcapable || self.opt.emulatetouch || cap.hasmstouch) {
+        if (cap.cantouch || self.istouchcapable || opt.emulatetouch || cap.hasmstouch) {
 
           self.scrollmom = new ScrollMomentumClass2D(self);
 
@@ -1115,6 +1120,11 @@
             if (e.pointerType && (e.pointerType === 'mouse' || e.pointerType === e.MSPOINTER_TYPE_MOUSE)) return false;
 
             self.hasmoving = false;
+
+            if (self.scrollmom.timer) {
+              self.triggerScrollEnd();
+              self.scrollmom.stop();
+            }
 
             if (!self.railslocked) {
               var tg;
@@ -1129,9 +1139,7 @@
                 }
               }
 
-              e.stopPropagation();
-
-              self.cancelScroll();
+              //e.stopPropagation();
 
               tg = self.getTarget(e);
 
@@ -1166,7 +1174,7 @@
                 tg: tg
               };
 
-              if (self.ispage || !self.opt.directionlockdeadzone) {
+              if (self.ispage || !opt.directionlockdeadzone) {
 
                 self.rail.drag.dl = "f";
 
@@ -1185,13 +1193,13 @@
                 var maxh = Math.max(0, page.h - view.h);
                 var maxw = Math.max(0, page.w - view.w);
 
-                if (!self.rail.scrollable && self.railh.scrollable) self.rail.drag.ck = (maxh > 0) ? "v" : false;
-                else if (self.rail.scrollable && !self.railh.scrollable) self.rail.drag.ck = (maxw > 0) ? "h" : false;
+                if (self.rail.scrollable && !self.railh.scrollable) self.rail.drag.ck = (maxh > 0) ? "v" : false;
+                else if (!self.rail.scrollable && self.railh.scrollable) self.rail.drag.ck = (maxw > 0) ? "h" : false;
                 else self.rail.drag.ck = false;
-                //if (!self.rail.drag.ck) self.rail.drag.dl = "f";
+
               }
 
-              if (self.opt.emulatetouch && self.isiframe && cap.isie) {
+              if (opt.emulatetouch && self.isiframe && cap.isie) {
                 var wp = self.win.position();
                 self.rail.drag.x += wp.left;
                 self.rail.drag.y += wp.top;
@@ -1206,7 +1214,7 @@
                 var ip = (tg) ? /INPUT|SELECT|BUTTON|TEXTAREA/i.test(tg.nodeName) : false;
                 if (!ip) {
                   if (!self.ispage && cap.hasmousecapture) tg.setCapture();
-                  if (self.opt.emulatetouch) {
+                  if (opt.emulatetouch) {
                     if (tg.onclick && !(tg._onclick || false)) { // intercept DOM0 onclick event
                       tg._onclick = tg.onclick;
                       tg.onclick = function (e) {
@@ -1267,36 +1275,26 @@
 
           };
 
-          var moveneedoffset = (self.opt.emulatetouch && self.isiframe && !cap.hasmousecapture);
+          var moveneedoffset = (opt.emulatetouch && self.isiframe && !cap.hasmousecapture);
+
+          var locktollerance = opt.directionlockdeadzone * 0.3 | 0;
 
           self.ontouchmove = function (e, byiframe) {
 
-            if (!self.rail.drag) return false;
+            if (!self.rail.drag) return true;
 
-            if (e.targetTouches && self.opt.preventmultitouchscrolling) {
-              if (e.targetTouches.length > 1) return false; // multitouch
+            if (e.targetTouches && opt.preventmultitouchscrolling) {
+              if (e.targetTouches.length > 1) return true; // multitouch
             }
 
             //if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
-            if (e.pointerType && (e.pointerType === 'mouse' || e.pointerType === e.MSPOINTER_TYPE_MOUSE)) return false;
+            if (e.pointerType && (e.pointerType === 'mouse' || e.pointerType === e.MSPOINTER_TYPE_MOUSE)) return true;
 
             if (self.rail.drag.pt == 2) {
 
               if (("changedTouches" in e)) {
                 e.clientX = e.changedTouches[0].clientX;
                 e.clientY = e.changedTouches[0].clientY;
-              }
-
-              if (!self.hasmoving) {
-                if (self.rail.drag.y === e.clientY && self.rail.drag.x === e.clientX) return false;  // prevent first useless move event 
-
-                self.triggerScrollStart(e.clientX, e.clientY, 0, 0, 0);
-                self.hasmoving = true;
-              }
-
-              if (self.preventclick && !self.preventclick.click) {
-                self.preventclick.click = self.preventclick.tg.onclick || false;
-                self.preventclick.tg.onclick = self.onpreventclick;
               }
 
               var ofy, ofx;
@@ -1315,7 +1313,7 @@
 
               var ny = self.rail.drag.st - my;
 
-              if (self.ishwscroll && self.opt.bouncescroll) {
+              if (self.ishwscroll && opt.bouncescroll) {
                 if (ny < 0) {
                   ny = Math.round(ny / 2);
                 } else if (ny > self.page.maxh) {
@@ -1326,17 +1324,22 @@
                   ny = 0;
                   fy = 0;
                 }
-                if (ny > self.page.maxh) {
+                else if (ny > self.page.maxh) {
                   ny = self.page.maxh;
                   fy = 0;
                 }
+                if (fy === 0 && !self.hasmoving) {
+                  self.rail.drag = false;
+                  return true;
+                }
               }
 
-              var nx;
+              var nx = self.getScrollLeft();
+
               if (self.railh && self.railh.scrollable) {
                 nx = (self.isrtlmode) ? mx - self.rail.drag.sl : self.rail.drag.sl - mx;
 
-                if (self.ishwscroll && self.opt.bouncescroll) {
+                if (self.ishwscroll && opt.bouncescroll) {
                   if (nx < 0) {
                     nx = Math.round(nx / 2);
                   } else if (nx > self.page.maxw) {
@@ -1355,40 +1358,68 @@
 
               }
 
-              var grabbed = false;
-              if (self.rail.drag.dl) {
-                grabbed = true;
-                if (self.rail.drag.dl == "v") nx = self.rail.drag.sl;
-                else if (self.rail.drag.dl == "h") ny = self.rail.drag.st;
-              } else {
+
+              if (!self.hasmoving) {
+
+                if (self.rail.drag.y === e.clientY && self.rail.drag.x === e.clientX) return e.stopPropagation();  // prevent first useless move event 
+
                 var ay = Math.abs(my);
                 var ax = Math.abs(mx);
-                var dz = self.opt.directionlockdeadzone;
+                var dz = opt.directionlockdeadzone;
 
                 if (!self.rail.drag.ck) {
                   if (ay > dz && ax > dz) self.rail.drag.dl = "f";
-                  else if (ay > dz) self.rail.drag.dl = (ax) ? "f" : "v";
-                  else if (ax > dz) self.rail.drag.dl = (ay) ? "f" : "h";
-                } 
-                else if (self.rail.drag.ck == "v") {
-                  if (ay > dz && (ax <= (ay * 0.3))) {
-                    self.rail.drag = false;
-                    return true;
-                  } else if (ax > dz) {
-                    self.rail.drag.dl = "f";
-                    $body.scrollTop($body.scrollTop()); // stop iOS native scrolling (when active javascript has blocked)
-                  }
-                } 
-                else if (self.rail.drag.ck == "h") {
-                  if (ax > dz && (ay <= (ax * 0.3))) {
-                    self.rail.drag = false;
-                    return true;
-                  } else {
-                    self.rail.drag.dl = "f";
-                    $body.scrollTop($body.scrollTop()); // stop iOS native scrolling (when active javascript has blocked)
-                  }
+                  else if (ay > dz) self.rail.drag.dl = (ax > locktollerance) ? "f" : "v";
+                  else if (ax > dz) self.rail.drag.dl = (ay > locktollerance) ? "f" : "h";
                 }
-                return false;
+                else if (self.rail.drag.ck == "v") {
+                  if (ax > dz && ay <= locktollerance) {
+                    self.rail.drag = false;
+                  }
+                  else if (ay > dz) self.rail.drag.dl = "v";
+
+                  /*                  
+                                    if (ay > dz && (ax <= (ay * 0.3))) {
+                                      self.rail.drag = false;
+                                      return true;
+                                    } else if (ax > dz) {
+                                      self.rail.drag.dl = "f";
+                                      $body.scrollTop($body.scrollTop()); // stop iOS native scrolling (when active javascript has blocked)
+                                    }
+                  */
+                }
+                else if (self.rail.drag.ck == "h") {
+
+                  if (ay > dz && ax <= locktollerance) {
+                    self.rail.drag = false;
+                  }
+                  else if (ax > dz) self.rail.drag.dl = "h";
+
+                  /*                  
+                                    if (ax > dz && (ay <= (ax * 0.3))) {
+                                      self.rail.drag = false;
+                                      return true;
+                                    } else {
+                                      self.rail.drag.dl = "f";
+                                      $body.scrollTop($body.scrollTop()); // stop iOS native scrolling (when active javascript has blocked)
+                                    }
+                  */
+                }
+
+                if (!self.rail.drag.dl) return false;
+
+                self.triggerScrollStart(e.clientX, e.clientY, 0, 0, 0);
+                self.hasmoving = true;
+              }
+
+              if (self.preventclick && !self.preventclick.click) {
+                self.preventclick.click = self.preventclick.tg.onclick || false;
+                self.preventclick.tg.onclick = self.onpreventclick;
+              }
+
+              if (self.rail.drag.dl) {
+                if (self.rail.drag.dl == "v") nx = self.rail.drag.sl;
+                else if (self.rail.drag.dl == "h") ny = self.rail.drag.st;
               }
 
               self.synched("touchmove", function () {
@@ -1406,8 +1437,13 @@
                 }
               });
 
-              if (cap.ischrome && self.istouchcapable) grabbed = false; //chrome touch emulation doesn't like!
-              if (grabbed) return self.cancelEvent(e);
+              //              if (cap.ischrome && self.istouchcapable) grabbed = false; //chrome touch emulation doesn't like!
+              //              if (grabbed) return self.cancelEvent(e);
+
+              //e.stopPropagation();
+              self.cancelEvent(e);
+              return false;
+
             }
             else if (self.rail.drag.pt == 1) { // drag on cursor
               return self.onmousemove(e);
@@ -1430,7 +1466,7 @@
             var tg = self.getTarget(e);
             if (!self.ispage && cap.hasmousecapture) tg.setCapture();
             if (self.isiframe && !cap.hasmousecapture) {
-              self.saved["csspointerevents"] = self.doc.css("pointer-events");
+              self.saved.csspointerevents = self.doc.css("pointer-events");
               self.css(self.doc, { "pointer-events": "none" });
             }
             return self.cancelEvent(e);
@@ -1439,7 +1475,7 @@
           self.ontouchendCursor = function (e) {
             if (self.rail.drag) {
               if (cap.hasmousecapture) _doc.releaseCapture();
-              if (self.isiframe && !cap.hasmousecapture) self.doc.css("pointer-events", self.saved["csspointerevents"]);
+              if (self.isiframe && !cap.hasmousecapture) self.doc.css("pointer-events", self.saved.csspointerevents);
               if (self.rail.drag.pt != 3) return;
               self.rail.drag = false;
               return self.cancelEvent(e);
@@ -1467,8 +1503,8 @@
               self.synched('touchmove', function () {
                 if (self.rail.drag && (self.rail.drag.pt == 3)) {
                   self.showCursor();
-                  if (self.rail.drag.hr) self.doScrollLeft(Math.round(self.scroll.x * self.scrollratio.x), self.opt.cursordragspeed);
-                  else self.doScrollTop(Math.round(self.scroll.y * self.scrollratio.y), self.opt.cursordragspeed);
+                  if (self.rail.drag.hr) self.doScrollLeft(Math.round(self.scroll.x * self.scrollratio.x), opt.cursordragspeed);
+                  else self.doScrollTop(Math.round(self.scroll.y * self.scrollratio.y), opt.cursordragspeed);
                 }
               });
 
@@ -1548,12 +1584,12 @@
                 /*                
                 if (self.rail.drag.hr) {
                   if (self.hasreversehr) {
-                    self.doScrollLeft(self.scrollvaluemaxw - Math.round(self.scroll.x * self.scrollratio.x), self.opt.cursordragspeed);
+                    self.doScrollLeft(self.scrollvaluemaxw - Math.round(self.scroll.x * self.scrollratio.x), opt.cursordragspeed);
                   } else {
-                    self.doScrollLeft(Math.round(self.scroll.x * self.scrollratio.x), self.opt.cursordragspeed);
+                    self.doScrollLeft(Math.round(self.scroll.x * self.scrollratio.x), opt.cursordragspeed);
                   }
                 }
-                else self.doScrollTop(Math.round(self.scroll.y * self.scrollratio.y), self.opt.cursordragspeed);
+                else self.doScrollTop(Math.round(self.scroll.y * self.scrollratio.y), opt.cursordragspeed);
                 */
 
                 if (self.rail.drag.hr) {
@@ -1572,7 +1608,7 @@
           }
         };
 
-        if (cap.cantouch || self.opt.emulatetouch) {
+        if (cap.cantouch || opt.emulatetouch) {
 
           self.onpreventclick = function (e) {
             if (self.preventclick) {
@@ -1593,7 +1629,7 @@
             }
           };
 
-          if (self.opt.grabcursorenabled && cap.cursorgrabvalue) {
+          if (opt.grabcursorenabled && cap.cursorgrabvalue) {
             self.css((self.ispage) ? self.doc : self.win, {
               'cursor': cap.cursorgrabvalue
             });
@@ -1695,16 +1731,17 @@
           self.bind(self.win, "touchstart", self.ontouchstart, false, true);
           self.bind(_doc, "touchend", self.ontouchend, false, true);
           self.bind(_doc, "touchcancel", self.ontouchend, false, true);
-          self.bind(_doc, "touchmove", self.ontouchmove, false, true);
+          //self.bind(_doc, "touchmove", self.ontouchmove, false, true);
+          self.delegate(_doc, "touchmove", self.ontouchmove, false, true);
         }
 
-        if (self.opt.emulatetouch) {
+        if (opt.emulatetouch) {
           self.bind(self.win, "mousedown", self.ontouchstart, false, true);
           self.bind(_doc, "mouseup", self.ontouchend, false, true);
           self.bind(_doc, "mousemove", self.ontouchmove, false, true);
         }
 
-        if (self.opt.cursordragontouch || (!cap.cantouch && !self.opt.emulatetouch)) {
+        if (opt.cursordragontouch || (!cap.cantouch && !opt.emulatetouch)) {
 
           self.rail.css({
             cursor: "default"
@@ -1723,7 +1760,7 @@
             if (!self.rail.drag) self.hideCursor();
           });
 
-          if (self.opt.sensitiverail) {
+          if (opt.sensitiverail) {
             self.bind(self.rail, "click", function (e) {
               self.doRailClick(e, false, false);
             });
@@ -1749,7 +1786,7 @@
               if (!self.rail.drag) self.hideCursor();
             });
 
-            if (self.opt.sensitiverail) {
+            if (opt.sensitiverail) {
               self.bind(self.railh, "click", function (e) {
                 self.doRailClick(e, false, true);
               });
@@ -1768,7 +1805,7 @@
 
         }
 
-        if (self.opt.cursordragontouch && (this.istouchcapable || cap.cantouch)) {
+        if (opt.cursordragontouch && (this.istouchcapable || cap.cantouch)) {
           self.bind(self.cursor, "touchstart", self.ontouchstartCursor);
           self.bind(self.cursor, "touchmove", self.ontouchmoveCursor);
           self.bind(self.cursor, "touchend", self.ontouchendCursor);
@@ -1779,7 +1816,7 @@
           self.cursorh && self.bind(self.cursorh, "touchend", self.ontouchendCursor);
         }
 
-        if (!cap.cantouch && !self.opt.emulatetouch) {
+        if (!cap.cantouch && !opt.emulatetouch) {
 
           self.bind((cap.hasmousecapture) ? self.win : _doc, "mouseup", self.onmouseup);
           self.bind(_doc, "mousemove", self.onmousemove);
@@ -1795,7 +1832,7 @@
             self.bind(self.cursorh, "mouseup", self.onmouseup);
           }
 
-          if (!self.ispage && self.opt.enablescrollonselection) {
+          if (!self.ispage && opt.enablescrollonselection) {
             self.bind(self.win[0], "mousedown", self.onselectionstart);
             self.bind(_doc, "mouseup", self.onselectionend);
             self.bind(self.cursor, "mouseup", self.onselectionend);
@@ -1819,7 +1856,7 @@
           self.bind((cap.hasmousecapture) ? self.win : _doc, "mouseup", self.ontouchend);
           if (self.onclick) self.bind(_doc, "click", self.onclick);
 
-          if (self.opt.cursordragontouch) {
+          if (opt.cursordragontouch) {
             self.bind(self.cursor, "mousedown", self.onmousedown);
             self.bind(self.cursor, "mouseup", self.onmouseup);
             self.cursorh && self.bind(self.cursorh, "mousedown", function (e) {
@@ -1834,7 +1871,7 @@
         }
 
 
-        if (self.opt.enablemousewheel) {
+        if (opt.enablemousewheel) {
           if (!self.isiframe) self.mousewheel((cap.isie && self.ispage) ? _doc : self.win, self.onmousewheel);
           self.mousewheel(self.rail, self.onmousewheel);
           if (self.railh) self.mousewheel(self.railh, self.onmousewheelhr);
@@ -1941,7 +1978,7 @@
                 ret = true;
                 break;
               case 32:
-                if (self.opt.spacebarenabled) {
+                if (opt.spacebarenabled) {
                   (shift) ? self.doScrollBy(self.view.h) : self.doScrollBy(-self.view.h);
                   ret = true;
                 }
@@ -1957,7 +1994,7 @@
           }
         };
 
-        if (self.opt.enablekeyboard) self.bind(_doc, (cap.isopera && !cap.isopera12) ? "keypress" : "keydown", self.onkeypress);
+        if (opt.enablekeyboard) self.bind(_doc, (cap.isopera && !cap.isopera12) ? "keypress" : "keydown", self.onkeypress);
 
         self.bind(_doc, "keydown", function (e) {
           var ctrl = e.ctrlKey || false;
@@ -1971,8 +2008,8 @@
           self.wheelprevented = false;
         });
 
-        self.bind(_win, 'resize', self.lazyResize);
-        self.bind(_win, 'orientationchange', self.lazyResize);
+        self.bind(_win, 'resize', self.onscreenresize);
+        self.bind(_win, 'orientationchange', self.onscreenresize);
 
         self.bind(_win, "load", self.lazyResize);
 
@@ -1992,7 +2029,7 @@
           self.lazyResize(self.isieold ? 250 : 30);
         };
 
-        if (self.opt.enableobserver) {
+        if (opt.enableobserver) {
 
           if ((!self.isie11) && (ClsMutationObserver !== false)) {  // IE11 crashes  #568
             self.observerbody = new ClsMutationObserver(function (mutations) {
@@ -2052,7 +2089,7 @@
 
         //
 
-        if (!self.ispage && self.opt.boxzoom) self.bind(_win, "resize", self.resizeZoom);
+        if (!self.ispage && opt.boxzoom) self.bind(_win, "resize", self.resizeZoom);
         if (self.istextarea) {
           self.bind(self.win, "keydown", self.lazyResize);
           self.bind(self.win, "mouseup", self.lazyResize);
@@ -2097,7 +2134,7 @@
             self.docscroll = $(self.iframe.body); //$(this.contentWindow);
           }
 
-          if (!cap.isios && self.opt.iframeautoresize && !self.isiframe) {
+          if (!cap.isios && opt.iframeautoresize && !self.isiframe) {
             self.win.scrollTop(0); // reset position
             self.doc.height(""); //reset height to fix browser bug
             var hh = Math.max(doc.getElementsByTagName('html')[0].scrollHeight, doc.body.scrollHeight);
@@ -2120,22 +2157,22 @@
             self.bind(doc, "scroll", self.onscroll);
           }
 
-          if (self.opt.enablemousewheel) {
+          if (opt.enablemousewheel) {
             self.mousewheel(doc, self.onmousewheel);
           }
 
-          if (self.opt.enablekeyboard) self.bind(doc, (cap.isopera) ? "keypress" : "keydown", self.onkeypress);
+          if (opt.enablekeyboard) self.bind(doc, (cap.isopera) ? "keypress" : "keydown", self.onkeypress);
 
           if (cap.cantouch) {
             self.bind(doc, "touchstart", self.ontouchstart);
             self.bind(doc, "touchmove", self.ontouchmove);
           }
-          else if (self.opt.emulatetouch) {
+          else if (opt.emulatetouch) {
             self.bind(doc, "mousedown", self.ontouchstart);
             self.bind(doc, "mousemove", function (e) {
               return self.ontouchmove(e, true);
             });
-            if (self.opt.grabcursorenabled && cap.cursorgrabvalue) self.css($(doc.body), {
+            if (opt.grabcursorenabled && cap.cursorgrabvalue) self.css($(doc.body), {
               'cursor': cap.cursorgrabvalue
             });
           }
@@ -2143,7 +2180,7 @@
           self.bind(doc, "mouseup", self.ontouchend);
 
           if (self.zoom) {
-            if (self.opt.dblclickzoom) self.bind(doc, 'dblclick', self.doZoom);
+            if (opt.dblclickzoom) self.bind(doc, 'dblclick', self.doZoom);
             if (self.ongesturezoom) self.bind(doc, "gestureend", self.ongesturezoom);
           }
         };
@@ -2167,7 +2204,7 @@
       if (!self.rail) return;
       if (self.autohidedom) {
         self.autohidedom.stop().css({
-          opacity: self.opt.cursoropacitymax
+          opacity: opt.cursoropacitymax
         });
         self.cursoractive = true;
       }
@@ -2195,7 +2232,7 @@
       }
 
       if (self.zoom) self.zoom.stop().css({
-        opacity: self.opt.cursoropacitymax
+        opacity: opt.cursoropacitymax
       });
     };
 
@@ -2204,19 +2241,19 @@
       if (!self.rail) return;
       if (!self.autohidedom) return;
 
-      if (self.hasmousefocus && self.opt.autohidemode === "leave") return;
+      if (self.hasmousefocus && opt.autohidemode === "leave") return;
       self.cursortimeout = setTimeout(function () {
         if (!self.rail.active || !self.showonmouseevent) {
           self.autohidedom.stop().animate({
-            opacity: self.opt.cursoropacitymin
+            opacity: opt.cursoropacitymin
           });
           if (self.zoom) self.zoom.stop().animate({
-            opacity: self.opt.cursoropacitymin
+            opacity: opt.cursoropacitymin
           });
           self.cursoractive = false;
         }
         self.cursortimeout = 0;
-      }, tm || self.opt.hidecursordelay);
+      }, tm || opt.hidecursordelay);
     };
 
     this.noticeCursor = function (tm, py, px) {
@@ -2300,7 +2337,7 @@
         self.setScrollTop(0);
         if (self.rail) self.rail.scrollable = false;
       } else {
-        self.page.maxh -= (self.opt.railpadding.top + self.opt.railpadding.bottom);  //**
+        self.page.maxh -= (opt.railpadding.top + opt.railpadding.bottom);  //**
         self.rail.scrollable = true;
       }
 
@@ -2315,8 +2352,8 @@
           self.railh.scrollable = false;
         }
       } else {
-        self.page.maxw -= (self.opt.railpadding.left + self.opt.railpadding.right);  //**
-        if (self.railh) self.railh.scrollable = (self.opt.horizrailenabled);
+        self.page.maxw -= (opt.railpadding.left + opt.railpadding.right);  //**
+        if (self.railh) self.railh.scrollable = (opt.horizrailenabled);
       }
 
       self.railslocked = (self.locked) || ((self.page.maxh === 0) && (self.page.maxw === 0));
@@ -2333,25 +2370,25 @@
       if (self.istextarea && self.win.css('resize') && self.win.css('resize') != 'none') self.view.h -= 20;
 
       self.cursorheight = Math.min(self.view.h, Math.round(self.view.h * (self.view.h / self.page.h)));
-      self.cursorheight = (self.opt.cursorfixedheight) ? self.opt.cursorfixedheight : Math.max(self.opt.cursorminheight, self.cursorheight);
+      self.cursorheight = (opt.cursorfixedheight) ? opt.cursorfixedheight : Math.max(opt.cursorminheight, self.cursorheight);
 
       self.cursorwidth = Math.min(self.view.w, Math.round(self.view.w * (self.view.w / self.page.w)));
-      self.cursorwidth = (self.opt.cursorfixedheight) ? self.opt.cursorfixedheight : Math.max(self.opt.cursorminheight, self.cursorwidth);
+      self.cursorwidth = (opt.cursorfixedheight) ? opt.cursorfixedheight : Math.max(opt.cursorminheight, self.cursorwidth);
 
       //      self.cursorwidth -= self.railh.cursor[0].outerWidth - self.railh.cursor[0].innerWidth;
 
-      self.scrollvaluemax = self.view.h - self.cursorheight - (self.opt.railpadding.top + self.opt.railpadding.bottom); // - self.cursor.hborder //**
+      self.scrollvaluemax = self.view.h - self.cursorheight - (opt.railpadding.top + opt.railpadding.bottom); // - self.cursor.hborder //**
       if (!self.hasborderbox) self.scrollvaluemax -= self.cursor[0].offsetHeight - self.cursor[0].clientHeight;
 
       if (self.railh) {
         self.railh.width = (self.page.maxh > 0) ? (self.view.w - self.rail.width) : self.view.w;
-        self.scrollvaluemaxw = self.railh.width - self.cursorwidth - (self.opt.railpadding.left + self.opt.railpadding.right); //  - self.cursorh.wborder  //**
+        self.scrollvaluemaxw = self.railh.width - self.cursorwidth - (opt.railpadding.left + opt.railpadding.right); //  - self.cursorh.wborder  //**
       }
 
       /*
       if (self.checkrtlmode&&self.railh) {
         self.checkrtlmode = false;
-        if (self.opt.rtlmode&&self.scroll.x==0) self.setScrollLeft(self.page.maxw);
+        if (opt.rtlmode&&self.scroll.x==0) self.setScrollLeft(self.page.maxw);
       }
 */
 
@@ -2378,22 +2415,31 @@
 
     this.resize = self.onResize;
 
-    this.hlazyresize = 0;
+    var hlazyresize = 0;
 
-    this.lazyResize = function (tm) { // event debounce
-
-      if (self.hlazyresize) clearTimeout(self.hlazyresize);
+    this.onscreenresize = function(e) {
+      clearTimeout(hlazyresize);
 
       var hiderails = (!self.ispage && !self.haswrapper);
-
       if (hiderails) self.hideRails();
-      
-      self.hlazyresize = setTimeout(function () {
+
+      hlazyresize = setTimeout(function () {
         if (self) {
           if (hiderails) self.showRails();
           self.resize();
         }
-      }, 240);
+        hlazyresize=0;
+      }, 120);
+    };
+
+    this.lazyResize = function (tm) { // event debounce
+
+      clearTimeout(hlazyresize);
+
+      hlazyresize = setTimeout(function () {
+        if (self) self.resize();
+        hlazyresize=0;
+      }, tm||240);
 
       return self;
 
@@ -2514,6 +2560,62 @@
 
     }
 
+    this.delegate = function (dom, name, fn, bubble, active) {
+
+      var de = delegatevents[name] || false;
+
+      if (!de) {
+
+        de = {
+          a: [],
+          l: [],
+          f: function (e) {
+            var lst = de.l, l = lst.length - 1;
+            var r = false;
+            for (var a = l; a >= 0; a--) {
+              r = lst[a].call(e.target, e);
+              if (r === false) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
+              }
+            }
+            return r;
+          }
+        };
+
+        self.bind(dom, name, de.f, bubble, active);
+
+        delegatevents[name] = de;
+
+      }
+
+      if (self.ispage) {
+        de.a = [self.id].concat(de.a);
+        de.l = [fn].concat(de.l);
+      } else {
+        de.a.push(self.id);
+        de.l.push(fn);        
+      }
+
+    };
+
+    this.undelegate = function (dom, name, fn, bubble, active) {
+      var de = delegatevents[name]||false;
+      if (de) {
+        for (var a=0,l=de.l.length;a<l;a++) {
+          if (de.a[a] === self.id) {
+            de.a.splice(a);
+            de.l.splice(a);
+            if (de.a.length===0) {
+              self.unbind(dom,name,del.f);
+              delegatevents[name] = null;
+            }
+          }
+        }
+      }
+    };
+
     this.bind = function (dom, name, fn, bubble, active) {
       var el = ("jquery" in dom) ? dom[0] : dom;
       self._bind(el, name, fn, bubble || false, active || false);
@@ -2568,7 +2670,7 @@
 
     this.hideRails = function () {
       return self.hideRail().hideRailHr();
-    }
+    };
 
     this.hideRail = function () {
       self.visibility = false;
@@ -2813,7 +2915,7 @@
         })();
 
         if (chk) {
-          if (self.opt.nativeparentscrolling && chkscroll && !self.ispage && !self.zoomactive) return true;
+          if (opt.nativeparentscrolling && chkscroll && !self.ispage && !self.zoomactive) return true;
           var ny = self.view.h >> 1;
           if (self.newscrolly < -ny) { self.newscrolly = -ny; py = -1; }
           else if (self.newscrolly > self.page.maxh + ny) { self.newscrolly = self.page.maxh + ny; py = 1; }
@@ -2856,14 +2958,14 @@
       if (!chkscroll && hasparentscrollingphase) return true;
 
       if (e.deltaMode === 0) { // PIXEL
-        px = -(e.deltaX * (self.opt.mousescrollstep / (18 * 3))) | 0;
-        py = -(e.deltaY * (self.opt.mousescrollstep / (18 * 3))) | 0;
+        px = -(e.deltaX * (opt.mousescrollstep / (18 * 3))) | 0;
+        py = -(e.deltaY * (opt.mousescrollstep / (18 * 3))) | 0;
       } else if (e.deltaMode === 1) { // LINE
-        px = -(e.deltaX * self.opt.mousescrollstep * 50 / 80) | 0;
-        py = -(e.deltaY * self.opt.mousescrollstep * 50 / 80) | 0;
+        px = -(e.deltaX * opt.mousescrollstep * 50 / 80) | 0;
+        py = -(e.deltaY * opt.mousescrollstep * 50 / 80) | 0;
       }
 
-      if (hr && self.opt.oneaxismousemode && (px === 0) && py) { // classic vertical-only mousewheel + browser with x/y support 
+      if (hr && opt.oneaxismousemode && (px === 0) && py) { // classic vertical-only mousewheel + browser with x/y support 
         px = py;
         py = 0;
 
@@ -2900,9 +3002,9 @@
       }
       if (self.rail.drag) return self.cancelEvent(e);
 
-      if (self.opt.oneaxismousemode === "auto" && e.deltaX !== 0) self.opt.oneaxismousemode = false; // check two-axis mouse support (not very elegant)
+      if (opt.oneaxismousemode === "auto" && e.deltaX !== 0) opt.oneaxismousemode = false; // check two-axis mouse support (not very elegant)
 
-      if (self.opt.oneaxismousemode && e.deltaX === 0) {
+      if (opt.oneaxismousemode && e.deltaX === 0) {
         if (!self.rail.scrollable) {
           if (self.railh && self.railh.scrollable) {
             return self.onmousewheelhr(e);
@@ -2914,7 +3016,7 @@
 
       var nw = now();
       var chk = false;
-      if (self.opt.preservenativescrolling && ((self.checkarea + 600) < nw)) {
+      if (opt.preservenativescrolling && ((self.checkarea + 600) < nw)) {
         self.nativescrollingarea = self.isScrollable(e);
         chk = true;
       }
@@ -2932,7 +3034,7 @@
 
       var nw = now();
       var chk = false;
-      if (self.opt.preservenativescrolling && ((self.checkarea + 600) < nw)) {
+      if (opt.preservenativescrolling && ((self.checkarea + 600) < nw)) {
         self.nativescrollingarea = self.isScrollable(e);
         chk = true;
       }
@@ -2954,11 +3056,11 @@
 
     this.getTransitionSpeed = function (dif) {
 
-      return 80 + (dif / 72) * self.opt.scrollspeed | 0;
+      return 80 + (dif / 72) * opt.scrollspeed | 0;
 
     };
 
-    if (!self.opt.smoothscroll) {
+    if (!opt.smoothscroll) {
       this.doScrollLeft = function (x, spd) { //direct
         var y = self.getScrollTop();
         self.doScrollPos(x, y, spd);
@@ -2978,7 +3080,7 @@
         });
       };
       this.cancelScroll = function () { }; // direct
-    } else if (self.ishwscroll && cap.hastransition && self.opt.usetransition && !!self.opt.smoothscroll) {
+    } else if (self.ishwscroll && cap.hastransition && opt.usetransition && !!opt.smoothscroll) {
 
       var lasttransitionstyle = '';
 
@@ -3034,7 +3136,7 @@
 
         if (((self.newscrolly - py) * (y - py) < 0) || ((self.newscrollx - px) * (x - px) < 0)) self.cancelScroll(); //inverted movement detection      
 
-        if (!self.opt.bouncescroll) {
+        if (!opt.bouncescroll) {
           if (y < 0) y = 0;
           else if (y > self.page.maxh) y = self.page.maxh;
           if (x < 0) x = 0;
@@ -3163,7 +3265,7 @@
         else if (py > self.page.maxh) py = self.page.maxh;
         if (px < 0) px = 0;
         else if (px > self.page.maxw) px = self.page.maxw;
-        if ((py != self.newscrolly) || (px != self.newscrollx)) return self.doScrollPos(px, py, self.opt.snapbackspeed);
+        if ((py != self.newscrolly) || (px != self.newscrollx)) return self.doScrollPos(px, py, opt.snapbackspeed);
 
         if (self.scrollrunning) self.triggerScrollEnd();
         self.scrollrunning = false;
@@ -3259,7 +3361,7 @@
             self.triggerScrollEnd();
           }
 
-        }
+        };
 
         if (!self.scrollrunning) {
           self.triggerScrollStart(px, py, x, y, ms);
@@ -3269,7 +3371,7 @@
 
       };
 
-      this.cancelScroll = function () {
+      this.cancelScroll = function () {        
         if (self.timer) clearAnimationFrame(self.timer);
         self.timer = 0;
         self.bzscroll = false;

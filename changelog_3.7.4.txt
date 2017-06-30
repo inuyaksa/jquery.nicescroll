@@ -8,6 +8,8 @@ Fixes
 - touchpad scrolling support for MS Surface aka FYI - Browser test results on Surface Pro touchscreen and touchpad #668
 - changed scrollbarid setting procedure because uglify mades uncompatible code for IE8 aka use nicescroll in IE8 #672
 - preserve scrol chain
+- page scrollbar not customized on android
+- prevent bar flickering when window not changed aka Using this plugin I got a flickering scroll bar #674
 
 Changes 
 - more responsive direct scrolling from bars
