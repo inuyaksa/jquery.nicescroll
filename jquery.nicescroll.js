@@ -572,7 +572,7 @@
 
       this.notifyScrollEvent = function (el) {
         var e = _doc.createEvent("UIEvents");
-        e.initUIEvent("scroll", false, true, _win, 1);
+        e.initUIEvent("scroll", false, false, _win, 1);
         e.niceevent = true;
         el.dispatchEvent(e);
       };
@@ -775,6 +775,7 @@
       var fn, pg, cur, pos;
 
       if (self.railslocked) return;
+
       self.cancelEvent(e);
 
       if (!("pageY" in e)) {
@@ -785,13 +786,14 @@
       if (dbl) {
         fn = (hr) ? self.doScrollLeft : self.doScrollTop;
         cur = (hr) ? ((e.pageX - self.railh.offset().left - (self.cursorwidth / 2)) * self.scrollratio.x) : ((e.pageY - self.rail.offset().top - (self.cursorheight / 2)) * self.scrollratio.y);
-        fn(cur);
+        self.unsynched("relativexy");
+        fn(cur|0);
       } else {
         fn = (hr) ? self.doScrollLeftBy : self.doScrollBy;
         cur = (hr) ? self.scroll.x : self.scroll.y;
         pos = (hr) ? e.pageX - self.railh.offset().left : e.pageY - self.rail.offset().top;
         pg = (hr) ? self.view.w : self.view.h;
-        fn((cur >= pos) ? pg : -pg);//   (cur >= pos) ? fn(pg): fn(-pg);
+        fn((cur >= pos) ? pg : -pg);
       }
 
     };
@@ -3025,6 +3027,7 @@
           var loop = function () {
             if (m.running) setAnimationFrame(loop);
             self.showCursor(self.getScrollTop(), self.getScrollLeft());
+            self.notifyScrollEvent(self.win[0]);
           };
 
           setAnimationFrame(loop);
@@ -3196,6 +3199,8 @@
         self.bzscroll.x = new BezierClass(px, self.newscrollx, ms, 0, 0, p3, 1);
         self.bzscroll.y = new BezierClass(py, self.newscrolly, ms, 0, 0, p3, 1);
 
+        var loopid = now();
+
         var loop = function () {
 
           if (!self.scrollrunning) return;
@@ -3205,7 +3210,7 @@
           self.setScrollTop(self.bzscroll.y.getNow());
 
           if (x <= 1) {
-            setAnimationFrame(loop);
+            self.timer = setAnimationFrame(loop);
           } else {
             self.scrollrunning = false;
             self.timer = 0;
