@@ -24,17 +24,17 @@ body {
 }
 </style>
 
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="js/jquery.nicescroll.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="js/jquery.nicescroll.min.js"></script>
 
 <script>
   var nice = false;
 
-  $(document).ready(function() {
+  $(function() {
     nice = $("html").niceScroll();
   });
   
-  var obj = window;//$(window);
+  var obj = window;
   
   console.log(obj.length);
   console.log("selector" in obj);

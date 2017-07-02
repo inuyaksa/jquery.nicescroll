@@ -1,5 +1,7 @@
 # jQuery.NiceScroll
-v. 3.7.3 2017-06-18
+v. 3.7.4
+
+## The best nicescroll release ever - extremely smooth and consistent in modern browsers and mobile devices, with low resource usage
 
  - [Web Site: nicescroll.areaaperta.com](https://nicescroll.areaaperta.com)
  - [Repo: github.com/inuyaksa/jquery.nicescroll](https://github.com/inuyaksa/jquery.nicescroll)
@@ -74,23 +76,23 @@ When you use zoom feature, copy image "zoomico.png" in the same folder of jquery
 Initialize nicescroll ALWAYS in (document) ready statement.
 ```javascript
 // 1. Simple mode, it styles document scrollbar:
-$(document).ready(function() {  
+$(function() {  
     $("html").niceScroll();
 });
 
 // 2. Instance with object returned:
 var nice = false;
-$(document).ready(function() {  
+$(function() {  
     nice = $("html").niceScroll();
 });
 
 // 3. Style a DIV and chage cursor color:
-$(document).ready(function() {  
+$(function() {  
     $("#thisdiv").niceScroll({cursorcolor:"#00F"});
 });
 
 // 4. DIV with "wrapper", formed by two divs, the first is the vieport, the latter is the content:
-$(document).ready(function() {
+$(function() {
     $("#viewportdiv").niceScroll("#wrapperdiv",{cursorcolor:"#00F"});
 });
 

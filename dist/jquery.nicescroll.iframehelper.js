@@ -76,12 +76,10 @@
             $.nicescroll.each(function () {
                 var nice = this;
                 nice.scrollstart(function () {
-                    console.log("start");
                     if (!hasstyle) sheet.insertRule("iframe { pointer-events: none !important; }", 0);
                     hasstyle = true;
                 });
                 nice.scrollend(function () {
-                    console.log("end");
                     if (hasstyle) sheet.deleteRule(0);
                     hasstyle = false;
                 });
