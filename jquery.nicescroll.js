@@ -1989,10 +1989,12 @@
           if (!self.ispage && !self.haswrapper) {
             // redesigned MutationObserver for Chrome18+/Firefox14+/iOS6+ with support for: remove div, add/remove content
             if (ClsMutationObserver !== false) {
+              var _dom = self.win[0];
+
               self.observer = new ClsMutationObserver(function (mutations) {
                 mutations.forEach(self.onAttributeChange);
               });
-              self.observer.observe(self.win[0], {
+              self.observer.observe(_dom, {
                 childList: true,
                 characterData: false,
                 attributes: true,
@@ -2002,22 +2004,22 @@
                 mutations.forEach(function (mo) {
                   if (mo.removedNodes.length > 0) {
                     for (var dd in mo.removedNodes) {
-                      if (!!self && (mo.removedNodes[dd] == self.win[0])) return self.remove();
+                      if (!!self && (mo.removedNodes[dd] === _dom)) return self.remove();
                     }
                   }
                 });
               });
-              self.observerremover.observe(self.win[0].parentNode, {
+              self.observerremover.observe(_dom.parentNode, {
                 childList: true,
                 characterData: false,
                 attributes: false,
                 subtree: false
               });
             } else {
-              self.bind(self.win, (cap.isie && !cap.isie9) ? "propertychange" : "DOMAttrModified", self.onAttributeChange);
-              if (cap.isie9) self.win[0].attachEvent("onpropertychange", self.onAttributeChange); //IE9 DOMAttrModified bug
-              self.bind(self.win, "DOMNodeRemoved", function (e) {
-                if (e.target == self.win[0]) self.remove();
+              self.bind(_dom, (cap.isie && !cap.isie9) ? "propertychange" : "DOMAttrModified", self.onAttributeChange);
+              if (cap.isie9) _dom.attachEvent("onpropertychange", self.onAttributeChange); //IE9 DOMAttrModified bug
+              self.bind(_dom, "DOMNodeRemoved", function (e) {
+                if (e.target === _dom) self.remove();
               });
             }
           }
