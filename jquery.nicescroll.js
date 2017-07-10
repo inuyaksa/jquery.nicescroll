@@ -1,5 +1,5 @@
 /* jquery.nicescroll
--- version 3.7.5-b
+-- version 3.7.5-c
 -- copyright 2017-07-02 InuYaksa*2017
 -- licensed under the MIT
 --
@@ -171,7 +171,7 @@
     d.ischrome26 = (!d.ischrome38) && (d.ischrome && ("transition" in _style)); // issue with transform detection (maintain prefix)
 
     d.cantouch = ("ontouchstart" in _doc.documentElement) || ("ontouchstart" in _win); // with detection for Chrome Touch Emulation    
-    d.hasw3ctouch = (_win.PointerEvent || false) && ((navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)); //IE11 pointer events, following W3C Pointer Events spec
+    d.hasw3ctouch = (_win.PointerEvent || false) && ((navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)); //IE11 pointer events, following W3C Pointer Events spec
     d.hasmstouch = (!d.hasw3ctouch) && (_win.MSPointerEvent || false); // IE10 pointer events
 
     d.ismac = /^mac$/i.test(_platform);
@@ -261,7 +261,7 @@
 
     var self = this;
 
-    this.version = '3.7.5-b';
+    this.version = '3.7.5-c';
     this.name = 'nicescroll';
 
     this.me = me;
