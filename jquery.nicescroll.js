@@ -1,6 +1,6 @@
 /* jquery.nicescroll
--- version 3.7.4-g [DEV REL]
--- copyright 2017-06-18 InuYaksa*2017
+-- version 3.7.5-b
+-- copyright 2017-07-02 InuYaksa*2017
 -- licensed under the MIT
 --
 -- https://nicescroll.areaaperta.com/
@@ -261,7 +261,7 @@
 
     var self = this;
 
-    this.version = '3.7.4-g';
+    this.version = '3.7.5-b';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -384,7 +384,7 @@
     this.hasfocus = false;
     this.hasmousefocus = false;
 
-    this.visibility = true;
+    //this.visibility = true;
     this.railslocked = false;  // locked by resize
     this.locked = false;  // prevent lost of locked status sets by user
     this.hidden = false; // rails always hidden
@@ -504,7 +504,6 @@
     };
     BezierClass.prototype = {
       B2: function (t) {
-        //return 3 * t * t * (1 - t);
         return 3 * (1 - t) * (1 - t) * t;
       },
       B3: function (t) {
@@ -1210,7 +1209,7 @@
                     return self.cancelEvent(e);
                   }
                   return self.stopPropagation(e);
-                }          
+                }
 
                 if (/SUBMIT|CANCEL|BUTTON/i.test($(tg).attr('type'))) {
                   self.preventclick = {
@@ -1757,7 +1756,8 @@
           self.cursorh && self.bind(self.cursorh, "touchend", self.ontouchendCursor);
         }
 
-        if (!cap.cantouch && !opt.emulatetouch) {
+//        if (!cap.cantouch && !opt.emulatetouch) {
+        if (!opt.emulatetouch && !cap.isandroid && !cap.isios) {
 
           self.bind((cap.hasmousecapture) ? self.win : _doc, "mouseup", self.onmouseup);
           self.bind(_doc, "mousemove", self.onmousemove);
@@ -2283,10 +2283,10 @@
         return false;
       }
 
-      if (!self.hidden && !self.visibility) {
-        self.showRail().showRailHr();
+      if (!self.hidden) {
+        if (!self.rail.visibility) self.showRail();
+        if (self.railh && !self.railh.visibility) self.showRailHr();
       }
-      else if (self.railh && (!self.hidden && !self.railh.visibility)) self.showRailHr();
 
       if (self.istextarea && self.win.css('resize') && self.win.css('resize') != 'none') self.view.h -= 20;
 
@@ -2515,7 +2515,7 @@
             de.a.splice(a);
             de.l.splice(a);
             if (de.a.length===0) {
-              self._unbind(dom,name,del.f);
+              self._unbind(dom,name,de.l.f);
               delegatevents[name] = null;
             }
           }
@@ -2559,7 +2559,7 @@
 
     this.showRail = function () {
       if ((self.page.maxh !== 0) && (self.ispage || self.win.css('display') != 'none')) {
-        self.visibility = true;
+        //self.visibility = true;
         self.rail.visibility = true;
         self.rail.css('display', 'block');
       }
@@ -2581,7 +2581,7 @@
     };
 
     this.hideRail = function () {
-      self.visibility = false;
+      //self.visibility = false;
       self.rail.visibility = false;
       self.rail.css('display', 'none');
       return self;
@@ -3227,7 +3227,7 @@
 
       };
 
-      this.cancelScroll = function () {        
+      this.cancelScroll = function () {
         if (self.timer) clearAnimationFrame(self.timer);
         self.timer = 0;
         self.bzscroll = false;
