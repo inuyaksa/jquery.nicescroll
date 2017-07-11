@@ -1,6 +1,6 @@
 /* jquery.nicescroll
--- version 3.7.5-c
--- copyright 2017-07-02 InuYaksa*2017
+-- version 3.7.5-d
+-- copyright 2017-07-11 InuYaksa*2017
 -- licensed under the MIT
 --
 -- https://nicescroll.areaaperta.com/
@@ -261,7 +261,7 @@
 
     var self = this;
 
-    this.version = '3.7.5-c';
+    this.version = '3.7.5-d';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -1987,10 +1987,11 @@
           }
 
           if (!self.ispage && !self.haswrapper) {
+
+            var _dom = self.win[0];
+
             // redesigned MutationObserver for Chrome18+/Firefox14+/iOS6+ with support for: remove div, add/remove content
             if (ClsMutationObserver !== false) {
-              var _dom = self.win[0];
-
               self.observer = new ClsMutationObserver(function (mutations) {
                 mutations.forEach(self.onAttributeChange);
               });
@@ -2350,10 +2351,12 @@
 
       clearTimeout(hlazyresize);
 
+      tm = isNaN(tm) ? 240 : tm;
+
       hlazyresize = setTimeout(function () {
-        if (self) self.resize();
+        self && self.resize();
         hlazyresize=0;
-      }, tm||240);
+      }, tm);
 
       return self;
 
