@@ -1,0 +1,14 @@
+Changelog nicescroll release 3.7.5
+https://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+
+Fixes
+- Calling .remove() throws an error after update to v. 3.7.4 #681
+- more robust hybrid system support mouse + touch events aka no drag and scroll #676
+- scroll is not working on edge and firefox browsers in touchscreen laptops #677
+- typos on navigator.maxTouchPoints
+
+Changes 
+- remove outdated self.visibility

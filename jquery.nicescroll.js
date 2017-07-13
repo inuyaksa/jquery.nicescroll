@@ -1,6 +1,6 @@
 /* jquery.nicescroll
--- version 3.7.4
--- copyright 2017-07-02 InuYaksa*2017
+-- version 3.7.5
+-- copyright 2017-07-13 InuYaksa*2017
 -- licensed under the MIT
 --
 -- https://nicescroll.areaaperta.com/
@@ -171,7 +171,7 @@
     d.ischrome26 = (!d.ischrome38) && (d.ischrome && ("transition" in _style)); // issue with transform detection (maintain prefix)
 
     d.cantouch = ("ontouchstart" in _doc.documentElement) || ("ontouchstart" in _win); // with detection for Chrome Touch Emulation    
-    d.hasw3ctouch = (_win.PointerEvent || false) && ((navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)); //IE11 pointer events, following W3C Pointer Events spec
+    d.hasw3ctouch = (_win.PointerEvent || false) && ((navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)); //IE11 pointer events, following W3C Pointer Events spec
     d.hasmstouch = (!d.hasw3ctouch) && (_win.MSPointerEvent || false); // IE10 pointer events
 
     d.ismac = /^mac$/i.test(_platform);
@@ -261,7 +261,7 @@
 
     var self = this;
 
-    this.version = '3.7.4';
+    this.version = '3.7.5';
     this.name = 'nicescroll';
 
     this.me = me;
@@ -384,7 +384,7 @@
     this.hasfocus = false;
     this.hasmousefocus = false;
 
-    this.visibility = true;
+    //this.visibility = true;
     this.railslocked = false;  // locked by resize
     this.locked = false;  // prevent lost of locked status sets by user
     this.hidden = false; // rails always hidden
@@ -504,7 +504,6 @@
     };
     BezierClass.prototype = {
       B2: function (t) {
-        //return 3 * t * t * (1 - t);
         return 3 * (1 - t) * (1 - t) * t;
       },
       B3: function (t) {
@@ -1210,7 +1209,7 @@
                     return self.cancelEvent(e);
                   }
                   return self.stopPropagation(e);
-                }          
+                }
 
                 if (/SUBMIT|CANCEL|BUTTON/i.test($(tg).attr('type'))) {
                   self.preventclick = {
@@ -1757,7 +1756,8 @@
           self.cursorh && self.bind(self.cursorh, "touchend", self.ontouchendCursor);
         }
 
-        if (!cap.cantouch && !opt.emulatetouch) {
+//        if (!cap.cantouch && !opt.emulatetouch) {
+        if (!opt.emulatetouch && !cap.isandroid && !cap.isios) {
 
           self.bind((cap.hasmousecapture) ? self.win : _doc, "mouseup", self.onmouseup);
           self.bind(_doc, "mousemove", self.onmousemove);
@@ -1987,12 +1987,15 @@
           }
 
           if (!self.ispage && !self.haswrapper) {
+
+            var _dom = self.win[0];
+
             // redesigned MutationObserver for Chrome18+/Firefox14+/iOS6+ with support for: remove div, add/remove content
             if (ClsMutationObserver !== false) {
               self.observer = new ClsMutationObserver(function (mutations) {
                 mutations.forEach(self.onAttributeChange);
               });
-              self.observer.observe(self.win[0], {
+              self.observer.observe(_dom, {
                 childList: true,
                 characterData: false,
                 attributes: true,
@@ -2002,22 +2005,22 @@
                 mutations.forEach(function (mo) {
                   if (mo.removedNodes.length > 0) {
                     for (var dd in mo.removedNodes) {
-                      if (!!self && (mo.removedNodes[dd] == self.win[0])) return self.remove();
+                      if (!!self && (mo.removedNodes[dd] === _dom)) return self.remove();
                     }
                   }
                 });
               });
-              self.observerremover.observe(self.win[0].parentNode, {
+              self.observerremover.observe(_dom.parentNode, {
                 childList: true,
                 characterData: false,
                 attributes: false,
                 subtree: false
               });
             } else {
-              self.bind(self.win, (cap.isie && !cap.isie9) ? "propertychange" : "DOMAttrModified", self.onAttributeChange);
-              if (cap.isie9) self.win[0].attachEvent("onpropertychange", self.onAttributeChange); //IE9 DOMAttrModified bug
-              self.bind(self.win, "DOMNodeRemoved", function (e) {
-                if (e.target == self.win[0]) self.remove();
+              self.bind(_dom, (cap.isie && !cap.isie9) ? "propertychange" : "DOMAttrModified", self.onAttributeChange);
+              if (cap.isie9) _dom.attachEvent("onpropertychange", self.onAttributeChange); //IE9 DOMAttrModified bug
+              self.bind(_dom, "DOMNodeRemoved", function (e) {
+                if (e.target === _dom) self.remove();
               });
             }
           }
@@ -2283,10 +2286,10 @@
         return false;
       }
 
-      if (!self.hidden && !self.visibility) {
-        self.showRail().showRailHr();
+      if (!self.hidden) {
+        if (!self.rail.visibility) self.showRail();
+        if (self.railh && !self.railh.visibility) self.showRailHr();
       }
-      else if (self.railh && (!self.hidden && !self.railh.visibility)) self.showRailHr();
 
       if (self.istextarea && self.win.css('resize') && self.win.css('resize') != 'none') self.view.h -= 20;
 
@@ -2348,10 +2351,12 @@
 
       clearTimeout(hlazyresize);
 
+      tm = isNaN(tm) ? 240 : tm;
+
       hlazyresize = setTimeout(function () {
-        if (self) self.resize();
+        self && self.resize();
         hlazyresize=0;
-      }, tm||240);
+      }, tm);
 
       return self;
 
@@ -2515,7 +2520,7 @@
             de.a.splice(a);
             de.l.splice(a);
             if (de.a.length===0) {
-              self._unbind(dom,name,del.f);
+              self._unbind(dom,name,de.l.f);
               delegatevents[name] = null;
             }
           }
@@ -2559,7 +2564,7 @@
 
     this.showRail = function () {
       if ((self.page.maxh !== 0) && (self.ispage || self.win.css('display') != 'none')) {
-        self.visibility = true;
+        //self.visibility = true;
         self.rail.visibility = true;
         self.rail.css('display', 'block');
       }
@@ -2581,7 +2586,7 @@
     };
 
     this.hideRail = function () {
-      self.visibility = false;
+      //self.visibility = false;
       self.rail.visibility = false;
       self.rail.css('display', 'none');
       return self;
@@ -3227,7 +3232,7 @@
 
       };
 
-      this.cancelScroll = function () {        
+      this.cancelScroll = function () {
         if (self.timer) clearAnimationFrame(self.timer);
         self.timer = 0;
         self.bzscroll = false;

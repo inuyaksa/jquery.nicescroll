@@ -1,5 +1,5 @@
 # jQuery.NiceScroll
-v. 3.7.4
+v. 3.7.5
 
 ## The best nicescroll release ever - extremely smooth and consistent in modern browsers and mobile devices, with low resource usage
 
