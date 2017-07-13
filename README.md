@@ -77,13 +77,13 @@ Initialize nicescroll ALWAYS in (document) ready statement.
 ```javascript
 // 1. Simple mode, it styles document scrollbar:
 $(function() {  
-    $("html").niceScroll();
+    $("body").niceScroll();
 });
 
 // 2. Instance with object returned:
 var nice = false;
 $(function() {  
-    nice = $("html").niceScroll();
+    nice = $("body").niceScroll();
 });
 
 // 3. Style a DIV and chage cursor color:
