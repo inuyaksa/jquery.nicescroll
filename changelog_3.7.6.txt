@@ -1,0 +1,11 @@
+Changelog nicescroll release 3.7.6
+https://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+
+
+Fixes
+- Error in remove() using angular nicescroll with modal popup #683
+
+Changes 
+- none
