@@ -130,7 +130,8 @@
     preventmultitouchscrolling: true,
     disablemutationobserver: false,
     enableobserver: true,
-    scrollbarid: false
+    scrollbarid: false,
+    scrollCLass: false
   };
 
   var browserdetected = false;
@@ -876,6 +877,10 @@
         rail.attr('id', self.id);
         rail.addClass('nicescroll-rails nicescroll-rails-vr');
 
+        if (opt.scrollCLass) {
+            rail.addClass(opt.scrollCLass);
+        }
+
         var v, a, kp = ["left", "right", "top", "bottom"];  //**
         for (var n in kp) {
           a = kp[n];
@@ -968,6 +973,10 @@
           railh = $(_doc.createElement('div'));
           railh.attr('id', self.id + '-hr');
           railh.addClass('nicescroll-rails nicescroll-rails-hr');
+          if (opt.scrollCLass) {
+              rail.addClass(opt.scrollCLass);
+          }
+
           railh.height = Math.max(parseFloat(opt.cursorwidth), cursor.outerHeight());
           railh.css({
             height: railh.height + "px",
