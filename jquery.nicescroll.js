@@ -974,7 +974,7 @@
           railh.attr('id', self.id + '-hr');
           railh.addClass('nicescroll-rails nicescroll-rails-hr');
           if (opt.scrollCLass) {
-              rail.addClass(opt.scrollCLass);
+              railh.addClass(opt.scrollCLass);
           }
 
           railh.height = Math.max(parseFloat(opt.cursorwidth), cursor.outerHeight());
