@@ -124,7 +124,7 @@ $("#thisdiv").niceScroll({
     zindex: "auto" | [number], // change z-index for scrollbar div
     scrollspeed: 60, // scrolling speed
     mousescrollstep: 40, // scrolling speed with mouse wheel (pixel)
-    touchbehavior: false, // DEPRECATED!! use "touchemulate"
+    touchbehavior: false, // DEPRECATED!! use "emulatetouch"
     emulatetouch: false, // enable cursor-drag scrolling like touch devices in desktop computer
     hwacceleration: true, // use hardware accelerated scroll when supported
     boxzoom: false, // enable zoom for box content
