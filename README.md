@@ -86,7 +86,7 @@ $(function() {
     nice = $("body").niceScroll();
 });
 
-// 3. Style a DIV and chage cursor color:
+// 3. Style a DIV and change cursor color:
 $(function() {  
     $("#thisdiv").niceScroll({cursorcolor:"#00F"});
 });
