@@ -2303,7 +2303,7 @@
       if (!self.hasborderbox) self.scrollvaluemax -= self.cursor[0].offsetHeight - self.cursor[0].clientHeight;
 
       if (self.railh) {
-        self.railh.width = (self.page.maxh > 0) ? (self.view.w - self.rail.width) : self.view.w;
+        self.railh.width = (self.page.maxh > 0) ? (self.rail.width) : self.view.w;
         self.scrollvaluemaxw = self.railh.width - self.cursorwidth - (opt.railpadding.left + opt.railpadding.right);
       }
 
