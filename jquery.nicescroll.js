@@ -174,7 +174,7 @@
     d.hasw3ctouch = (_win.PointerEvent || false) && ((navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)); //IE11 pointer events, following W3C Pointer Events spec
     d.hasmstouch = (!d.hasw3ctouch) && (_win.MSPointerEvent || false); // IE10 pointer events
 
-    d.ismac = /^mac$/i.test(_platform);
+    d.ismac = /^mac$/i.test(_platform) || /^MacIntel$/i.test(_platform);
 
     d.isios = d.cantouch && /iphone|ipad|ipod/i.test(_platform);
     d.isios4 = d.isios && !("seal" in Object);
