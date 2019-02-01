@@ -1234,7 +1234,7 @@
 
           self.ontouchend = function (e) {
 
-            if (!self.rail.drag) return true;
+            if (!self || !self.rail.drag) return true;
 
             if (self.rail.drag.pt == 2) {
               //if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
@@ -1265,7 +1265,7 @@
 
           self.ontouchmove = function (e, byiframe) {
 
-            if (!self.rail.drag) return true;
+            if (!self || !self.rail.drag) return true;
 
             if (e.targetTouches && opt.preventmultitouchscrolling) {
               if (e.targetTouches.length > 1) return true; // multitouch
