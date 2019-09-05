@@ -2630,6 +2630,14 @@
       if (self.cursortimeout) clearTimeout(self.cursortimeout);
       for (var n in self.delaylist) if (self.delaylist[n]) clearAnimationFrame(self.delaylist[n].h);
       self.doZoomOut();
+
+      if (cap.hasw3ctouch) { //IE11+
+        self.undelegate(_doc, "pointermove", self.ontouchmove);
+      } else if (cap.hasmstouch) { //IE10
+        self.undelegate(_doc, "MSPointerMove", self.ontouchmove);
+      } else if (cap.cantouch) { // smartphones/touch devices
+        self.undelegate(_doc, "touchmove", self.ontouchmove, false, true);
+      }
       self.unbindAll();
 
       if (cap.isie9) self.win[0].detachEvent("onpropertychange", self.onAttributeChange); //IE9 DOMAttrModified bug
