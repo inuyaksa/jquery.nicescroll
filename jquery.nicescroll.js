@@ -46,7 +46,7 @@
     return (path.split('/').length > 0) ? path.split('/').slice(0, -1).join('/') + '/' : '';
   }
 
-  // based on code by Paul Irish https://www.paulirish.com/2011/requestanimationframe-for-smart-animating/  
+  // based on code by Paul Irish https://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
   var setAnimationFrame = _win.requestAnimationFrame || _win.webkitRequestAnimationFrame || _win.mozRequestAnimationFrame || false;
   var clearAnimationFrame = _win.cancelAnimationFrame || _win.webkitCancelAnimationFrame || _win.mozCancelAnimationFrame || false;
 
@@ -167,11 +167,11 @@
     d.iswebkit = !d.ismsedge && ("WebkitAppearance" in _style);
 
     d.ischrome = d.iswebkit && ("chrome" in _win);
-    d.ischrome38 = (d.ischrome && ("touchAction" in _style)); // behavior changed in touch emulation    
+    d.ischrome38 = (d.ischrome && ("touchAction" in _style)); // behavior changed in touch emulation
     d.ischrome22 = (!d.ischrome38) && (d.ischrome && d.haspointerlock);
     d.ischrome26 = (!d.ischrome38) && (d.ischrome && ("transition" in _style)); // issue with transform detection (maintain prefix)
 
-    d.cantouch = ("ontouchstart" in _doc.documentElement) || ("ontouchstart" in _win); // with detection for Chrome Touch Emulation    
+    d.cantouch = ("ontouchstart" in _doc.documentElement) || ("ontouchstart" in _win); // with detection for Chrome Touch Emulation
     d.hasw3ctouch = (_win.PointerEvent || false) && ((navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)); //IE11 pointer events, following W3C Pointer Events spec
     d.hasmstouch = (!d.hasw3ctouch) && (_win.MSPointerEvent || false); // IE10 pointer events
 
@@ -307,7 +307,7 @@
 
     this.canshowonmouseevent = (opt.autohidemode != "scroll");
 
-    // Events jump table    
+    // Events jump table
     this.onmousedown = false;
     this.onmouseup = false;
     this.onmousemove = false;
@@ -324,7 +324,7 @@
     this.onzoomin = false;
     this.onzoomout = false;
 
-    // Let's start!  
+    // Let's start!
     this.view = false;
     this.page = false;
 
@@ -550,7 +550,7 @@
       };
 
       //this one can help to enable hw accel on ios6 http://indiegamr.com/ios6-html-hardware-acceleration-changes-and-how-to-fix-them/
-      if (cap.hastranslate3d && cap.isios) this.doc.css("-webkit-backface-visibility", "hidden"); // prevent flickering http://stackoverflow.com/questions/3461441/      
+      if (cap.hastranslate3d && cap.isios) this.doc.css("-webkit-backface-visibility", "hidden"); // prevent flickering http://stackoverflow.com/questions/3461441/
 
       this.getScrollTop = function (last) {
         if (!last) {
@@ -812,7 +812,7 @@
       if (cap.isoperamini) return true; // SORRY, DO NOT WORK!
       if (cap.isandroid && !("hidden" in _doc)) return true; // Android 3- SORRY, DO NOT WORK!
 
-      opt.emulatetouch = opt.emulatetouch || opt.touchbehavior;  // mantain compatibility with "touchbehavior"      
+      opt.emulatetouch = opt.emulatetouch || opt.touchbehavior;  // mantain compatibility with "touchbehavior"
 
       self.hasborderbox = _win.getComputedStyle && (_win.getComputedStyle(_doc.body)['box-sizing'] === "border-box");
 
@@ -1345,7 +1345,7 @@
 
               if (!self.hasmoving) {
 
-                if (self.rail.drag.y === e.clientY && self.rail.drag.x === e.clientX) return self.cancelEvent(e);  // prevent first useless move event 
+                if (self.rail.drag.y === e.clientY && self.rail.drag.x === e.clientX) return self.cancelEvent(e);  // prevent first useless move event
 
                 var ay = Math.abs(my);
                 var ax = Math.abs(mx);
@@ -1624,15 +1624,15 @@
           }
 
           self.onselectionstart = function (e) {
-            //  More testing - severe chrome issues           
-            /* 
+            //  More testing - severe chrome issues
+            /*
                           if (!self.haswrapper&&(e.which&&e.which==2)) {  // fool browser to manage middle button scrolling
                             self.win.css({'overflow':'auto'});
                             setTimeout(function(){
                               self.win.css({'overflow':'hidden'});
-                            },10);                
+                            },10);
                             return true;
-                          }            
+                          }
             */
             if (self.ispage) return;
             self.selectiondrag = self.win.offset();
@@ -1814,7 +1814,7 @@
             });
             self.cursorh && self.bind(self.cursorh, "mouseup", self.onmouseup);
           } else {
-            self.bind(self.rail, "mousedown", function (e) { e.preventDefault(); });  // prevent text selection             
+            self.bind(self.rail, "mousedown", function (e) { e.preventDefault(); });  // prevent text selection
             self.railh && self.bind(self.railh, "mousedown", function (e) { e.preventDefault(); });
           }
 
@@ -1847,7 +1847,7 @@
             self.hasmousefocus = true;
             if (self.canshowonmouseevent) self.noticeCursor();
           });
-          self.bind(self.win, "mouseleave", function (e) {   // *       
+          self.bind(self.win, "mouseleave", function (e) {   // *
             mousefocus = false;
             self.hasmousefocus = false;
             if (!self.rail.drag) self.hideCursor();
@@ -1914,7 +1914,7 @@
                 ret = true;
                 break;
               case 36:
-              case 63273: // safari                
+              case 63273: // safari
                 (self.railh && ctrl) ? self.doScrollPos(0, 0) : self.doScrollTo(0);
                 ret = true;
                 break;
@@ -2062,7 +2062,7 @@
 
           if (self.iframexd) {
             if ("console" in _win) console.log('NiceScroll error: policy restriced iframe');
-            return true; //cross-domain - I can't manage this        
+            return true; //cross-domain - I can't manage this
           }
 
           self.forcescreen = true;
@@ -2248,12 +2248,12 @@
       self.page.maxw = Math.max(0, self.page.w - self.view.w);
 
       if ((self.page.maxh == premaxh) && (self.page.maxw == premaxw) && (self.view.w == previeww) && (self.view.h == previewh)) {
-        // test position        
+        // test position
         if (!self.ispage) {
           var pos = self.win.offset();
           if (self.lastposition) {
             var lst = self.lastposition;
-            if ((lst.top == pos.top) && (lst.left == pos.left)) return self; //nothing to do            
+            if ((lst.top == pos.top) && (lst.left == pos.left)) return self; //nothing to do
           }
           self.lastposition = pos;
         } else {
@@ -2420,7 +2420,7 @@
       if ("onwheel" in _doc.createElement("div")) { // Modern browsers support "wheel"
         self._bind(el, "wheel", fn, bubble || false);
       } else {
-        var wname = (_doc.onmousewheel !== undefined) ? "mousewheel" : "DOMMouseScroll"; // older Webkit+IE support or older Firefox          
+        var wname = (_doc.onmousewheel !== undefined) ? "mousewheel" : "DOMMouseScroll"; // older Webkit+IE support or older Firefox
         _modernWheelEvent(el, wname, fn, bubble || false);
         if (wname == "DOMMouseScroll") _modernWheelEvent(el, "MozMousePixelScroll", fn, bubble || false); // Firefox legacy
       }
@@ -2445,11 +2445,11 @@
         e.stopImmediatePropagation();
         if (e.preventManipulation) e.preventManipulation();  // IE10+
         return false;
-      };      
+      };
 
     } else {
 
-      // inspired from https://gist.github.com/jonathantneal/2415137      
+      // inspired from https://gist.github.com/jonathantneal/2415137
 
       Event.prototype.preventDefault = function () {
         this.returnValue = false;
@@ -2469,11 +2469,11 @@
       // Thanks to http://www.switchonthecode.com !!
       this.cancelEvent = function (e) {
         e = e || _win.event;
-        if (e) {          
+        if (e) {
           e.cancelBubble = true;
           e.cancel = true;
           e.returnValue = false;
-        }  
+        }
         return false;
       };
 
@@ -2516,7 +2516,7 @@
         de.l = [fn].concat(de.l);
       } else {
         de.a.push(self.id);
-        de.l.push(fn);        
+        de.l.push(fn);
       }
 
     };
@@ -2552,7 +2552,7 @@
         q: false
       });
 
-      (passiveSupported && active) ? el.addEventListener(name, fn, { passive: false, capture: bubble }) : el.addEventListener(name, fn, bubble || false);
+      (passiveSupported && (active || el == window.document || el == window.document.body || el == window)) ? el.addEventListener(name, fn, { passive: false, capture: bubble }) : el.addEventListener(name, fn, bubble || false);
     };
 
     this._unbind = function (el, name, fn, bub) { // primitive unbind
@@ -2885,7 +2885,7 @@
         py = -(e.deltaY * opt.mousescrollstep * 50 / 80) | 0;
       }
 
-      if (hr && opt.oneaxismousemode && (px === 0) && py) { // classic vertical-only mousewheel + browser with x/y support 
+      if (hr && opt.oneaxismousemode && (px === 0) && py) { // classic vertical-only mousewheel + browser with x/y support
         px = py;
         py = 0;
 
@@ -3056,7 +3056,7 @@
         var py = self.getScrollTop();
         var px = self.getScrollLeft();
 
-        if (((self.newscrolly - py) * (y - py) < 0) || ((self.newscrollx - px) * (x - px) < 0)) self.cancelScroll(); //inverted movement detection      
+        if (((self.newscrolly - py) * (y - py) < 0) || ((self.newscrollx - px) * (x - px) < 0)) self.cancelScroll(); //inverted movement detection
 
         if (!opt.bouncescroll) {
           if (y < 0) y = 0;
@@ -3143,7 +3143,7 @@
         self.scrollendtrapped = false;
         self.resetTransition();
         self.timerscroll = false;
-        self.setScrollTop(py); // fire event onscroll        
+        self.setScrollTop(py); // fire event onscroll
         if (self.railh) self.setScrollLeft(px); // fire event onscroll left
 
         self.cursorupdate.stop();
@@ -3384,7 +3384,7 @@
   };
 
   // Inspired by the work of Kin Blas
-  // http://webpro.host.adobe.com/people/jblas/momentum/includes/jquery.momentum.0.7.js  
+  // http://webpro.host.adobe.com/people/jblas/momentum/includes/jquery.momentum.0.7.js
   var ScrollMomentumClass2D = function (nc) {
     var self = this;
     this.nc = nc;
