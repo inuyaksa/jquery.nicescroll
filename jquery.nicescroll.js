@@ -2509,6 +2509,14 @@
 
         delegatevents[name] = de;
 
+      } else {
+        self.events.push({
+          e: dom,
+          n: name,
+          f: fn,
+          b: bubble,
+          q: false
+        });
       }
 
       if (self.ispage) {
