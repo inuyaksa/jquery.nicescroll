@@ -1,6 +1,6 @@
 /* jquery.nicescroll
--- version 3.7.6
--- copyright 2017-07-19 InuYaksa*2017
+-- version 4.0.0 for modern browsers
+-- copyright 2022-02-23 InuYaksa*2017+22
 -- licensed under the MIT
 --
 -- https://nicescroll.areaaperta.com/
@@ -175,7 +175,7 @@
     d.hasw3ctouch = (_win.PointerEvent || false) && ((navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)); //IE11 pointer events, following W3C Pointer Events spec
     d.hasmstouch = (!d.hasw3ctouch) && (_win.MSPointerEvent || false); // IE10 pointer events
 
-    d.ismac = /^mac$/i.test(_platform);
+    d.ismac = /Mac.+$/.test(_platform);  // inspired by issue from @arealdeadone: Added Additional Check for Mac #764
 
     d.isios = d.cantouch && /iphone|ipad|ipod/i.test(_platform);
     d.isios4 = d.isios && !("seal" in Object);
@@ -262,8 +262,9 @@
 
     var self = this;
 
-    this.version = '3.7.6';
+    this.version = '4.0.0';
     this.name = 'nicescroll';
+    this.modern = 1;
 
     this.me = me;
 
@@ -2552,7 +2553,9 @@
         q: false
       });
 
-      (passiveSupported && active) ? el.addEventListener(name, fn, { passive: false, capture: bubble }) : el.addEventListener(name, fn, bubble || false);
+      //https://github.com/inuyaksa/jquery.nicescroll/issues/825#issuecomment-735423931
+      //(passiveSupported && active) ? el.addEventListener(name, fn, { passive: false, capture: bubble }) : el.addEventListener(name, fn, bubble || false);
+      (passiveSupported && (active || el == window.document || el == window.document.body || el == window)) ? el.addEventListener(name, fn, { passive: false, capture: bubble }) : el.addEventListener(name, fn, bubble || false);
     };
 
     this._unbind = function (el, name, fn, bub) { // primitive unbind
@@ -2630,6 +2633,14 @@
       if (self.cursortimeout) clearTimeout(self.cursortimeout);
       for (var n in self.delaylist) if (self.delaylist[n]) clearAnimationFrame(self.delaylist[n].h);
       self.doZoomOut();
+      //https://github.com/inuyaksa/jquery.nicescroll/pull/814/commits/43f37b9b79c40ceef4fe797c9d5dfc2a5913cdee
+      if (cap.hasw3ctouch) { //IE11+
+        self.undelegate(_doc, "pointermove", self.ontouchmove);
+      } else if (cap.hasmstouch) { //IE10
+        self.undelegate(_doc, "MSPointerMove", self.ontouchmove);
+      } else if (cap.cantouch) { // smartphones/touch devices
+        self.undelegate(_doc, "touchmove", self.ontouchmove, false, true);
+      }
       self.unbindAll();
 
       if (cap.isie9) self.win[0].detachEvent("onpropertychange", self.onAttributeChange); //IE9 DOMAttrModified bug

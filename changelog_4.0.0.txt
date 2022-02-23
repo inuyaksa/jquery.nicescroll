@@ -1,0 +1,11 @@
+Changelog nicescroll release 4.0.0 beta
+https://nicescroll.areaaperta.com/
+https://github.com/inuyaksa/jquery.nicescroll
+
+Nicescroll for modern browsers
+
+
+Fixes
+
+
+Changes 
