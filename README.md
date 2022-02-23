@@ -12,55 +12,55 @@ v. 3.8.0 quickfix august 2018
 > Nicescroll as a Greasemonkey plugin: http://userscripts.org/scripts/show/119910 (freezed)
 
 
-> Nicescroll is a jquery plugin, for nice scrollbars with a very similar ios/mobile style.
+> Nicescroll is a jQuery plugin, for nice scrollbars with a very similar ios/mobile style.
 
   - HORIZONAL scrollbar support!
   - It supports DIVs, IFrames, textarea, and document page (body) scrollbars.
-  - Compatible with all recent desktop browser and older: Chrome, Firefox, Edge, IE8+, Safari (win/mac), Opera. (all A-grade browsers)
-  - Compatible with mobile device: iPad/iPhone/iPod, Android 4+, Blackberry phones and Playbook (WebWorks/Table OS), Windows Phone 8 and 10.
+  - Compatible with all recent desktop browsers and older: Chrome, Firefox, Edge, IE8+, Safari (win/mac), Opera. (all A-grade browsers)
+  - Compatible with mobile devices: iPad/iPhone/iPod, Android 4+, Blackberry phones and Playbook (WebWorks/Table OS), Windows Phone 8 and 10.
   - Compatible with all touch devices: iPad, Android tablets, Window Surface.
-  - Compabible with multi-input device (mouse with touch or pen): Window Surface, Chrome Desktop on touch notebook.
-  - Compatible with 2 directions mice: Apple Magic Mouse, Apple Mouser with 2-dir wheel, PC mouse with 2-dir wheel (if browser support it).
+  - Compabible with multi-input devices (mouse with touch or pen): Window Surface, Chrome Desktop on touch notebook.
+  - Compatible with 2-directional mice: Apple Magic Mouse, Apple Mouser with 2-dir wheel, PC mouse with 2-dir wheel (if browser support it).
 
-So you have customizable and scrollable divs with momentum for iPad and you have consistent scrollable areas for all desktop and mobile platforms.
+What you get: customizable and scrollable divs with momentum for iPad and consistent scrollable areas for all desktop and mobile platforms.
 
-Sexy zoom feature, you can "zoom-in" the content of any nicescroll'ed div.
-Nice to use and nice to see, all the content of the div in fullscreen mode.
-It works on desktop (double click on div) either in mobile/touch devices using pinch gesture.
+Sexy zoom feature: you can "zoom in" on the content of any nicescroll enabled DIV.
+Nice to use and nice to see: all the content of the DIV in fullscreen mode.
+It works on desktop (double click on div) either in mobile/touch devices using the pinch gesture.
 
-On modern browsers hardware accelerated scrolling has implemented.
-Using animationFrame for a smoothest and cpu-saving scrolling. (when browser supports)
+On modern browsers hardware accelerated scrolling has been implemented.
+Using animationFrame for smoother and cpu-saving scroll animations. (when browser supports)
 
 "Use strict" tested script for maximum code quality.
 Bower and AMD ready.
 
-Warning for IE6/7 users (why do you uses yet? Please updgrade to a more stable and modern browser), support for your browser has deprecated.
+Warning for IE6/IE7 users: support for your browser has been deprecated. (Why do you still use this? Please upgrade to a more stable and modern browser)
 
 
 ## FEATURES
 
-- simple installation and activation, it works with NO modification of your code. (some exceptions can happen, so you can write to me)
-- very stylish scrollbars, with no occupation on your window (original browser scrollbars need some of page space and reduces window/div usable width)
-- you can style main document scrollbar (body) too!! (not all device/browser support this feature)
-- on all browsers you can scroll: dragging the cursor, mouse wheel (speed customizable), keyboard navigation (cursor keys, pagup/down keys, home/end keys)
-- scroll is smooth (as modern tablet browsing), speed is customizable
-- zoom feature
-- hardware accelerated scroll (where available)
-- animation frame support for smoth scrolling and cpu-saving
-- dragging scroll mode with scrolling momentum (as touch device)
-- tested for all major browsers desktop and mobile versions
-- support for touch devices
-- support for multi-input devices (MSPointer/Pointer support)
-- compatible with many other browsers and webkit derivated!
-- scrollbar has a lot a customizable features
-- native scroll events are working yet
-- fully integrated with jQuery
-- compatibile with jQuery UI, jQuery Touch, jQuery Mobile
+- Simple installation and activation: functions with NO modification of your code. (some exceptions can happen, in which case you can write to me.)
+- Very stylish scrollbars with no occupation on your window: original browser scrollbars need some of page space and reduces window/div usable width.
+- You can style main document scrollbar (body) too! (not all devices/browsers support this feature yet)
+- You can scroll by dragging the cursor, mouse wheel (speed customizable), keyboard navigation (cursor keys, pagup/down keys, home/end keys) on all browsers.
+- Scrolling is smooth (like modern tablet browsing). Speed is customizable.
+- Zoom feature.
+- Hardware accelerated scroll (where available).
+- Animation frame support for smooth scrolling and cpu-saving.
+- Dragging scroll mode with scrolling momentum (like touch devices).
+- Tested for all major mobile and desktop browser versions.
+- Support for touch devices.
+- Support for multi-input devices (MSPointer/Pointer support).
+- Compatible with many other browsers and webkit derivatives!
+- Scrollbar has a lot a customizable features.
+- Native scroll events are working.
+- Fully integrated with jQuery.
+- Compatibile with jQuery UI, jQuery Touch, jQuery Mobile
 
 
 ## DEPENDENCIES
->> It's a plugin for the jquery framework, you need to include jquery in your scripts.
->> it works with jQuery 1.x / 2.x / 3.x branch (slim version don't works)
+>> jQuery is required to be included in your scripts.
+>> Works with jQuery 1.x / 2.x / 3.x branch (slim version don't works)
 
 
 * INSTALLATION
@@ -68,12 +68,12 @@ Put loading script tag after jquery script tag and loading the zoom image in the
 
 <script src="jquery.nicescroll.js"></script>
 
-When you use zoom feature, copy image "zoomico.png" in the same folder of jquery.nicescroll.js.
+When using the zoom feature, copy "zoomico.png" in to the same folder as jquery.nicescroll.js.
 
 
 * HOW TO USE
 
-Initialize nicescroll ALWAYS in (document) ready statement.
+ALWAYS Initialize nicescroll in a (document) ready statement.
 ```javascript
 // 1. Simple mode, it styles document scrollbar:
 $(function() {  
