@@ -9,3 +9,16 @@ Fixes
 
 
 Changes 
+
+
+Removed
+- deprecated navigator.platform
+- deprecated setCapture
+
+
+Minimal browser spec required:
+- Mutation Observer, polyfill https://github.com/webcomponents/webcomponentsjs
+- requestAnimationFrame, polyfill https://github.com/behnammodi/polyfill/blob/master/window.polyfill.js
+- CSS3 transition, transform, translate3d
+- style "cursor:grab"
+- setPointerCapture (prev setCapture)

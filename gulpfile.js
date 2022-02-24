@@ -1,4 +1,5 @@
 //thanks to https://goede.site/transpile-and-minify-javascript-html-and-css-using-gulp-4
+//https://github.com/gulp-community/gulp-header
 
 const gulp = require("gulp");
 const browserify = require("browserify");	
@@ -6,8 +7,17 @@ const babelify = require("babelify");
 const source = require("vinyl-source-stream");	
 const buffer = require("vinyl-buffer");	
 const uglify = require("gulp-uglify");
+const header = require('gulp-header');
+const rename = require('gulp-rename');
 const del = require("del");
 	
+const pkg = require('./package.json');
+
+const banner = [
+  '/** <%= pkg.name %> - <%= pkg.version %> - <%= pkg.homepage %> - license <%= pkg.license %> **/',
+  ''
+].join('\n');
+
 const paths = {
   source: "src",
   build: "dist",
@@ -15,17 +25,20 @@ const paths = {
 	
 function buildMain() {
     return (	
-        browserify({	
-            entries: [`${paths.source}/jquery.nicescroll.js`],
-            transform: [babelify.configure({ 
-              presets: ["@babel/preset-env"],
-              plugins: ['@babel/transform-runtime'],
-            })]	
-        })	
-        .bundle()	
-        .pipe(source("jquery.nicescroll.min.js"))	
-        .pipe(buffer())
+        // browserify({	
+        //     entries: [`${paths.source}/jquery.nicescroll.js`],
+        //     transform: [babelify.configure({ 
+        //       presets: ["@babel/preset-env"],
+        //       // plugins: ['@babel/transform-runtime'],
+        //     })]	
+        // })	
+        // .bundle()	
+        // .pipe(source("jquery.nicescroll.min.js"))	
+        // .pipe(buffer())
+        gulp.src([`${paths.source}/jquery.nicescroll.js`])
+        .pipe(rename('jquery.nicescroll.min.js'))
         .pipe(uglify())
+        .pipe(header(banner, { pkg : pkg } ))
         .pipe(gulp.dest(`${paths.build}`))	
     );	
 }
@@ -36,7 +49,7 @@ function buildUtils() {
             entries: [`${paths.source}/jquery.nicescroll.iframehelper.js`],
             transform: [babelify.configure({ 
               presets: ["@babel/preset-env"],
-              plugins: ['@babel/transform-runtime'],
+              // plugins: ['@babel/transform-runtime'],
             })]	
         })	
         .bundle()	
