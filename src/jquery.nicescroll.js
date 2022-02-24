@@ -12,16 +12,33 @@
 
 /* jshint expr: true */
 
+//https://github.com/umdjs/umd/blob/master/templates/jqueryPlugin.js
+
 (function (factory) {
   if (typeof define === 'function' && define.amd) {
-    // AMD. Register as anonymous module.
-    define(['jquery'], factory);
-  } else if (typeof exports === 'object') {
-    // Node/CommonJS.
-    module.exports = factory(require('jquery'));
+      // AMD. Register as an anonymous module.
+      define(['jquery'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+      // Node/CommonJS
+      module.exports = function( root, jQuery ) {
+          if ( jQuery === undefined ) {
+              // require('jQuery') returns a factory that requires window to
+              // build a jQuery instance, we normalize how we use modules
+              // that require this pattern but the window provided is a noop
+              // if it's defined (how jquery works)
+              if ( typeof window !== 'undefined' ) {
+                  jQuery = require('jquery');
+              }
+              else {
+                  jQuery = require('jquery')(root);
+              }
+          }
+          factory(jQuery);
+          return jQuery;
+      };
   } else {
-    // Browser globals.
-    factory(jQuery);
+      // Browser globals
+      factory(jQuery);
   }
 }(function (jQuery) {
 
@@ -65,7 +82,6 @@
     cursorborderradius: "5px",
     scrollspeed: 40,
     mousescrollstep: 9 * 3,
-    touchbehavior: false,   // deprecated
     emulatetouch: false,    // replacing touchbehavior
     hwacceleration: true,
     usetransition: true,
@@ -118,6 +134,17 @@
     scrollCLass: false
   };
 
+  const detectFadingScrollbar = function() {
+    var _div = _doc.createElement("div");
+    _div.style="position:absolute; top:0; opacity:0; width:20px; height:1px; overflow-y:scroll;";
+    _doc.body.appendChild(_div);    
+    var px = _div.clientWidth;
+    _div.style="position:absolute; top:0; opacity:0; width:20px; height:1px; overflow-y:hidden;";
+    var chk = (px == _div.clientWidth);
+    _doc.body.removeChild(_div);
+    return chk;
+  }
+
   var browserdetected = false;
 
   var getBrowserDetection = function () {
@@ -146,7 +173,7 @@
 
     d.ismsedge = ("msCredentials" in _win);  // MS Edge 14+
 
-    d.ismozilla = ("mozFullScreen" in _style);
+    d.ismozilla = ("mozFullScreen" in _doc);
 
     d.iswebkit = !d.ismsedge && ("WebkitAppearance" in _style);
 
@@ -194,12 +221,24 @@
 
     d.hasMutationObserver = (ClsMutationObserver !== false);
 
+    d.hasfadingscrollbar = detectFadingScrollbar();
+
     _el = null; //memory released
 
     browserdetected = d;
 
     return d;
   };
+
+  var _chromeInit = false;
+  const setupChrome = function() {
+    if (_chromeInit) return;
+    _chromeInit = true;
+    var _style = _doc.createElement('style');
+    _style.innerHTML = ".nicescroll-webkit-nativescrollbarhide::-webkit-scrollbar { width: 0 !important; } ";
+    _doc.head.appendChild(_style);  
+  };
+
 
   var NiceScrollClass = function (myopt, me) {
 
@@ -222,7 +261,7 @@
 
     $.extend(opt, _globaloptions);  // clone opts
 
-    // Options for internal use
+    // Options for internal usage
     opt.snapbackspeed = 80;
 
     if (myopt || false) {
@@ -479,15 +518,6 @@
       }
     };
 
-    //derived from http://stackoverflow.com/questions/11236090/
-    function getMatrixValues() {
-      var tr = self.doc.css(cap.trstyle);
-      if (tr && (tr.substr(0, 6) == "matrix")) {
-        return tr.replace(/^.*\((.*)\)$/g, "$1").replace(/px/g, '').split(/, +/);
-      }
-      return false;
-    }
-
     if (this.ishwscroll) {    // hw accelerated scroll
 
       this.doc.translate = {
@@ -499,8 +529,6 @@
 
       this.getScrollTop = function (last) {
         if (!last) {
-          var mtx = getMatrixValues();
-          if (mtx) return (mtx.length == 16) ? -mtx[13] : -mtx[5]; //matrix3d 16 on IE10
           if (self.timerscroll && self.timerscroll.bz) return self.timerscroll.bz.getNow();
         }
         return self.doc.translate.y;
@@ -508,16 +536,13 @@
 
       this.getScrollLeft = function (last) {
         if (!last) {
-          var mtx = getMatrixValues();
-          if (mtx) return (mtx.length == 16) ? -mtx[12] : -mtx[4]; //matrix3d 16 on IE10
           if (self.timerscroll && self.timerscroll.bh) return self.timerscroll.bh.getNow();
         }
         return self.doc.translate.x;
       };
 
       this.notifyScrollEvent = function (el) {
-        var e = _doc.createEvent("UIEvents");
-        e.initUIEvent("scroll", false, false, _win, 1);
+        const e = new Event('scroll');
         e.niceevent = true;
         el.dispatchEvent(e);
       };
@@ -767,6 +792,8 @@
 
       self.saved.css = [];
 
+      detectFadingScrollbar();
+
       if (cap.isoperamini) return true; // SORRY, DO NOT WORK!
       if (cap.isandroid && !("hidden" in _doc)) return true; // Android 3- SORRY, DO NOT WORK!
 
@@ -777,10 +804,11 @@
       var _scrollyhidden = {};
 
       if (cap.ismozilla) {
-        _scrollyhidden = { 'scrollbar-width': 0 };
+        _scrollyhidden = { 'scrollbar-width': 'none' };
       }
       else if (cap.ischrome) {
-
+        setupChrome();
+        this.win.addClass("nicescroll-webkit-nativescrollbarhide");
       }
       else {
         _scrollyhidden = { 'overflow-y': 'hidden' };
@@ -814,14 +842,6 @@
 
         self.css(cont, _scrollyhidden);
 
-        if (self.ispage && (cap.isie11 || cap.isie)) { // IE 7-11
-          self.css($("html"), _scrollyhidden);
-        }
-
-        if (cap.isios && !self.ispage && !self.haswrapper) self.css($body, {
-          "-webkit-overflow-scrolling": "touch"
-        }); //force hw acceleration
-
         var cursor = $(_doc.createElement('div'));
         cursor.css({
           position: "relative",
@@ -832,8 +852,6 @@
           'background-color': opt.cursorcolor,
           border: opt.cursorborder,
           'background-clip': 'padding-box',
-          '-webkit-border-radius': opt.cursorborderradius,
-          '-moz-border-radius': opt.cursorborderradius,
           'border-radius': opt.cursorborderradius
         });
 
@@ -927,8 +945,6 @@
             backgroundColor: opt.cursorcolor,
             border: opt.cursorborder,
             backgroundClip: 'padding-box',
-            '-webkit-border-radius': opt.cursorborderradius,
-            '-moz-border-radius': opt.cursorborderradius,
             'border-radius': opt.cursorborderradius
           });
 
@@ -1045,14 +1061,12 @@
             }
           }
 
-          if (cap.isios) self.css(self.win, {
-            '-webkit-tap-highlight-color': 'rgba(0,0,0,0)',
-            '-webkit-touch-callout': 'none'
-          }); // prevent grey layer on click
-
           if (opt.disableoutline) {
-            if (cap.isie) self.win.attr("hideFocus", "true"); // IE, prevent dotted rectangle on focused div
             if (cap.iswebkit) self.win.css('outline', 'none');  // Webkit outline
+            if (cap.isios) self.css(self.win, { // prevent grey layer on click
+              '-webkit-tap-highlight-color': 'rgba(0,0,0,0)',
+              '-webkit-touch-callout': 'none'
+            });  
           }
 
         }
@@ -1086,14 +1100,14 @@
 
           self.scrollmom = new ScrollMomentumClass2D(self);
 
-          var delayedclick = null;
+          //var delayedclick = null;
 
           self.ontouchstart = function (e) {
 
             if (self.locked) return false;
 
             //if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
-            if (e.pointerType && (e.pointerType === 'mouse' || e.pointerType === e.MSPOINTER_TYPE_MOUSE)) return false;  // need test on surface!!
+            if (e.pointerType && e.pointerType === 'mouse') return false;  // need test on surface!!
 
             self.hasmoving = false;
 
@@ -1206,7 +1220,7 @@
 
             if (self.rail.drag.pt == 2) {
               //if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
-              if (e.pointerType && (e.pointerType === 'mouse' || e.pointerType === e.MSPOINTER_TYPE_MOUSE)) return false;
+              if (e.pointerType && e.pointerType === 'mouse') return false;
 
               self.rail.drag = false;
 
@@ -1240,7 +1254,7 @@
             }
 
             //if (e.pointerType && e.pointerType != 2 && e.pointerType != "touch") return false;
-            if (e.pointerType && (e.pointerType === 'mouse' || e.pointerType === e.MSPOINTER_TYPE_MOUSE)) return true;
+            if (e.pointerType && e.pointerType === 'mouse') return true;
 
             if (self.rail.drag.pt == 2) {
 
@@ -1790,7 +1804,8 @@
 
 
         if (opt.enablemousewheel) {
-          if (!self.isiframe) self.mousewheel((cap.isie && self.ispage) ? _doc : self.win, self.onmousewheel);
+          //if (!self.isiframe) self.mousewheel((cap.isie && self.ispage) ? _doc : self.win, self.onmousewheel);
+          if (!self.hasnativescroll && !self.isiframe) self.mousewheel(self.win, self.onmousewheel);
           self.mousewheel(self.rail, self.onmousewheel);
           if (self.railh) self.mousewheel(self.railh, self.onmousewheelhr);
         }
@@ -2050,7 +2065,7 @@
             self.docscroll = $(self.iframe.body);
           }
 
-          if (!cap.isios && opt.iframeautoresize && !self.isiframe) {
+          if (!cap.isios && opt.iframeautoresize && !self.isiframe) { // CHECKME
             self.win.scrollTop(0); // reset position
             self.doc.height(""); //reset height to fix browser bug
             var hh = Math.max(doc.getElementsByTagName('html')[0].scrollHeight, doc.body.scrollHeight);
@@ -2385,13 +2400,7 @@
 
     this.mousewheel = function (dom, fn, bubble) { // bind mousewheel
       var el = ("jquery" in dom) ? dom[0] : dom;
-      if ("onwheel" in _doc.createElement("div")) { // Modern browsers support "wheel"
-        self._bind(el, "wheel", fn, bubble || false);
-      } else {
-        var wname = (_doc.onmousewheel !== undefined) ? "mousewheel" : "DOMMouseScroll"; // older Webkit+IE support or older Firefox          
-        _modernWheelEvent(el, wname, fn, bubble || false);
-        if (wname == "DOMMouseScroll") _modernWheelEvent(el, "MozMousePixelScroll", fn, bubble || false); // Firefox legacy
-      }
+      self._bind(el, "wheel", fn, bubble || false);
     };
 
     var passiveSupported = false;

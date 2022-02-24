@@ -14,6 +14,10 @@ Changes
 Removed
 - deprecated navigator.platform
 - deprecated setCapture
+- deprecated -webkit-overflow-scrolling
+- prefixed border-radius
+- config property touchbehavior
+- IE transformation matrix
 
 
 Minimal browser spec required:
