@@ -1,5 +1,5 @@
 # jQuery.NiceScroll
-v. 3.8.0 quickfix august 2018
+v. 4.0.0 modern - 2022 febbrary
 
 ## The best nicescroll release ever - extremely smooth and consistent in modern browsers and mobile devices, with low resource usage
 
@@ -9,7 +9,7 @@ v. 3.8.0 quickfix august 2018
 
  [![Join the chat at https://gitter.im/inuyaksa/jquery.nicescroll](https://badges.gitter.im/inuyaksa/jquery.nicescroll.svg)](https://gitter.im/inuyaksa/jquery.nicescroll?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-> Nicescroll as a Greasemonkey plugin: http://userscripts.org/scripts/show/119910 (freezed)
+> Nicescroll as a Greasemonkey plugin: http://userscripts.org/scripts/show/119910 (deprecated)
 
 
 > Nicescroll is a jQuery plugin, for nice scrollbars with a very similar ios/mobile style.
@@ -34,7 +34,7 @@ Using animationFrame for smoother and cpu-saving scroll animations. (when browse
 "Use strict" tested script for maximum code quality.
 Bower and AMD ready.
 
-Warning for IE6/IE7 users: support for your browser has been deprecated. (Why do you still use this? Please upgrade to a more stable and modern browser)
+Warning for IE6/IE7/IE8/IE9/IE10/IE11 users: support for your browser has been deprecated.
 
 
 ## FEATURES
