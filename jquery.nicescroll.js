@@ -706,8 +706,9 @@
       var ww = self.win.offset();
       if (!self.viewport) return ww;
       var vp = self.viewport.offset();
+      const vpScrollTop = self.viewport.scrollTop();
       return {
-        top: ww.top - vp.top,
+        top: ww.top - vp.top + vpScrollTop,
         left: ww.left - vp.left
       };
     };
